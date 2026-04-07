@@ -42,6 +42,7 @@ export default async function DashboardPage() {
       profile={profile}
       initialTherapist={{
         bio: therapistData?.bio ?? '',
+        bio_en: therapistData?.bio_en ?? '',
         specialties: therapistData?.specialties ?? [],
         consultation_fee: therapistData?.consultation_fee ?? 0,
         languages: therapistData?.languages ?? [],

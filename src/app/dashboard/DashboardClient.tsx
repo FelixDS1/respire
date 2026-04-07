@@ -1,7 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
+import { specialtyTranslations, useLanguage } from '@/lib/language'
+
+const ALL_SPECIALTIES = Object.keys(specialtyTranslations)
+
+function normalize(str: string) {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+}
 
 interface Profile {
   full_name: string
@@ -11,6 +18,7 @@ interface Profile {
 
 interface TherapistData {
   bio: string
+  bio_en: string
   specialties: string[]
   consultation_fee: number
   languages: string[]
@@ -49,6 +57,7 @@ interface Props {
 }
 
 export default function DashboardClient({ userId, profile, initialTherapist, initialSlots, initialAppointments }: Props) {
+  const { lang } = useLanguage()
   const [tab, setTab] = useState<Tab>('profile')
   const [therapist, setTherapist] = useState<TherapistData>(initialTherapist)
   const [slots, setSlots] = useState<Slot[]>(initialSlots)
@@ -66,6 +75,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
     const supabase = createClient()
     await supabase.from('therapists').update({
       bio: therapist.bio,
+      bio_en: therapist.bio_en,
       specialties: therapist.specialties,
       consultation_fee: therapist.consultation_fee,
       languages: therapist.languages,
@@ -99,9 +109,10 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
     setSlots(prev => prev.filter(s => s.id !== slotId))
   }
 
-  function addSpecialty() {
-    if (specialtyInput.trim() && !therapist.specialties.includes(specialtyInput.trim())) {
-      setTherapist(prev => ({ ...prev, specialties: [...prev.specialties, specialtyInput.trim()] }))
+  function addSpecialty(value?: string) {
+    const term = (value ?? specialtyInput).trim()
+    if (term && ALL_SPECIALTIES.includes(term) && !therapist.specialties.includes(term)) {
+      setTherapist(prev => ({ ...prev, specialties: [...prev.specialties, term] }))
       setSpecialtyInput('')
     }
   }
@@ -172,10 +183,21 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
           <div className="flex flex-col gap-6">
 
             <div>
-              <label className="block text-sm mb-1" style={{ color: 'var(--text)' }}>Présentation</label>
+              <label className="block text-sm mb-1" style={{ color: 'var(--text)' }}>Présentation (français)</label>
               <textarea
                 value={therapist.bio}
                 onChange={e => setTherapist(prev => ({ ...prev, bio: e.target.value }))}
+                rows={5}
+                className="w-full px-4 py-2 text-sm"
+                style={{ ...inputStyle, resize: 'vertical' }}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm mb-1" style={{ color: 'var(--text)' }}>Présentation (english)</label>
+              <textarea
+                value={therapist.bio_en}
+                onChange={e => setTherapist(prev => ({ ...prev, bio_en: e.target.value }))}
                 rows={5}
                 className="w-full px-4 py-2 text-sm"
                 style={{ ...inputStyle, resize: 'vertical' }}
@@ -188,26 +210,19 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                 {therapist.specialties.map(s => (
                   <span key={s} className="text-xs px-3 py-1 flex items-center gap-2"
                     style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
-                    {s}
+                    {lang === 'en' ? (specialtyTranslations[s] ?? s) : s}
                     <button onClick={() => removeSpecialty(s)} style={{ color: 'var(--blue-primary)', cursor: 'pointer' }}>×</button>
                   </span>
                 ))}
               </div>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={specialtyInput}
-                  onChange={e => setSpecialtyInput(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && addSpecialty()}
-                  placeholder="Ajouter une spécialité"
-                  className="flex-1 px-4 py-2 text-sm"
-                  style={inputStyle}
-                />
-                <button onClick={addSpecialty} className="px-4 py-2 text-sm text-white"
-                  style={{ backgroundColor: 'var(--blue-primary)', cursor: 'pointer' }}>
-                  Ajouter
-                </button>
-              </div>
+              <SpecialtyInput
+                value={specialtyInput}
+                onChange={setSpecialtyInput}
+                onAdd={addSpecialty}
+                existing={therapist.specialties}
+                inputStyle={inputStyle}
+                lang={lang}
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -371,5 +386,74 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
       </div>
     </main>
+  )
+}
+
+function SpecialtyInput({ value, onChange, onAdd, existing, inputStyle, lang }: {
+  value: string
+  onChange: (v: string) => void
+  onAdd: (v: string) => void
+  existing: string[]
+  inputStyle: React.CSSProperties
+  lang: string
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  // Match against the display label (French or English depending on lang)
+  const suggestions = value.trim()
+    ? ALL_SPECIALTIES.filter(frTerm => {
+        if (existing.includes(frTerm)) return false
+        const displayLabel = lang === 'en' ? (specialtyTranslations[frTerm] ?? frTerm) : frTerm
+        return normalize(displayLabel).includes(normalize(value))
+      })
+    : []
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  const placeholder = lang === 'en' ? 'Search an area of expertise...' : 'Rechercher une spécialité...'
+
+  return (
+    <div ref={ref} className="relative flex gap-2">
+      <div className="flex-1 relative">
+        <input
+          type="text"
+          value={value}
+          onChange={e => { onChange(e.target.value); setOpen(true) }}
+          onFocus={() => setOpen(true)}
+          onKeyDown={e => {
+            if (e.key === 'Enter' && suggestions.length > 0) {
+              onAdd(suggestions[0])
+              onChange('')
+              setOpen(false)
+            }
+          }}
+          placeholder={placeholder}
+          className="w-full px-4 py-2 text-sm"
+          style={inputStyle}
+        />
+        {open && suggestions.length > 0 && (
+          <div className="absolute z-10 w-full bg-white mt-1 shadow-sm"
+            style={{ border: '1px solid var(--border)', maxHeight: '200px', overflowY: 'auto' }}>
+            {suggestions.map(frTerm => (
+              <button
+                key={frTerm}
+                onMouseDown={() => { onAdd(frTerm); onChange(''); setOpen(false) }}
+                className="w-full text-left px-4 py-2 text-sm hover:opacity-70"
+                style={{ color: 'var(--text)', background: 'none', border: 'none', cursor: 'pointer' }}
+              >
+                {lang === 'en' ? (specialtyTranslations[frTerm] ?? frTerm) : frTerm}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
