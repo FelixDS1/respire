@@ -59,19 +59,26 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
 
           {userEmail ? (
             <>
-              {role === 'therapist' && (
-                <Link href="/dashboard" style={{ color: 'var(--blue-primary)' }} className="hover:opacity-70 transition-opacity">
-                  {t.nav.dashboard}
+              {role === 'patient' && (
+                <Link href="/account" className="flex items-center gap-2 hover:opacity-70 transition-opacity">
+                  <span style={{ color: 'var(--blue-primary)' }}>
+                    {lang === 'en' ? 'My Profile' : 'Mon Profil'}
+                  </span>
+                  <span className="text-xs px-2 py-0.5" style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
+                    Patient
+                  </span>
                 </Link>
               )}
-              <span className="flex items-center gap-2">
-                <span style={{ color: '#4A6070' }}>{userEmail}</span>
-                {roleLabel && (
+              {role === 'therapist' && (
+                <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-70 transition-opacity">
+                  <span style={{ color: 'var(--blue-primary)' }}>
+                    {lang === 'en' ? 'My Profile' : 'Mon Profil'}
+                  </span>
                   <span className="text-xs px-2 py-0.5" style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
                     {roleLabel}
                   </span>
-                )}
-              </span>
+                </Link>
+              )}
               <a href="/api/logout" style={{ color: 'var(--text)' }} className="hover:opacity-70 transition-opacity">
                 {t.nav.logout}
               </a>

@@ -59,7 +59,13 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="block text-sm mb-1" style={{ color: 'var(--text)' }}>Mot de passe</label>
+              <div className="flex justify-between items-center mb-1">
+                <label className="block text-sm" style={{ color: 'var(--text)' }}>Mot de passe</label>
+                <Link href="/forgot-password" className="text-xs hover:opacity-70"
+                  style={{ color: 'var(--blue-primary)' }}>
+                  Mot de passe oublié ?
+                </Link>
+              </div>
               <input
                 type="password"
                 value={password}

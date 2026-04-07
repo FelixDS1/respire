@@ -18,6 +18,7 @@ interface Therapist {
   consultation_fee: number | null
   languages: string[] | null
   location: string | null
+  is_verified: boolean
   profiles: {
     full_name: string | null
     email: string | null
@@ -66,9 +67,19 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
               )}
             </div>
             <div>
-              <h1 className="text-2xl font-light mb-2" style={{ color: 'var(--text)' }}>
-                {therapist.profiles?.full_name ?? 'Thérapeute'}
-              </h1>
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-2xl font-light" style={{ color: 'var(--text)' }}>
+                  {therapist.profiles?.full_name ?? 'Thérapeute'}
+                </h1>
+                {therapist.is_verified
+                  ? <span className="text-xs px-2 py-0.5" style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
+                      {lang === 'en' ? '✓ Verified' : '✓ Vérifié'}
+                    </span>
+                  : <span className="text-xs px-2 py-0.5" style={{ backgroundColor: '#F5F5F5', color: '#4A6070' }}>
+                      {lang === 'en' ? 'Pending verification' : 'En cours de vérification'}
+                    </span>
+                }
+              </div>
               {therapist.location && (
                 <p className="text-sm" style={{ color: '#4A6070' }}>{therapist.location}</p>
               )}

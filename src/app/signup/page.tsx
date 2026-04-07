@@ -46,7 +46,7 @@ export default function Signup() {
       await supabase.from('therapists').insert({ id: data.user.id })
     }
 
-    router.push('/')
+    router.push('/onboarding')
   }
 
   return (

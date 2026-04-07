@@ -12,6 +12,7 @@ interface Therapist {
   consultation_fee: number | null
   languages: string[] | null
   location: string | null
+  is_verified: boolean
   profiles: {
     full_name: string | null
   }
@@ -66,9 +67,19 @@ export default function TherapistsClient({ therapists }: { therapists: Therapist
                     </div>
 
                     <div className="flex-1">
-                      <h2 className="text-base font-normal mb-1" style={{ color: 'var(--text)' }}>
-                        {therapist.profiles?.full_name ?? 'Thérapeute'}
-                      </h2>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h2 className="text-base font-normal" style={{ color: 'var(--text)' }}>
+                          {therapist.profiles?.full_name ?? 'Thérapeute'}
+                        </h2>
+                        {therapist.is_verified
+                          ? <span className="text-xs px-2 py-0.5" style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
+                              {lang === 'en' ? '✓ Verified' : '✓ Vérifié'}
+                            </span>
+                          : <span className="text-xs px-2 py-0.5" style={{ backgroundColor: '#F5F5F5', color: '#4A6070' }}>
+                              {lang === 'en' ? 'Pending verification' : 'En cours de vérification'}
+                            </span>
+                        }
+                      </div>
                       {therapist.specialties && therapist.specialties.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-3">
                           {therapist.specialties.map((s) => (
