@@ -31,10 +31,25 @@ export default async function DashboardPage() {
 
   const { data: apptData } = await supabase
     .from('appointments')
-    .select('id, status, availability(date, start_time), profiles!appointments_patient_id_fkey(full_name)')
+    .select('id, status, no_show, session_notes, patient_id, availability(date, start_time), profiles!appointments_patient_id_fkey(full_name)')
     .eq('therapist_id', user.id)
     .eq('status', 'confirmed')
     .order('created_at', { ascending: false })
+
+  const { data: scheduleData } = await supabase
+    .from('therapist_schedules')
+    .select('*')
+    .eq('therapist_id', user.id)
+    .single()
+
+  const today = new Date().toISOString().split('T')[0]
+  const { data: timeBlocksData } = await supabase
+    .from('time_blocks')
+    .select('*')
+    .eq('therapist_id', user.id)
+    .gte('date', today)
+    .order('date')
+    .order('start_time')
 
   return (
     <DashboardClient
@@ -47,9 +62,12 @@ export default async function DashboardPage() {
         consultation_fee: therapistData?.consultation_fee ?? 0,
         languages: therapistData?.languages ?? [],
         location: therapistData?.location ?? '',
+        profession: therapistData?.profession ?? '',
       }}
       initialSlots={slotsData ?? []}
       initialAppointments={(apptData ?? []) as any}
+      initialSchedule={scheduleData ?? null}
+      initialTimeBlocks={timeBlocksData ?? []}
     />
   )
 }

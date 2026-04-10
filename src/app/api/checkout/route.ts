@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       {
         price_data: {
           currency: 'eur',
-          unit_amount: therapist.consultation_fee * 100,
+          unit_amount: (therapist.consultation_fee + 4) * 100,
           product_data: {
             name: `Séance avec ${therapistName}`,
             description: `${slot.date} à ${slot.start_time.slice(0, 5)}`,

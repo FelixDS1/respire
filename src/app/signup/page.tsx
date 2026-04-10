@@ -75,7 +75,7 @@ export default function Signup() {
                   color: role === 'patient' ? 'var(--blue-primary)' : '#4A6070'
                 }}
               >
-                Je suis patient
+                Je suis membre
               </button>
               <button
                 type="button"

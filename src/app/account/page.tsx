@@ -15,14 +15,17 @@ export default async function AccountPage() {
 
   if (!profile || profile.role !== 'patient') redirect('/')
 
-  const today = new Date().toISOString().split('T')[0]
-
   const { data: appointments } = await supabase
     .from('appointments')
-    .select('id, status, availability(date, start_time, end_time), therapists(consultation_fee, profiles(full_name))')
+    .select('id, status, therapist_id, availability(date, start_time, end_time), therapists(consultation_fee, profiles(full_name))')
     .eq('patient_id', user.id)
     .eq('status', 'confirmed')
-    .gte('availability.date', today)
+    .order('created_at', { ascending: false })
+
+  const { data: waitlistEntries } = await supabase
+    .from('waitlist')
+    .select('therapist_id, therapists(profiles(full_name))')
+    .eq('patient_id', user.id)
     .order('created_at', { ascending: false })
 
   return (
@@ -30,6 +33,7 @@ export default async function AccountPage() {
       userId={user.id}
       profile={profile}
       appointments={(appointments ?? []) as any}
+      waitlistEntries={(waitlistEntries ?? []) as any}
     />
   )
 }

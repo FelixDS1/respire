@@ -6,5 +6,7 @@ export default async function TherapistsPage() {
   const { data } = await supabase
     .from('therapists')
     .select('*, profiles(full_name)')
+    .not('bio', 'is', null)
+    .not('consultation_fee', 'is', null)
   return <TherapistsClient therapists={data ?? []} />
 }

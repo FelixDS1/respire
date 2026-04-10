@@ -10,7 +10,7 @@ export default function Home() {
     <main className="min-h-screen" style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}>
 
       {/* Hero */}
-      <section className="max-w-5xl mx-auto px-6 py-24">
+      <section className="max-w-5xl mx-auto px-6 py-12">
         <div className="max-w-2xl">
           <h1 className="text-4xl font-light leading-snug mb-6" style={{ whiteSpace: 'pre-line' }}>
             {t.home.heroTitle}
@@ -34,7 +34,7 @@ export default function Home() {
       </div>
 
       {/* How it works */}
-      <section className="max-w-5xl mx-auto px-6 py-20">
+      <section className="max-w-5xl mx-auto px-6 py-10">
         <h2 className="text-sm uppercase tracking-widest mb-12" style={{ color: 'var(--blue-primary)' }}>
           {t.home.howItWorks}
         </h2>

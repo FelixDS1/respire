@@ -84,7 +84,7 @@ export default function OnboardingClient({ userId, role, fullName }: Props) {
         photo_url: photoUrl,
       }).eq('id', userId)
 
-      router.push('/account')
+      router.push('/therapists')
 
     } else {
       // Upload credential documents

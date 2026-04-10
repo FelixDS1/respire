@@ -1,7 +1,9 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useLanguage, specialtyTranslations } from '@/lib/language'
+import { createClient } from '@/lib/supabase'
 
 interface Slot {
   id: string
@@ -18,6 +20,7 @@ interface Therapist {
   consultation_fee: number | null
   languages: string[] | null
   location: string | null
+  sector: string | null
   is_verified: boolean
   profiles: {
     full_name: string | null
@@ -32,6 +35,40 @@ interface Props {
 
 export default function TherapistProfileClient({ therapist, byDate }: Props) {
   const { t, lang } = useLanguage()
+  const [onWaitlist, setOnWaitlist] = useState(false)
+  const [waitlistLoading, setWaitlistLoading] = useState(false)
+  const [waitlistDone, setWaitlistDone] = useState(false)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return
+      supabase.from('waitlist')
+        .select('id')
+        .eq('patient_id', user.id)
+        .eq('therapist_id', therapist.id)
+        .maybeSingle()
+        .then(({ data }) => { if (data) setOnWaitlist(true) })
+    })
+  }, [therapist.id])
+
+  async function toggleWaitlist() {
+    setWaitlistLoading(true)
+    try {
+      const method = onWaitlist ? 'DELETE' : 'POST'
+      const res = await fetch('/api/waitlist', {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ therapistId: therapist.id }),
+      })
+      if (res.ok) {
+        setOnWaitlist(!onWaitlist)
+        if (!onWaitlist) setWaitlistDone(true)
+      }
+    } finally {
+      setWaitlistLoading(false)
+    }
+  }
 
   const bio = lang === 'en' && therapist.bio_en ? therapist.bio_en : therapist.bio
 
@@ -114,7 +151,7 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
               <h2 className="text-xs uppercase tracking-widest mb-4" style={{ color: 'var(--blue-primary)' }}>
                 {t.profile.about}
               </h2>
-              <p className="text-sm font-light leading-relaxed" style={{ color: 'var(--text)', lineHeight: '1.9' }}>
+              <p className="text-sm font-light leading-relaxed" style={{ color: 'var(--text)', lineHeight: '1.9', textAlign: 'justify' }}>
                 {bio}
               </p>
             </div>
@@ -128,10 +165,39 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
 
             {therapist.consultation_fee && (
               <p className="text-lg font-light mb-1" style={{ color: 'var(--text)' }}>
-                {therapist.consultation_fee}€
+                {therapist.consultation_fee + 4}€
                 <span className="text-sm ml-1" style={{ color: '#4A6070' }}>{t.profile.perSession}</span>
               </p>
             )}
+            {therapist.sector && (
+              <p className="text-xs mb-1" style={{ color: '#4A6070' }}>
+                Secteur {therapist.sector}
+                {therapist.sector === '1'
+                  ? (lang === 'fr' ? ' · remboursé par la Sécu' : ' · reimbursed by Sécurité sociale')
+                  : (lang === 'fr' ? ' · dépassements d\'honoraires possibles' : ' · fees above official tariff')}
+              </p>
+            )}
+            {therapist.consultation_fee && therapist.sector && (() => {
+              const displayed = therapist.consultation_fee + 4
+              const covered = 55 // Sécu (70% × €57 − €2) + mutuelle ticket modérateur (30% × €57)
+              const outOfPocket = Math.max(displayed - covered, 6)
+              return (
+                <div style={{ backgroundColor: 'var(--blue-accent)', padding: '8px 10px', marginBottom: '4px' }}>
+                  <p className="text-xs" style={{ color: 'var(--blue-primary)', lineHeight: 1.6 }}>
+                    {lang === 'fr'
+                      ? <>Reste à charge estimé : <strong>~{outOfPocket}€</strong> avec Sécu + mutuelle</>
+                      : <>Estimated out-of-pocket: <strong>~{outOfPocket}€</strong> with Sécu + mutuelle</>}
+                  </p>
+                  {therapist.sector === '2' && (
+                    <p style={{ fontSize: '0.6rem', color: '#4A6070', marginTop: '2px' }}>
+                      {lang === 'fr'
+                        ? 'Hors dépassements couverts par certaines mutuelles premium'
+                        : 'Excess fees may be partially covered by premium mutuelles'}
+                    </p>
+                  )}
+                </div>
+              )
+            })()}
 
             <hr style={{ borderColor: 'var(--border)', margin: '1rem 0' }} />
 
@@ -168,6 +234,28 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
                 ))}
               </div>
             )}
+
+            {/* Waitlist */}
+            <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
+              {waitlistDone ? (
+                <p className="text-xs" style={{ color: 'var(--blue-primary)' }}>
+                  {lang === 'fr' ? '✓ Vous êtes sur la liste d\'attente' : '✓ You\'re on the waitlist'}
+                </p>
+              ) : (
+                <button
+                  onClick={toggleWaitlist}
+                  disabled={waitlistLoading}
+                  className="text-xs hover:opacity-70 transition-opacity disabled:opacity-40"
+                  style={{ color: onWaitlist ? '#8A9BAD' : 'var(--blue-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                >
+                  {waitlistLoading
+                    ? '...'
+                    : onWaitlist
+                      ? (lang === 'fr' ? 'Quitter la liste d\'attente' : 'Leave waitlist')
+                      : (lang === 'fr' ? 'Aucun créneau disponible ? Rejoindre la liste d\'attente →' : 'No slot available? Join the waitlist →')}
+                </button>
+              )}
+            </div>
 
           </div>
         </div>

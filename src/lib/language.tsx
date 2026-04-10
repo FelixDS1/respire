@@ -28,7 +28,7 @@ const translations = {
     },
     about: {
       heroTitle: 'Rendre la thérapie\naccessible à tous.',
-      missionBody: "Respire est une plateforme qui met en relation patients et thérapeutes qualifiés. Notre objectif est simple : lever les obstacles qui empêchent trop de personnes d'accéder à un suivi psychologique — manque de transparence sur les tarifs, difficulté à trouver le bon praticien, démarches administratives fastidieuses.",
+      missionBody: "Respire est une plateforme qui met en relation ses membres et thérapeutes qualifiés. Notre objectif est de lever les obstacles qui empêchent trop de personnes d'accéder à un suivi psychologique — manque de transparence sur les tarifs, difficulté à trouver le bon praticien, démarches administratives fastidieuses.\n\nVous avez le droit de respirer.",
       howItWorks: 'Comment ça marche',
       step1Title: 'Parcourez les profils',
       step1Body: 'Chaque thérapeute présente son parcours, ses spécialités et son approche thérapeutique.',
@@ -84,7 +84,7 @@ const translations = {
     },
     about: {
       heroTitle: 'Making therapy\naccessible to everyone.',
-      missionBody: 'Respire is a platform connecting patients with qualified therapists. Our goal is straightforward: remove the barriers that prevent too many people from accessing mental health support — opaque pricing, difficulty finding the right practitioner, and cumbersome admin.',
+      missionBody: 'Respire is a platform connecting members with qualified therapists. Our goal is straightforward: remove the barriers that prevent too many people from accessing mental health support — opaque pricing, difficulty finding the right practitioner, and cumbersome admin.',
       howItWorks: 'How it works',
       step1Title: 'Browse profiles',
       step1Body: 'Each therapist shares their background, specialties, and therapeutic approach.',
@@ -132,8 +132,7 @@ export const specialtyTranslations: Record<string, string> = {
   'Deuil': 'Grief',
   'Couple': 'Couples therapy',
   'Relations': 'Relationships',
-  'Confiance en soi': 'Self-confidence',
-  'Estime de soi': 'Self-esteem',
+  'Confiance et estime de soi': 'Self-confidence & self-esteem',
   'Adolescents': 'Adolescents',
   'Enfants': 'Children',
   'Famille': 'Family',
@@ -161,6 +160,34 @@ export const specialtyTranslations: Record<string, string> = {
   'Gestalt': 'Gestalt therapy',
   'Pleine conscience': 'Mindfulness',
   'Méditation': 'Meditation',
+}
+
+export const languageTranslations: Record<string, string> = {
+  'Français': 'French',
+  'Anglais': 'English',
+  'Espagnol': 'Spanish',
+  'Arabe': 'Arabic',
+  'Mandarin': 'Mandarin',
+  'Russe': 'Russian',
+  'Allemand': 'German',
+  'Italien': 'Italian',
+  'Portugais': 'Portuguese',
+  'Japonais': 'Japanese',
+  'Néerlandais': 'Dutch',
+  'Polonais': 'Polish',
+  'Turc': 'Turkish',
+  'Hébreu': 'Hebrew',
+  'Hindi': 'Hindi',
+  'Coréen': 'Korean',
+  'Grec': 'Greek',
+  'Roumain': 'Romanian',
+  'Vietnamien': 'Vietnamese',
+  'Persan': 'Persian',
+  'Bengali': 'Bengali',
+  'Ukrainien': 'Ukrainian',
+  'Tagalog': 'Tagalog',
+  'Swahili': 'Swahili',
+  'Amharique': 'Amharic',
 }
 
 type Translations = typeof translations.fr

@@ -14,6 +14,7 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
   const { t, lang, toggle } = useLanguage()
   const [userEmail, setUserEmail] = useState<string | null>(initialEmail)
   const [role, setRole] = useState<string | null>(initialRole)
+  const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
     const supabase = createClient()
@@ -30,16 +31,29 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
       } else {
         setUserEmail(null)
         setRole(null)
+        setUnreadCount(0)
       }
     })
 
     return () => subscription.unsubscribe()
   }, [])
 
+  useEffect(() => {
+    if (!userEmail) return
+    const fetchUnread = () =>
+      fetch('/api/unread-messages-count')
+        .then(r => r.json())
+        .then(json => setUnreadCount(json.count ?? 0))
+        .catch(() => {})
+    fetchUnread()
+    const interval = setInterval(fetchUnread, 30_000)
+    return () => clearInterval(interval)
+  }, [userEmail])
+
   const roleLabel = role === 'therapist'
     ? (lang === 'en' ? 'Therapist' : 'Thérapeute')
     : role === 'patient'
-    ? 'Patient'
+    ? 'Membre'
     : null
 
   return (
@@ -65,7 +79,7 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
                     {lang === 'en' ? 'My Profile' : 'Mon Profil'}
                   </span>
                   <span className="text-xs px-2 py-0.5" style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
-                    Patient
+                    Membre
                   </span>
                 </Link>
               )}
@@ -79,6 +93,28 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
                   </span>
                 </Link>
               )}
+              {/* PREMIUM — Messages link, visible only when logged in */}
+              <Link href="/messages" className="relative hover:opacity-70 transition-opacity" style={{ color: 'var(--text)' }}>
+                {lang === 'en' ? 'Messages' : 'Messages'}
+                {unreadCount > 0 && (
+                  <span
+                    className="absolute text-white"
+                    style={{
+                      top: '-8px',
+                      right: '-10px',
+                      backgroundColor: 'var(--blue-primary)',
+                      borderRadius: '10px',
+                      fontSize: '10px',
+                      lineHeight: 1,
+                      padding: '2px 5px',
+                      minWidth: '16px',
+                      textAlign: 'center',
+                    }}
+                  >
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
+              </Link>
               <a href="/api/logout" style={{ color: 'var(--text)' }} className="hover:opacity-70 transition-opacity">
                 {t.nav.logout}
               </a>
