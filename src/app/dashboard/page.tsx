@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import DashboardClient from './DashboardClient'
+import { DPA_CURRENT_VERSION } from '@/lib/constants'
 
 export default async function DashboardPage() {
   const supabase = await createServerSupabaseClient()
@@ -22,6 +23,10 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
+  if ((therapistData?.dpa_version ?? 0) < DPA_CURRENT_VERSION) {
+    redirect('/dpa/accept')
+  }
+
   const { data: slotsData } = await supabase
     .from('availability')
     .select('*, appointments(id)')
@@ -31,7 +36,7 @@ export default async function DashboardPage() {
 
   const { data: apptData } = await supabase
     .from('appointments')
-    .select('id, status, no_show, session_notes, patient_id, availability(date, start_time), profiles!appointments_patient_id_fkey(full_name)')
+    .select('id, status, no_show, session_notes, patient_id, availability(date, start_time), profiles!appointments_patient_id_fkey(full_name, date_of_birth)')
     .eq('therapist_id', user.id)
     .eq('status', 'confirmed')
     .order('created_at', { ascending: false })
@@ -63,6 +68,8 @@ export default async function DashboardPage() {
         languages: therapistData?.languages ?? [],
         location: therapistData?.location ?? '',
         profession: therapistData?.profession ?? '',
+        is_verified: therapistData?.is_verified ?? false,
+        photo_url: therapistData?.photo_url ?? null,
       }}
       initialSlots={slotsData ?? []}
       initialAppointments={(apptData ?? []) as any}

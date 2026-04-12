@@ -2,7 +2,8 @@ import { redirect } from 'next/navigation'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import OnboardingClient from './OnboardingClient'
 
-export default async function OnboardingPage() {
+export default async function OnboardingPage({ searchParams }: { searchParams: Promise<{ redirectTo?: string }> }) {
+  const { redirectTo } = await searchParams
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -31,6 +32,7 @@ export default async function OnboardingPage() {
       userId={user.id}
       role={profile.role}
       fullName={profile.full_name}
+      redirectAfter={redirectTo ?? null}
     />
   )
 }

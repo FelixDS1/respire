@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function Login() {
+function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirectTo') ?? '/'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -26,7 +28,7 @@ export default function Login() {
       return
     }
 
-    router.push('/')
+    router.push(redirectTo)
   }
 
   return (
@@ -38,7 +40,7 @@ export default function Login() {
           <h1 className="text-2xl font-light mb-2" style={{ color: 'var(--text)' }}>Connexion</h1>
           <p className="text-sm mb-8" style={{ color: '#4A6070' }}>
             Pas encore de compte ?{' '}
-            <Link href="/signup" style={{ color: 'var(--blue-primary)' }}>S'inscrire</Link>
+            <Link href={`/signup${redirectTo !== '/' ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ''}`} style={{ color: 'var(--blue-primary)' }}>S'inscrire</Link>
           </p>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -97,5 +99,13 @@ export default function Login() {
       </div>
 
     </main>
+  )
+}
+
+export default function Login() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }

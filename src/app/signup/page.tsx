@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function Signup() {
+function SignupForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirectTo') ?? ''
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -46,7 +48,7 @@ export default function Signup() {
       await supabase.from('therapists').insert({ id: data.user.id })
     }
 
-    router.push('/onboarding')
+    router.push(redirectTo ? `/onboarding?redirectTo=${encodeURIComponent(redirectTo)}` : '/onboarding')
   }
 
   return (
@@ -58,7 +60,7 @@ export default function Signup() {
           <h1 className="text-2xl font-light mb-2" style={{ color: 'var(--text)' }}>Créer un compte</h1>
           <p className="text-sm mb-8" style={{ color: '#4A6070' }}>
             Déjà inscrit ?{' '}
-            <Link href="/login" style={{ color: 'var(--blue-primary)' }}>Se connecter</Link>
+            <Link href={`/login${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ''}`} style={{ color: 'var(--blue-primary)' }}>Se connecter</Link>
           </p>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -154,5 +156,13 @@ export default function Signup() {
       </div>
 
     </main>
+  )
+}
+
+export default function Signup() {
+  return (
+    <Suspense>
+      <SignupForm />
+    </Suspense>
   )
 }

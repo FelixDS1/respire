@@ -21,13 +21,18 @@ interface Props {
   slot: Slot
   therapist: Therapist
   isBooked: boolean
+  userId: string | null
 }
 
-export default function BookClient({ slot, therapist, isBooked }: Props) {
+export default function BookClient({ slot, therapist, isBooked, userId }: Props) {
   const [paying, setPaying] = useState(false)
   const [error, setError] = useState('')
 
   async function handlePayment() {
+    if (!userId) {
+      window.location.href = `/login?redirectTo=/book/${slot.id}`
+      return
+    }
     setPaying(true)
     setError('')
 
@@ -130,7 +135,7 @@ export default function BookClient({ slot, therapist, isBooked }: Props) {
             className="w-full py-3 text-white text-sm transition-opacity hover:opacity-80 disabled:opacity-50"
             style={{ backgroundColor: 'var(--blue-primary)' }}
           >
-            {paying ? 'Redirection vers le paiement...' : 'Procéder au paiement'}
+            {paying ? 'Redirection vers le paiement...' : userId ? 'Procéder au paiement' : 'Se connecter pour réserver'}
           </button>
 
           <p className="text-xs text-center mt-4" style={{ color: '#4A6070' }}>

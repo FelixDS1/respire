@@ -7,7 +7,6 @@ export default async function BookPage({ params }: { params: Promise<{ slotId: s
   const supabase = await createServerSupabaseClient()
 
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
 
   const { data: slot } = await supabase
     .from('availability')
@@ -37,6 +36,7 @@ export default async function BookPage({ params }: { params: Promise<{ slotId: s
       slot={slot}
       therapist={therapist as any}
       isBooked={isBooked}
+      userId={user?.id ?? null}
     />
   )
 }

@@ -7,13 +7,6 @@ import { specialtyTranslations, languageTranslations, useLanguage } from '@/lib/
 const ALL_SPECIALTIES = Object.keys(specialtyTranslations)
 const ALL_LANGUAGES = Object.keys(languageTranslations)
 
-const PARIS_ARRONDISSEMENTS = [
-  'Paris 1er', 'Paris 2e', 'Paris 3e', 'Paris 4e', 'Paris 5e',
-  'Paris 6e', 'Paris 7e', 'Paris 8e', 'Paris 9e', 'Paris 10e',
-  'Paris 11e', 'Paris 12e', 'Paris 13e', 'Paris 14e', 'Paris 15e',
-  'Paris 16e', 'Paris 17e', 'Paris 18e', 'Paris 19e', 'Paris 20e',
-]
-
 function normalize(str: string) {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
 }
@@ -34,6 +27,8 @@ interface TherapistData {
   location: string
   profession: string
   sector: string | null
+  is_verified: boolean
+  photo_url: string | null
 }
 
 interface Slot {
@@ -57,6 +52,7 @@ interface Appointment {
   }
   profiles: {
     full_name: string
+    date_of_birth: string | null
   }
 }
 
@@ -379,6 +375,44 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
         </h1>
         <p className="text-sm mb-8" style={{ color: '#4A6070' }}>{profile.full_name}</p>
 
+        {/* Go-live checklist */}
+        {(() => {
+          const hasFutureSlot = slots.some(s => !s.appointments?.length && new Date(s.date + 'T00:00:00') >= new Date())
+          const checks = [
+            { label: 'Photo de profil', done: !!therapist.photo_url },
+            { label: 'Présentation rédigée', done: therapist.bio.length > 0 },
+            { label: 'Spécialités ajoutées', done: therapist.specialties.length > 0 },
+            { label: 'Tarif renseigné', done: therapist.consultation_fee > 0 },
+            { label: 'Code postal renseigné', done: therapist.location.length > 0 },
+            { label: 'Créneaux configurés', done: hasFutureSlot },
+            { label: 'Profil vérifié par l\'équipe Respire', done: therapist.is_verified },
+          ]
+          const allDone = checks.every(c => c.done)
+          if (allDone) return null
+          return (
+            <div className="mb-8 p-5" style={{ border: '1px solid var(--border)', backgroundColor: 'white' }}>
+              <p className="text-sm font-medium mb-1" style={{ color: 'var(--text)' }}>
+                Avant d'apparaître dans l'annuaire
+              </p>
+              <p className="text-xs mb-4" style={{ color: '#8A9BAD' }}>
+                Complétez ces étapes pour que votre profil soit visible par les membres.
+              </p>
+              <div className="flex flex-col gap-2">
+                {checks.map(c => (
+                  <div key={c.label} className="flex items-center gap-2">
+                    <span style={{ color: c.done ? 'var(--blue-primary)' : '#DDE3EA', fontSize: '1rem', lineHeight: 1 }}>
+                      {c.done ? '✓' : '○'}
+                    </span>
+                    <span className="text-sm" style={{ color: c.done ? '#4A6070' : 'var(--text)', textDecoration: c.done ? 'line-through' : 'none' }}>
+                      {c.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        })()}
+
         {/* Tabs */}
         <div className="flex gap-0 mb-8" style={{ borderBottom: '1px solid var(--border)' }}>
           {(['profile', 'availability', 'appointments', 'calendar', 'revenue'] as Tab[]).map(t => (
@@ -583,19 +617,17 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                     </div>
                     <div>
                       <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--blue-primary)' }}>
-                        Arrondissement
+                        {lang === 'fr' ? 'Code postal' : 'Postcode'}
                       </p>
-                      <select
+                      <input
+                        type="text"
                         value={therapist.location}
                         onChange={e => setTherapist(prev => ({ ...prev, location: e.target.value }))}
                         className="w-full px-3 py-2 text-sm"
                         style={inputStyle}
-                      >
-                        <option value="">— {lang === 'fr' ? 'Choisir' : 'Select'} —</option>
-                        {PARIS_ARRONDISSEMENTS.map(arr => (
-                          <option key={arr} value={arr}>{arr}</option>
-                        ))}
-                      </select>
+                        placeholder="75006"
+                        maxLength={10}
+                      />
                     </div>
                     <div>
                       <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--blue-primary)' }}>
@@ -903,12 +935,30 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                     )}
                   </div>
 
-                  {/* Post-session tools for past appointments */}
-                  {past && !appt.no_show && (
+                  {/* Session notes — available before, during, and after session */}
+                  {!appt.no_show && (
                     <div style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
                       <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#8A9BAD' }}>
                         Notes de séance <span style={{ textTransform: 'none', letterSpacing: 0 }}>(privées)</span>
                       </p>
+                      {/* Patient name + age header */}
+                      <div className="mb-3">
+                        <span className="text-sm font-normal" style={{ color: 'var(--text)' }}>
+                          {appt.profiles?.full_name ?? '—'}
+                        </span>
+                        {appt.profiles?.date_of_birth && (() => {
+                          const dob = new Date(appt.profiles.date_of_birth)
+                          const today = new Date()
+                          let age = today.getFullYear() - dob.getFullYear()
+                          const m = today.getMonth() - dob.getMonth()
+                          if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--
+                          return (
+                            <span className="text-sm ml-2" style={{ color: '#8A9BAD' }}>
+                              {age} ans
+                            </span>
+                          )
+                        })()}
+                      </div>
                       <textarea
                         value={notesDraft[appt.id] ?? ''}
                         onChange={e => setNotesDraft(prev => ({ ...prev, [appt.id]: e.target.value }))}

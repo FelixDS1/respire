@@ -1,10 +1,19 @@
 import { NextResponse } from 'next/server'
+import { createServerSupabaseClient } from '@/lib/supabase-server'
 
 export async function POST(req: Request) {
+  const supabase = await createServerSupabaseClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const { text, targetLang } = await req.json()
 
   if (!text?.trim() || !targetLang) {
     return NextResponse.json({ error: 'Missing params' }, { status: 400 })
+  }
+
+  if (text.length > 2000) {
+    return NextResponse.json({ error: 'Text too long' }, { status: 400 })
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY

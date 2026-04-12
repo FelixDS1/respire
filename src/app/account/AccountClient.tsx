@@ -20,6 +20,7 @@ interface Profile {
   seeking: string | null
   photo_url: string | null
   streak_frequency: string | null
+  date_of_birth: string | null
 }
 
 interface WaitlistEntry {
@@ -32,6 +33,7 @@ interface Props {
   profile: Profile
   appointments: Appointment[]
   waitlistEntries: WaitlistEntry[]
+  initialNir: string | null
 }
 
 type Tab = 'profile' | 'appointments' | 'calendar'
@@ -72,12 +74,28 @@ function computeStreak(appointments: Appointment[], frequency: string): number {
   return streak
 }
 
-export default function AccountClient({ userId, profile, appointments, waitlistEntries }: Props) {
+function getTargetWeek(sessionDate: string, frequency: string | null): { monday: Date; sunday: Date } {
+  const session = new Date(sessionDate + 'T00:00:00')
+  const daysAhead = frequency === 'weekly' ? 7 : frequency === 'biweekly' ? 14 : 21
+  const target = new Date(session)
+  target.setDate(target.getDate() + daysAhead)
+  const dow = target.getDay()
+  const mondayDelta = dow === 0 ? -6 : 1 - dow
+  const monday = new Date(target)
+  monday.setDate(monday.getDate() + mondayDelta)
+  const sunday = new Date(monday)
+  sunday.setDate(sunday.getDate() + 6)
+  return { monday, sunday }
+}
+
+export default function AccountClient({ userId, profile, appointments, waitlistEntries, initialNir }: Props) {
   const { lang } = useLanguage()
   const [tab, setTab] = useState<Tab>('profile')
 
   // Profile edit state
   const [bio, setBio] = useState(profile.bio ?? '')
+  const [dob, setDob] = useState(profile.date_of_birth ?? '')
+  const [nir, setNir] = useState(initialNir ?? '')
   const [photoPreview, setPhotoPreview] = useState<string | null>(profile.photo_url)
   const [newPhoto, setNewPhoto] = useState<File | null>(null)
   const [saving, setSaving] = useState(false)
@@ -101,6 +119,35 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
   const [checkinNote, setCheckinNote] = useState<Record<string, string>>({})
   const [checkinSaved, setCheckinSaved] = useState<Record<string, boolean>>({})
   const [checkinSaving, setCheckinSaving] = useState<Record<string, boolean>>({})
+
+  // Rebook slot picker (keyed by appointment id)
+  const [rebookOpen, setRebookOpen] = useState<Record<string, boolean>>({})
+  const [rebookSlots, setRebookSlots] = useState<Record<string, { id: string; date: string; start_time: string; end_time: string }[]>>({})
+  const [rebookLoading, setRebookLoading] = useState<Record<string, boolean>>({})
+
+  async function openRebookPicker(apptId: string, therapistId: string, sessionDate: string) {
+    setRebookOpen(prev => ({ ...prev, [apptId]: true }))
+    if (rebookSlots[apptId]) return // already loaded
+    setRebookLoading(prev => ({ ...prev, [apptId]: true }))
+
+    const { monday, sunday } = getTargetWeek(sessionDate, streakFrequency)
+    const from = monday.toISOString().split('T')[0]
+    const to = sunday.toISOString().split('T')[0]
+
+    const supabase = createClient()
+    const { data } = await supabase
+      .from('availability')
+      .select('id, date, start_time, end_time')
+      .eq('therapist_id', therapistId)
+      .eq('is_booked', false)
+      .gte('date', from)
+      .lte('date', to)
+      .order('date')
+      .order('start_time')
+
+    setRebookSlots(prev => ({ ...prev, [apptId]: data ?? [] }))
+    setRebookLoading(prev => ({ ...prev, [apptId]: false }))
+  }
 
   // Account deletion
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -161,7 +208,14 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
     await supabase.from('profiles').update({
       bio: bio.trim() || null,
       photo_url: photoUrl,
+      date_of_birth: dob || null,
     }).eq('id', userId)
+
+    await supabase.from('patient_sensitive').upsert({
+      patient_id: userId,
+      nir: nir.trim() || null,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'patient_id' })
 
     setSaving(false)
     setSaved(true)
@@ -408,6 +462,38 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                     : 'A few words about yourself, your expectations, what brings you here...'}
                   inputStyle={{ ...inputStyle, resize: 'vertical' }}
                 />
+
+                <div style={{ marginTop: '20px' }}>
+                  <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--blue-primary)' }}>
+                    {lang === 'fr' ? 'Date de naissance' : 'Date of birth'}
+                  </p>
+                  <input
+                    type="date"
+                    value={dob}
+                    onChange={e => setDob(e.target.value)}
+                    className="text-sm px-3 py-2"
+                    style={{ border: '1px solid var(--border)', color: 'var(--text)', backgroundColor: 'white', outline: 'none' }}
+                  />
+                </div>
+
+                <div style={{ marginTop: '20px' }}>
+                  <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--blue-primary)' }}>
+                    {lang === 'fr' ? 'Numéro de sécurité sociale (NIR)' : 'Social security number (NIR)'}
+                  </p>
+                  <input
+                    type="text"
+                    value={nir}
+                    onChange={e => setNir(e.target.value)}
+                    placeholder="1 85 12 75 108 001 28"
+                    className="text-sm px-3 py-2"
+                    style={{ border: '1px solid var(--border)', color: 'var(--text)', backgroundColor: 'white', outline: 'none', width: '100%', maxWidth: '260px' }}
+                  />
+                  <p className="text-xs mt-1" style={{ color: '#8A9BAD' }}>
+                    {lang === 'fr'
+                      ? 'Utilisé uniquement pour générer vos feuilles de soins.'
+                      : 'Used only to generate your reimbursement receipts.'}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -531,13 +617,128 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                       {/* Past: rebook CTA */}
                       {!future && (
                         <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border)' }}>
-                          <Link
-                            href={`/therapists/${appt.therapist_id}`}
-                            className="text-xs hover:opacity-70 transition-opacity"
-                            style={{ color: 'var(--blue-primary)' }}
-                          >
-                            {lang === 'fr' ? 'Reprendre un rendez-vous →' : 'Book another session →'}
-                          </Link>
+                          {streakFrequency ? (
+                            // Smart slot picker for members with a streak
+                            !rebookOpen[appt.id] ? (
+                              <div className="flex items-center gap-4">
+                                <button
+                                  onClick={() => openRebookPicker(appt.id, appt.therapist_id, appt.availability.date)}
+                                  className="text-xs hover:opacity-70 transition-opacity"
+                                  style={{ color: 'var(--blue-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                                >
+                                  {lang === 'fr' ? 'Reprendre ma séance →' : 'Rebook a session →'}
+                                </button>
+                                <Link
+                                  href="/therapists"
+                                  className="text-xs hover:opacity-70 transition-opacity"
+                                  style={{ color: '#8A9BAD' }}
+                                >
+                                  {lang === 'fr' ? 'Voir d\'autres thérapeutes' : 'See other therapists'}
+                                </Link>
+                              </div>
+                            ) : (
+                              <div>
+                                {(() => {
+                                  const { monday, sunday } = getTargetWeek(appt.availability.date, streakFrequency)
+                                  const weekLabel = monday.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
+                                    + ' – ' + sunday.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
+                                  const slots = rebookSlots[appt.id] ?? []
+                                  const loading = rebookLoading[appt.id]
+
+                                  // Group slots by date
+                                  const byDate: Record<string, typeof slots> = {}
+                                  for (const s of slots) {
+                                    if (!byDate[s.date]) byDate[s.date] = []
+                                    byDate[s.date].push(s)
+                                  }
+
+                                  return (
+                                    <div>
+                                      <p className="text-xs mb-3" style={{ color: '#4A6070' }}>
+                                        {lang === 'fr'
+                                          ? `Créneaux disponibles · semaine du ${weekLabel}`
+                                          : `Available slots · week of ${weekLabel}`}
+                                      </p>
+                                      {loading ? (
+                                        <p className="text-xs" style={{ color: '#8A9BAD' }}>
+                                          {lang === 'fr' ? 'Chargement...' : 'Loading...'}
+                                        </p>
+                                      ) : slots.length === 0 ? (
+                                        <div>
+                                          <p className="text-xs mb-2" style={{ color: '#8A9BAD' }}>
+                                            {lang === 'fr'
+                                              ? 'Aucun créneau disponible cette semaine.'
+                                              : 'No slots available this week.'}
+                                          </p>
+                                          <Link
+                                            href={`/therapists/${appt.therapist_id}`}
+                                            className="text-xs hover:opacity-70"
+                                            style={{ color: 'var(--blue-primary)' }}
+                                          >
+                                            {lang === 'fr' ? 'Voir tous les créneaux →' : 'View all slots →'}
+                                          </Link>
+                                        </div>
+                                      ) : (
+                                        <div className="flex flex-col gap-2">
+                                          {Object.entries(byDate).map(([date, daySlots]) => (
+                                            <div key={date} className="flex items-center gap-2 flex-wrap">
+                                              <span className="text-xs capitalize" style={{ color: '#4A6070', minWidth: '80px' }}>
+                                                {new Date(date + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' })}
+                                              </span>
+                                              {daySlots.map(s => (
+                                                <Link
+                                                  key={s.id}
+                                                  href={`/book/${s.id}`}
+                                                  className="text-xs px-2 py-1 hover:opacity-80 transition-opacity"
+                                                  style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', border: '1px solid var(--border)' }}
+                                                >
+                                                  {s.start_time.slice(0, 5)}
+                                                </Link>
+                                              ))}
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
+                                      <div className="flex items-center gap-4 mt-3">
+                                        <button
+                                          onClick={() => setRebookOpen(prev => ({ ...prev, [appt.id]: false }))}
+                                          className="text-xs hover:opacity-70"
+                                          style={{ color: '#8A9BAD', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                                        >
+                                          {lang === 'fr' ? 'Fermer' : 'Close'}
+                                        </button>
+                                        <Link
+                                          href="/therapists"
+                                          className="text-xs hover:opacity-70"
+                                          style={{ color: '#8A9BAD' }}
+                                        >
+                                          {lang === 'fr' ? 'Voir d\'autres thérapeutes' : 'See other therapists'}
+                                        </Link>
+                                      </div>
+                                    </div>
+                                  )
+                                })()}
+                              </div>
+                            )
+                          ) : (
+                            // No streak: simple rebook link + gentle streak prompt
+                            <div className="flex items-center gap-4">
+                              <Link
+                                href={`/therapists/${appt.therapist_id}`}
+                                className="text-xs hover:opacity-70 transition-opacity"
+                                style={{ color: 'var(--blue-primary)' }}
+                              >
+                                {lang === 'fr' ? 'Reprendre un rendez-vous →' : 'Book another session →'}
+                              </Link>
+                              <button
+                                onClick={() => setShowStreakModal(true)}
+                                className="text-xs hover:opacity-70 transition-opacity"
+                                style={{ color: '#8A9BAD', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                              >
+                                {lang === 'fr' ? 'Configurer un suivi ?' : 'Set up a streak?'}
+                              </button>
+                            </div>
+                          )}
                         </div>
                       )}
 

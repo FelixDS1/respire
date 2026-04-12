@@ -26,6 +26,7 @@ export default function Privacy() {
             <ul className="text-sm leading-relaxed list-disc pl-5 flex flex-col gap-2" style={{ color: '#4A6070' }}>
               <li><strong>Données d'identification :</strong> nom complet, adresse e-mail</li>
               <li><strong>Données de profil :</strong> photo, biographie, besoins thérapeutiques déclarés</li>
+              <li><strong>Données de santé :</strong> date de naissance, et — de façon facultative — numéro de sécurité sociale (NIR), uniquement si vous choisissez de le renseigner afin de générer vos feuilles de soins. Ces données sont stockées dans une table isolée, distincte de votre profil public, et ne sont accessibles qu'à vous et aux thérapeutes avec lesquels vous avez un rendez-vous confirmé.</li>
               <li><strong>Données de paiement :</strong> traitées exclusivement par Stripe. Respire ne stocke aucune donnée bancaire.</li>
               <li><strong>Données de navigation :</strong> cookies de session nécessaires au fonctionnement du service</li>
               <li><strong>Pour les thérapeutes :</strong> numéro ADELI, justificatifs de diplômes</li>
@@ -35,7 +36,7 @@ export default function Privacy() {
           <section>
             <h2 className="text-base font-normal mb-3">3. Finalités du traitement</h2>
             <p className="text-sm leading-relaxed" style={{ color: '#4A6070' }}>
-              Vos données sont utilisées pour : la création et la gestion de votre compte, la mise en relation avec des thérapeutes, la gestion des rendez-vous et des paiements, la vérification des qualifications professionnelles des thérapeutes, et la communication relative à votre compte.
+              Vos données sont utilisées pour : la création et la gestion de votre compte, la mise en relation avec des thérapeutes, la gestion des rendez-vous et des paiements, la vérification des qualifications professionnelles des thérapeutes, la communication relative à votre compte, et — si vous avez fourni votre NIR — la génération automatique de vos feuilles de soins à des fins de remboursement.
             </p>
           </section>
 
