@@ -250,7 +250,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
     const supabase = createClient()
 
     // Upsert schedule
-    await supabase.from('therapist_schedules').upsert({
+    const { error: upsertError } = await supabase.from('therapist_schedules').upsert({
       therapist_id: userId,
       days_of_week: scheduleDays,
       start_time: scheduleStart,
@@ -260,6 +260,12 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
       advance_weeks: advanceWeeks,
       breaks,
     })
+
+    if (upsertError) {
+      setScheduleMessage(`Erreur: ${upsertError.message}`)
+      setScheduleGenerating(false)
+      return
+    }
 
     // Call generate API
     const res = await fetch('/api/generate-slots', { method: 'POST' })
