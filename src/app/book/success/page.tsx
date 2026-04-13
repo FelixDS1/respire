@@ -1,14 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+
+const POLL_INTERVAL_MS = 2000
+const POLL_TIMEOUT_MS = 20000
 
 function SuccessContent() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
   const [status, setStatus] = useState<'loading' | 'confirmed' | 'error'>('loading')
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     if (!sessionId) {
@@ -16,17 +21,36 @@ function SuccessContent() {
       return
     }
 
-    fetch('/api/booking-confirm', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessionId }),
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) setStatus('confirmed')
-        else setStatus('error')
-      })
-      .catch(() => setStatus('error'))
+    function stopPolling() {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+
+    async function checkStatus() {
+      try {
+        const res = await fetch(`/api/booking-confirm?session_id=${encodeURIComponent(sessionId!)}`)
+        const data = await res.json()
+        if (data.confirmed) {
+          stopPolling()
+          setStatus('confirmed')
+        }
+      } catch {
+        // Keep polling on transient errors
+      }
+    }
+
+    // Poll immediately, then every POLL_INTERVAL_MS
+    checkStatus()
+    intervalRef.current = setInterval(checkStatus, POLL_INTERVAL_MS)
+
+    // Give up after POLL_TIMEOUT_MS — payment was taken; webhook may still arrive
+    timeoutRef.current = setTimeout(() => {
+      stopPolling()
+      // Show confirmed anyway — Stripe already charged, webhook will arrive eventually
+      setStatus('confirmed')
+    }, POLL_TIMEOUT_MS)
+
+    return stopPolling
   }, [sessionId])
 
   return (

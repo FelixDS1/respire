@@ -29,6 +29,8 @@ interface TherapistData {
   sector: string | null
   is_verified: boolean
   photo_url: string | null
+  stripe_account_id: string | null
+  stripe_onboarding_complete: boolean
 }
 
 interface Slot {
@@ -74,6 +76,7 @@ interface Schedule {
   session_duration: number
   buffer_minutes: number
   advance_weeks: number
+  breaks?: { start: string; end: string }[]
 }
 
 interface Props {
@@ -125,6 +128,33 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
   const [advanceWeeks, setAdvanceWeeks] = useState(initialSchedule?.advance_weeks ?? 8)
   const [scheduleGenerating, setScheduleGenerating] = useState(false)
   const [scheduleMessage, setScheduleMessage] = useState('')
+
+  // Stripe Connect
+  const [stripeConnecting, setStripeConnecting] = useState(false)
+  const [stripeComplete, setStripeComplete] = useState(initialTherapist.stripe_onboarding_complete)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const stripeParam = params.get('stripe')
+
+    // Clean up query param
+    if (stripeParam) {
+      const url = new URL(window.location.href)
+      url.searchParams.delete('stripe')
+      window.history.replaceState({}, '', url.toString())
+    }
+
+    if (stripeParam === 'success') {
+      fetch('/api/stripe-connect/callback').then(r => r.json()).then(data => {
+        if (data.complete) setStripeComplete(true)
+      })
+    } else if (stripeParam === 'refresh') {
+      // Link expired — re-initiate onboarding automatically
+      fetch('/api/stripe-connect/onboard', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => { if (data.url) window.location.href = data.url })
+    }
+  }, [])
 
   // Recurring breaks
   const [breaks, setBreaks] = useState<{start: string, end: string}[]>(initialSchedule?.breaks ?? [])
@@ -344,6 +374,19 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
     }
   }
 
+  async function handleStripeConnect() {
+    setStripeConnecting(true)
+    try {
+      const res = await fetch('/api/stripe-connect/onboard', { method: 'POST' })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+      }
+    } finally {
+      setStripeConnecting(false)
+    }
+  }
+
   function isPastAppointment(appt: Appointment) {
     if (!appt.availability) return false
     return new Date(`${appt.availability.date}T${appt.availability.start_time}`) < new Date()
@@ -385,6 +428,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
             { label: 'Tarif renseigné', done: therapist.consultation_fee > 0 },
             { label: 'Code postal renseigné', done: therapist.location.length > 0 },
             { label: 'Créneaux configurés', done: hasFutureSlot },
+            { label: 'Paiements configurés (Stripe)', done: stripeComplete },
             { label: 'Profil vérifié par l\'équipe Respire', done: therapist.is_verified },
           ]
           const allDone = checks.every(c => c.done)
@@ -412,6 +456,32 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
             </div>
           )
         })()}
+
+        {/* Stripe Connect card */}
+        {!stripeComplete && (
+          <div className="mb-8 p-5" style={{ border: '1px solid var(--border)', backgroundColor: 'white' }}>
+            <p className="text-sm font-medium mb-1" style={{ color: 'var(--text)' }}>
+              Recevoir des paiements
+            </p>
+            <p className="text-xs mb-4" style={{ color: '#8A9BAD' }}>
+              Connectez votre compte Stripe pour recevoir les règlements de vos séances directement sur votre compte bancaire.
+            </p>
+            <button
+              onClick={handleStripeConnect}
+              disabled={stripeConnecting}
+              className="px-5 py-2 text-sm"
+              style={{
+                backgroundColor: 'var(--blue-primary)',
+                color: 'white',
+                border: 'none',
+                cursor: stripeConnecting ? 'not-allowed' : 'pointer',
+                opacity: stripeConnecting ? 0.6 : 1,
+              }}
+            >
+              {stripeConnecting ? 'Redirection…' : initialTherapist.stripe_account_id ? 'Reprendre la configuration Stripe' : 'Configurer les paiements'}
+            </button>
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="flex gap-0 mb-8" style={{ borderBottom: '1px solid var(--border)' }}>

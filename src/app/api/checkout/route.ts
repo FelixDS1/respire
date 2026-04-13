@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   // Get therapist
   const { data: therapist } = await supabase
     .from('therapists')
-    .select('consultation_fee, profiles(full_name)')
+    .select('consultation_fee, stripe_account_id, stripe_onboarding_complete, profiles(full_name)')
     .eq('id', slot.therapist_id)
     .single()
 
@@ -40,7 +40,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Informations thérapeute manquantes' }, { status: 400 })
   }
 
-  const therapistName = (therapist.profiles as { full_name: string | null })?.full_name ?? 'Thérapeute'
+  if (!therapist.stripe_account_id || !therapist.stripe_onboarding_complete) {
+    return NextResponse.json({ error: 'Ce thérapeute ne peut pas encore recevoir de paiements' }, { status: 400 })
+  }
+
+  const therapistName = (therapist.profiles as unknown as { full_name: string | null })?.full_name ?? 'Thérapeute'
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
@@ -58,6 +62,12 @@ export async function POST(req: NextRequest) {
         quantity: 1,
       },
     ],
+    payment_intent_data: {
+      application_fee_amount: 400,
+      transfer_data: {
+        destination: therapist.stripe_account_id,
+      },
+    },
     metadata: {
       slot_id: slotId,
       patient_id: user.id,

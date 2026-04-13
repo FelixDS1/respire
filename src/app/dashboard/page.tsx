@@ -68,8 +68,11 @@ export default async function DashboardPage() {
         languages: therapistData?.languages ?? [],
         location: therapistData?.location ?? '',
         profession: therapistData?.profession ?? '',
+        sector: therapistData?.sector ?? null,
         is_verified: therapistData?.is_verified ?? false,
         photo_url: therapistData?.photo_url ?? null,
+        stripe_account_id: therapistData?.stripe_account_id ?? null,
+        stripe_onboarding_complete: therapistData?.stripe_onboarding_complete ?? false,
       }}
       initialSlots={slotsData ?? []}
       initialAppointments={(apptData ?? []) as any}
