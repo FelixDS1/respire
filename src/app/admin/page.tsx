@@ -35,5 +35,5 @@ export default async function AdminPage() {
     })
   )
 
-  return <AdminClient therapists={therapistsWithUrls} />
+  return <AdminClient therapists={therapistsWithUrls as any} />
 }

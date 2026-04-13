@@ -142,7 +142,7 @@ export default function MessagesClient({
           table: 'messages',
           filter: `recipient_id=eq.${currentUserId}`,
         },
-        (payload) => {
+        (payload: { new: Message }) => {
           const newMsg = payload.new as Message
 
           // If the message belongs to the currently open conversation, add it
@@ -349,7 +349,6 @@ export default function MessagesClient({
                     className="w-full text-left px-4 py-3 transition-colors"
                     style={{
                       backgroundColor: isActive ? 'var(--blue-accent)' : 'transparent',
-                      borderBottom: '1px solid var(--border)',
                       cursor: 'pointer',
                       display: 'block',
                       border: 'none',

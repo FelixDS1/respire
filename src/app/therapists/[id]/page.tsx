@@ -16,11 +16,12 @@ export default async function TherapistProfile({ params }: { params: Promise<{ i
 
   if (!therapist) notFound()
 
-  const byDate: Record<string, typeof slots> = {}
+  type SlotItem = NonNullable<typeof slots>[number]
+  const byDate: Record<string, SlotItem[]> = {}
   for (const slot of slots ?? []) {
     if (!byDate[slot.date]) byDate[slot.date] = []
     byDate[slot.date].push(slot)
   }
 
-  return <TherapistProfileClient therapist={therapist} byDate={byDate} />
+  return <TherapistProfileClient therapist={therapist as any} byDate={byDate} />
 }

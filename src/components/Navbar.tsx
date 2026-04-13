@@ -19,7 +19,7 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
   useEffect(() => {
     const supabase = createClient()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: unknown, session: { user?: { id: string; email?: string } } | null) => {
       if (session?.user) {
         setUserEmail(session.user.email ?? null)
         const { data: profile } = await supabase

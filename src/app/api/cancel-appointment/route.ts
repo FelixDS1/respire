@@ -28,7 +28,8 @@ export async function POST(req: Request) {
   }
 
   // Check 24h window
-  const sessionStart = new Date(`${appt.availability.date}T${appt.availability.start_time}`)
+  const availability = appt.availability as unknown as { date: string; start_time: string }
+  const sessionStart = new Date(`${availability.date}T${availability.start_time}`)
   const hoursUntil = (sessionStart.getTime() - Date.now()) / 3600000
   const refundEligible = hoursUntil >= 24
 

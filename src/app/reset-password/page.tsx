@@ -14,7 +14,7 @@ export default function ResetPassword() {
 
   useEffect(() => {
     const supabase = createClient()
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string) => {
       if (event === 'PASSWORD_RECOVERY') setReady(true)
     })
     return () => subscription.unsubscribe()

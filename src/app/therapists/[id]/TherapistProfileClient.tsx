@@ -41,14 +41,14 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then(({ data: { user } }: { data: { user: { id: string } | null } }) => {
       if (!user) return
       supabase.from('waitlist')
         .select('id')
         .eq('patient_id', user.id)
         .eq('therapist_id', therapist.id)
         .maybeSingle()
-        .then(({ data }) => { if (data) setOnWaitlist(true) })
+        .then(({ data }: { data: { id: string } | null }) => { if (data) setOnWaitlist(true) })
     })
   }, [therapist.id])
 
