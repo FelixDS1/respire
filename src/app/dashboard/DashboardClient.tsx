@@ -173,17 +173,18 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
     const file = e.target.files?.[0]
     if (!file) return
     setAvatarUploading(true)
-    const supabase = createClient()
-    const ext = file.name.split('.').pop()
-    const path = `${userId}/avatar.${ext}`
-    const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
-    if (!error) {
-      const { data } = supabase.storage.from('avatars').getPublicUrl(path)
-      const url = `${data.publicUrl}?t=${Date.now()}`
-      setAvatarUrl(url)
-      await supabase.from('profiles').update({ avatar_url: data.publicUrl }).eq('id', userId)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch('/api/upload-avatar', { method: 'POST', body: formData })
+      const data = await res.json()
+      if (res.ok && data.url) {
+        setAvatarUrl(data.url)
+        setTherapist(prev => ({ ...prev, photo_url: data.url }))
+      }
+    } finally {
+      setAvatarUploading(false)
     }
-    setAvatarUploading(false)
   }
 
   async function saveProfile() {
