@@ -29,9 +29,12 @@ export async function POST(req: NextRequest) {
 
   const { error } = await supabaseAdmin.storage
     .from('avatars')
-    .upload(path, buffer, { upsert: true, contentType: file.type })
+    .upload(path, buffer, { upsert: true, contentType: file.type || 'image/jpeg' })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) {
+    console.error('Storage upload error:', JSON.stringify(error))
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
 
   const { data: { publicUrl } } = supabaseAdmin.storage.from('avatars').getPublicUrl(path)
   const url = `${publicUrl}?t=${Date.now()}`
