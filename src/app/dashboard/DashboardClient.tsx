@@ -249,26 +249,22 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
     setScheduleMessage('')
     const supabase = createClient()
 
-    // Upsert schedule
-    const { error: upsertError } = await supabase.from('therapist_schedules').upsert({
-      therapist_id: userId,
-      days_of_week: scheduleDays,
-      start_time: scheduleStart,
-      end_time: scheduleEnd,
-      session_duration: sessionDuration,
-      buffer_minutes: bufferMinutes,
-      advance_weeks: advanceWeeks,
-      breaks,
+    // Send schedule to API route which handles both upsert and slot generation
+    const res = await fetch('/api/generate-slots', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        schedule: {
+          days_of_week: scheduleDays,
+          start_time: scheduleStart,
+          end_time: scheduleEnd,
+          session_duration: sessionDuration,
+          buffer_minutes: bufferMinutes,
+          advance_weeks: advanceWeeks,
+          breaks,
+        },
+      }),
     })
-
-    if (upsertError) {
-      setScheduleMessage(`Erreur: ${upsertError.message}`)
-      setScheduleGenerating(false)
-      return
-    }
-
-    // Call generate API
-    const res = await fetch('/api/generate-slots', { method: 'POST' })
     const data = await res.json()
 
     if (res.ok) {

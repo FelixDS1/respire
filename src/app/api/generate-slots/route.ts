@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 
 interface Break {
@@ -107,10 +107,19 @@ function generateSlots(schedule: Schedule, timeBlocks: TimeBlock[], cutoffDateSt
   return slots
 }
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  // Accept schedule payload from client and upsert server-side
+  const body = await req.json().catch(() => ({}))
+  if (body.schedule) {
+    await supabase.from('therapist_schedules').upsert({
+      therapist_id: user.id,
+      ...body.schedule,
+    })
+  }
 
   const { data: schedule } = await supabase
     .from('therapist_schedules')
