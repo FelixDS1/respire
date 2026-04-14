@@ -18,7 +18,7 @@ interface Profile {
   email: string
   bio: string | null
   seeking: string | null
-  photo_url: string | null
+  avatar_url: string | null
   streak_frequency: string | null
   date_of_birth: string | null
 }
@@ -96,7 +96,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
   const [bio, setBio] = useState(profile.bio ?? '')
   const [dob, setDob] = useState(profile.date_of_birth ?? '')
   const [nir, setNir] = useState(initialNir ?? '')
-  const [photoPreview, setPhotoPreview] = useState<string | null>(profile.photo_url)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(profile.avatar_url)
   const [newPhoto, setNewPhoto] = useState<File | null>(null)
   const [photoRemoved, setPhotoRemoved] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -200,7 +200,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
     setError('')
     const supabase = createClient()
 
-    let photoUrl: string | null = photoRemoved ? null : profile.photo_url
+    let photoUrl: string | null = photoRemoved ? null : profile.avatar_url
     if (newPhoto) {
       const fd = new FormData()
       fd.append('file', newPhoto)
@@ -219,7 +219,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
 
     await supabase.from('profiles').update({
       bio: bio.trim() || null,
-      photo_url: photoUrl,
+      avatar_url: photoUrl,
       date_of_birth: dob || null,
     }).eq('id', userId)
 

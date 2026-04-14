@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     const url = `${publicUrl}?t=${Date.now()}`
 
     await Promise.all([
-      supabaseAdmin.from('profiles').update({ photo_url: publicUrl }).eq('id', user.id),
+      supabaseAdmin.from('profiles').update({ avatar_url: publicUrl }).eq('id', user.id),
       supabaseAdmin.from('therapists').update({ photo_url: publicUrl }).eq('id', user.id),
     ])
 

@@ -97,7 +97,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
     if (role === 'patient') {
       await supabase.from('profiles').update({
         bio: bio.trim(),
-        photo_url: photoUrl,
+        avatar_url: photoUrl,
       }).eq('id', userId)
 
       router.push(redirectAfter ?? '/therapists')
