@@ -98,6 +98,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
   const [nir, setNir] = useState(initialNir ?? '')
   const [photoPreview, setPhotoPreview] = useState<string | null>(profile.photo_url)
   const [newPhoto, setNewPhoto] = useState<File | null>(null)
+  const [photoRemoved, setPhotoRemoved] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
@@ -182,12 +183,14 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
     if (file.size > 5 * 1024 * 1024) { setError(lang === 'en' ? 'Photo must be under 5 MB.' : 'La photo ne doit pas dépasser 5 Mo.'); return }
     setNewPhoto(file)
     setPhotoPreview(URL.createObjectURL(file))
+    setPhotoRemoved(false)
     setError('')
   }
 
   function handleRemovePhoto() {
     setNewPhoto(null)
     setPhotoPreview(null)
+    setPhotoRemoved(true)
     if (photoInputRef.current) photoInputRef.current.value = ''
     setError('')
   }
@@ -197,19 +200,21 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
     setError('')
     const supabase = createClient()
 
-    let photoUrl: string | null = photoPreview === null ? null : profile.photo_url
+    let photoUrl: string | null = photoRemoved ? null : profile.photo_url
     if (newPhoto) {
       const fd = new FormData()
       fd.append('file', newPhoto)
       const res = await fetch('/api/upload-avatar', { method: 'POST', body: fd })
       const json = await res.json().catch(() => ({}))
-      console.log('upload-avatar response:', res.status, json)
       if (!res.ok) {
         setError(`Photo upload failed: ${json.error ?? res.status}`)
         setSaving(false)
         return
       }
       photoUrl = json.url.split('?')[0]
+      setPhotoPreview(photoUrl)
+      setNewPhoto(null)
+      setPhotoRemoved(false)
     }
 
     await supabase.from('profiles').update({
