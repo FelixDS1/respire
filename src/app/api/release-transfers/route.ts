@@ -55,7 +55,6 @@ export async function GET(req: NextRequest) {
         amount: appt.consultation_fee * 100, // cents
         currency: 'eur',
         destination: appt.therapist_stripe_account_id,
-        source_transaction: appt.stripe_payment_intent_id ?? undefined,
         metadata: { appointment_id: appt.id },
       })
 
