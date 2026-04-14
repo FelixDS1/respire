@@ -615,7 +615,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                           <p className="text-xs" style={{ color: '#4A6070' }}>
                             {appt.therapists?.profiles?.full_name}
                             {appt.therapists?.consultation_fee
-                              ? ` · ${appt.therapists.consultation_fee}€`
+                              ? ` · ${appt.therapists.consultation_fee + 4}€`
                               : ''}
                           </p>
                         </div>
