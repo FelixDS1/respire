@@ -173,6 +173,10 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
+    if (file.size > 4 * 1024 * 1024) {
+      setAvatarError('La photo ne doit pas dépasser 4 Mo.')
+      return
+    }
     setAvatarUploading(true)
     setAvatarError('')
     try {

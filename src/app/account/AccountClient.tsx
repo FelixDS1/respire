@@ -180,7 +180,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
   async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    if (file.size > 5 * 1024 * 1024) { setError(lang === 'en' ? 'Photo must be under 5 MB.' : 'La photo ne doit pas dépasser 5 Mo.'); return }
+    if (file.size > 4 * 1024 * 1024) { setError(lang === 'en' ? 'Photo must be under 4 MB.' : 'La photo ne doit pas dépasser 4 Mo.'); return }
     setPhotoPreview(URL.createObjectURL(file))
     setPhotoRemoved(false)
     setError('')

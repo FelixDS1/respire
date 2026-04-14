@@ -21,8 +21,8 @@ export async function POST(req: NextRequest) {
     if (!['jpg', 'jpeg', 'png', 'webp'].includes(ext ?? '')) {
       return NextResponse.json({ error: 'Invalid file type' }, { status: 400 })
     }
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File too large (max 5MB)' }, { status: 400 })
+    if (file.size > 4 * 1024 * 1024) {
+      return NextResponse.json({ error: 'File too large (max 4MB)' }, { status: 400 })
     }
 
     const path = `${user.id}/avatar.${ext}`
