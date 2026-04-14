@@ -172,6 +172,8 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
+    // Reset input so the same file can be re-selected after an error
+    e.target.value = ''
     if (!file) return
     if (file.size > 4 * 1024 * 1024) {
       setAvatarError('La photo ne doit pas dépasser 4 Mo.')
@@ -526,7 +528,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
                 {/* Photo */}
                 <div
-                  onClick={() => avatarInputRef.current?.click()}
+                  onClick={() => { setAvatarError(''); avatarInputRef.current?.click() }}
                   style={{
                     width: '190px', height: '250px',
                     backgroundColor: '#EEF2F5',
