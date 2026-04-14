@@ -185,12 +185,19 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
     setError('')
   }
 
+  function handleRemovePhoto() {
+    setNewPhoto(null)
+    setPhotoPreview(null)
+    if (photoInputRef.current) photoInputRef.current.value = ''
+    setError('')
+  }
+
   async function saveProfile() {
     setSaving(true)
     setError('')
     const supabase = createClient()
 
-    let photoUrl = profile.photo_url
+    let photoUrl: string | null = photoPreview === null ? null : profile.photo_url
     if (newPhoto) {
       const fd = new FormData()
       fd.append('file', newPhoto)
@@ -410,6 +417,15 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                 </div>
                 <input ref={photoInputRef} type="file" accept="image/jpeg,image/png,image/webp"
                   onChange={handlePhotoChange} className="hidden" />
+                {photoPreview && (
+                  <button
+                    type="button"
+                    onClick={handleRemovePhoto}
+                    style={{ fontSize: '0.62rem', color: '#8A9BAD', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0 0', letterSpacing: '0.03em' }}
+                  >
+                    {lang === 'fr' ? 'Supprimer la photo' : 'Remove photo'}
+                  </button>
+                )}
                 <div style={{ padding: '12px 0 14px' }}>
                   <p style={{ color: 'var(--text)', fontWeight: 500, fontSize: '0.9rem' }}>{profile.full_name}</p>
                   <p style={{ color: '#8A9BAD', fontSize: '0.72rem', marginTop: '2px', letterSpacing: '0.02em' }}>Membre</p>
