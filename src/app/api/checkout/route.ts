@@ -63,15 +63,16 @@ export async function POST(req: NextRequest) {
       },
     ],
     payment_intent_data: {
-      application_fee_amount: 400,
-      transfer_data: {
-        destination: therapist.stripe_account_id,
-      },
+      // No transfer_data — funds are held in the platform account until after
+      // the session completes, then released via the daily release-transfers cron.
+      // The €4 platform fee is retained naturally (we only transfer consultation_fee).
     },
     metadata: {
       slot_id: slotId,
       patient_id: user.id,
       therapist_id: slot.therapist_id,
+      consultation_fee: String(therapist.consultation_fee),
+      stripe_account_id: therapist.stripe_account_id,
     },
     success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/book/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/therapists/${slot.therapist_id}`,

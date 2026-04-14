@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true })
   }
 
-  const { slot_id, patient_id, therapist_id } = session.metadata!
+  const { slot_id, patient_id, therapist_id, consultation_fee, stripe_account_id } = session.metadata!
 
   // Idempotency — skip if already confirmed
   const { data: existing } = await supabase
@@ -63,6 +63,9 @@ export async function POST(req: NextRequest) {
     availability_id: slot_id,
     status: 'confirmed',
     stripe_payment_intent_id: session.payment_intent as string,
+    consultation_fee: parseInt(consultation_fee, 10),
+    therapist_stripe_account_id: stripe_account_id,
+    transfer_released: false,
   })
 
   // Fetch details for emails + message
