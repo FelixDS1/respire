@@ -116,6 +116,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
   const [languageInput, setLanguageInput] = useState('')
   const [avatarUrl, setAvatarUrl] = useState<string | null>(profile.avatar_url)
   const [avatarUploading, setAvatarUploading] = useState(false)
+  const [avatarError, setAvatarError] = useState('')
   const avatarInputRef = useRef<HTMLInputElement>(null)
   const lastSavedBioRef = useRef({ fr: initialTherapist?.bio ?? '', en: initialTherapist?.bio_en ?? '' })
 
@@ -173,15 +174,20 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
     const file = e.target.files?.[0]
     if (!file) return
     setAvatarUploading(true)
+    setAvatarError('')
     try {
       const formData = new FormData()
       formData.append('file', file)
       const res = await fetch('/api/upload-avatar', { method: 'POST', body: formData })
-      const data = await res.json()
+      const data = await res.json().catch(() => ({}))
       if (res.ok && data.url) {
         setAvatarUrl(data.url)
         setTherapist(prev => ({ ...prev, photo_url: data.url }))
+      } else {
+        setAvatarError(data.error ?? `Erreur ${res.status}`)
       }
+    } catch (e: any) {
+      setAvatarError(e?.message ?? 'Erreur inconnue')
     } finally {
       setAvatarUploading(false)
     }
@@ -549,7 +555,8 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                     </div>
                   )}
                 </div>
-                <input ref={avatarInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarUpload} />
+                <input ref={avatarInputRef} type="file" accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }} onChange={handleAvatarUpload} />
+                {avatarError && <p style={{ fontSize: '0.65rem', color: '#C0392B', marginTop: '4px' }}>{avatarError}</p>}
 
                 {/* Name + role + profession */}
                 <div style={{ padding: '12px 0 10px' }}>
