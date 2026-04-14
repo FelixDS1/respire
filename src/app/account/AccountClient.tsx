@@ -192,17 +192,17 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
 
     let photoUrl = profile.photo_url
     if (newPhoto) {
-      const ext = newPhoto.name.split('.').pop()
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(`${userId}/avatar.${ext}`, newPhoto, { upsert: true })
-      if (uploadError) {
-        setError(lang === 'en' ? 'Photo upload failed. Please try again.' : 'Erreur lors du téléversement de la photo.')
+      const fd = new FormData()
+      fd.append('file', newPhoto)
+      const res = await fetch('/api/upload-avatar', { method: 'POST', body: fd })
+      const json = await res.json().catch(() => ({}))
+      console.log('upload-avatar response:', res.status, json)
+      if (!res.ok) {
+        setError(`Photo upload failed: ${json.error ?? res.status}`)
         setSaving(false)
         return
       }
-      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(uploadData.path)
-      photoUrl = publicUrl
+      photoUrl = json.url.split('?')[0]
     }
 
     await supabase.from('profiles').update({

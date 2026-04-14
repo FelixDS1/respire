@@ -83,19 +83,16 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
 
     // Upload profile photo
     let photoUrl: string | null = null
-    const ext = photo.name.split('.').pop()
-    const { data: photoData, error: photoError } = await supabase.storage
-      .from('avatars')
-      .upload(`${userId}/avatar.${ext}`, photo, { upsert: true })
-
-    if (photoError) {
+    const photoFd = new FormData()
+    photoFd.append('file', photo)
+    const photoRes = await fetch('/api/upload-avatar', { method: 'POST', body: photoFd })
+    const photoJson = await photoRes.json()
+    if (!photoRes.ok) {
       setError('Erreur lors du téléversement de la photo. Veuillez réessayer.')
       setLoading(false)
       return
     }
-
-    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(photoData.path)
-    photoUrl = publicUrl
+    photoUrl = photoJson.url
 
     if (role === 'patient') {
       await supabase.from('profiles').update({
