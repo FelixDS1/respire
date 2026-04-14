@@ -195,7 +195,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
         setPhotoPreview(profile.avatar_url)
         return
       }
-      setPhotoPreview(json.url.split('?')[0])
+      setPhotoPreview(json.url)
     } finally {
       setPhotoUploading(false)
     }
