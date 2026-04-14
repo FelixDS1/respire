@@ -97,7 +97,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
   const [dob, setDob] = useState(profile.date_of_birth ?? '')
   const [nir, setNir] = useState(initialNir ?? '')
   const [photoPreview, setPhotoPreview] = useState<string | null>(profile.avatar_url)
-  const [newPhoto, setNewPhoto] = useState<File | null>(null)
+  const [photoUploading, setPhotoUploading] = useState(false)
   const [photoRemoved, setPhotoRemoved] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -177,22 +177,36 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
     }
   })()
 
-  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     if (file.size > 5 * 1024 * 1024) { setError(lang === 'en' ? 'Photo must be under 5 MB.' : 'La photo ne doit pas dépasser 5 Mo.'); return }
-    setNewPhoto(file)
     setPhotoPreview(URL.createObjectURL(file))
     setPhotoRemoved(false)
     setError('')
+    setPhotoUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      const res = await fetch('/api/upload-avatar', { method: 'POST', body: fd })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setError(`Photo upload failed: ${json.error ?? res.status}`)
+        setPhotoPreview(profile.avatar_url)
+        return
+      }
+      setPhotoPreview(json.url.split('?')[0])
+    } finally {
+      setPhotoUploading(false)
+    }
   }
 
-  function handleRemovePhoto() {
-    setNewPhoto(null)
+  async function handleRemovePhoto() {
     setPhotoPreview(null)
     setPhotoRemoved(true)
     if (photoInputRef.current) photoInputRef.current.value = ''
     setError('')
+    await createClient().from('profiles').update({ avatar_url: null }).eq('id', userId)
   }
 
   async function saveProfile() {
@@ -200,26 +214,8 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
     setError('')
     const supabase = createClient()
 
-    let photoUrl: string | null = photoRemoved ? null : profile.avatar_url
-    if (newPhoto) {
-      const fd = new FormData()
-      fd.append('file', newPhoto)
-      const res = await fetch('/api/upload-avatar', { method: 'POST', body: fd })
-      const json = await res.json().catch(() => ({}))
-      if (!res.ok) {
-        setError(`Photo upload failed: ${json.error ?? res.status}`)
-        setSaving(false)
-        return
-      }
-      photoUrl = json.url.split('?')[0]
-      setPhotoPreview(photoUrl)
-      setNewPhoto(null)
-      setPhotoRemoved(false)
-    }
-
     await supabase.from('profiles').update({
       bio: bio.trim() || null,
-      avatar_url: photoUrl,
       date_of_birth: dob || null,
     }).eq('id', userId)
 
@@ -410,7 +406,12 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                       {lang === 'fr' ? 'Cliquer pour\najouter une photo' : 'Click to\nadd a photo'}
                     </span>
                   )}
-                  {photoPreview && (
+                  {photoUploading && (
+                    <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ color: 'white', fontSize: '0.65rem', letterSpacing: '0.06em' }}>{lang === 'fr' ? 'Chargement...' : 'Uploading...'}</span>
+                    </div>
+                  )}
+                  {photoPreview && !photoUploading && (
                     <div
                       style={{ position: 'absolute', inset: 0, opacity: 0, backgroundColor: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: '10px', transition: 'opacity 0.2s' }}
                       onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
