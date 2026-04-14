@@ -114,7 +114,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
   const [saved, setSaved] = useState(false)
   const [specialtyInput, setSpecialtyInput] = useState('')
   const [languageInput, setLanguageInput] = useState('')
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(profile.avatar_url)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(profile.avatar_url ?? initialTherapist.photo_url)
   const [avatarUploading, setAvatarUploading] = useState(false)
   const [avatarError, setAvatarError] = useState('')
   const avatarInputRef = useRef<HTMLInputElement>(null)
