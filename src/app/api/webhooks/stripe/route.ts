@@ -85,10 +85,25 @@ export async function POST(req: NextRequest) {
     const time = slot.start_time.slice(0, 5)
 
     const appointmentBlock = `
-      <div style="border: 1px solid #DDE3EA; padding: 20px; margin: 24px 0;">
-        <p style="margin: 0 0 8px 0;"><strong>Date :</strong> ${date}</p>
-        <p style="margin: 0;"><strong>Heure :</strong> ${time}</p>
-      </div>`
+      <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #DDE3EA; margin: 24px 0;">
+        <tr><td style="padding: 20px;">
+          <p style="margin: 0 0 8px 0; font-family: Georgia, serif; color: #1C2B3A;"><strong>Date :</strong> ${date}</p>
+          <p style="margin: 0; font-family: Georgia, serif; color: #1C2B3A;"><strong>Heure :</strong> ${time}</p>
+        </td></tr>
+      </table>`
+
+    const emailWrapper = (body: string) => `
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #F5F7F9;">
+        <tr><td align="center" style="padding: 40px 20px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; padding: 48px;">
+            <tr><td>
+              <p style="font-family: Georgia, serif; font-size: 18px; letter-spacing: 0.08em; color: #1C2B3A; margin: 0 0 40px 0;">RESPIRE</p>
+              ${body}
+              <p style="font-family: Georgia, serif; font-size: 12px; color: #8A9BAC; margin: 40px 0 0 0;">Respire · contact@respire.pro</p>
+            </td></tr>
+          </table>
+        </td></tr>
+      </table>`
 
     const from = process.env.RESEND_FROM ?? 'Respire <onboarding@resend.dev>'
 
@@ -99,15 +114,12 @@ export async function POST(req: NextRequest) {
         from,
         to: patient.email,
         subject: 'Votre rendez-vous est confirmé — Respire',
-        html: `
-          <div style="font-family: Georgia, serif; max-width: 480px; margin: 0 auto; color: #1C2B3A;">
-            <h2 style="font-weight: normal; margin-bottom: 8px;">Rendez-vous confirmé</h2>
-            <p style="color: #4A6070; margin-bottom: 24px;">Bonjour ${patient.full_name ?? ''},</p>
-            <p style="color: #4A6070;">Votre séance avec ${therapistName} a bien été réservée et le paiement confirmé.</p>
-            ${appointmentBlock}
-            <p style="color: #4A6070; font-size: 14px;">Respire</p>
-          </div>
-        `,
+        html: emailWrapper(`
+          <h2 style="font-family: Georgia, serif; font-weight: normal; font-size: 24px; color: #1C2B3A; margin: 0 0 24px 0;">Rendez-vous confirmé</h2>
+          <p style="font-family: Georgia, serif; color: #4A6070; margin: 0 0 16px 0;">Bonjour ${patient.full_name ?? ''},</p>
+          <p style="font-family: Georgia, serif; color: #4A6070; margin: 0;">Votre séance avec ${therapistName} a bien été réservée et le paiement confirmé.</p>
+          ${appointmentBlock}
+        `),
       }))
     }
 
@@ -116,15 +128,12 @@ export async function POST(req: NextRequest) {
         from,
         to: therapistProfile.email,
         subject: 'Nouvelle réservation — Respire',
-        html: `
-          <div style="font-family: Georgia, serif; max-width: 480px; margin: 0 auto; color: #1C2B3A;">
-            <h2 style="font-weight: normal; margin-bottom: 8px;">Nouvelle réservation</h2>
-            <p style="color: #4A6070; margin-bottom: 24px;">Bonjour ${therapistProfile.full_name ?? ''},</p>
-            <p style="color: #4A6070;">${patient?.full_name ?? 'Un membre'} a réservé une séance avec vous.</p>
-            ${appointmentBlock}
-            <p style="color: #4A6070; font-size: 14px;">Respire</p>
-          </div>
-        `,
+        html: emailWrapper(`
+          <h2 style="font-family: Georgia, serif; font-weight: normal; font-size: 24px; color: #1C2B3A; margin: 0 0 24px 0;">Nouvelle réservation</h2>
+          <p style="font-family: Georgia, serif; color: #4A6070; margin: 0 0 16px 0;">Bonjour ${therapistProfile.full_name ?? ''},</p>
+          <p style="font-family: Georgia, serif; color: #4A6070; margin: 0;">${patient?.full_name ?? 'Un membre'} a réservé une séance avec vous.</p>
+          ${appointmentBlock}
+        `),
       }))
     }
 
