@@ -39,6 +39,15 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
   const [waitlistLoading, setWaitlistLoading] = useState(false)
   const [waitlistDone, setWaitlistDone] = useState(false)
 
+  // Calendar state — start on first month that has availability, or today
+  const firstAvailable = Object.keys(byDate).sort()[0]
+  const initialMonth = firstAvailable
+    ? new Date(firstAvailable + 'T00:00:00')
+    : new Date()
+  initialMonth.setDate(1)
+  const [calendarMonth, setCalendarMonth] = useState(initialMonth)
+  const [selectedDate, setSelectedDate] = useState<string | null>(firstAvailable ?? null)
+
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data: { user } }: { data: { user: { id: string } | null } }) => {
@@ -201,39 +210,124 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
 
             <hr style={{ borderColor: 'var(--border)', margin: '1rem 0' }} />
 
-            <h2 className="text-xs uppercase tracking-widest mb-4" style={{ color: 'var(--blue-primary)' }}>
+            <h2 className="text-xs uppercase tracking-widest mb-3" style={{ color: 'var(--blue-primary)' }}>
               {t.profile.availability}
             </h2>
 
             {Object.keys(byDate).length === 0 ? (
               <p className="text-sm" style={{ color: '#4A6070' }}>{t.profile.noSlots}</p>
-            ) : (
-              <div className="flex flex-col gap-4">
-                {Object.entries(byDate).slice(0, 5).map(([date, slots]) => (
-                  <div key={date}>
-                    <p className="text-xs mb-2 capitalize" style={{ color: '#4A6070' }}>
-                      {formatDate(date)}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {slots.map((slot) => (
-                        <Link
-                          key={slot.id}
-                          href={`/book/${slot.id}`}
-                          className="text-xs px-3 py-1 transition-colors hover:opacity-80"
+            ) : (() => {
+              const year = calendarMonth.getFullYear()
+              const month = calendarMonth.getMonth()
+              const firstDay = new Date(year, month, 1).getDay()
+              // Sunday=0 → shift so Monday=0
+              const startOffset = (firstDay + 6) % 7
+              const daysInMonth = new Date(year, month + 1, 0).getDate()
+              const monthLabel = calendarMonth.toLocaleDateString(lang === 'en' ? 'en-GB' : 'fr-FR', { month: 'long', year: 'numeric' })
+              const today = new Date().toISOString().slice(0, 10)
+
+              const cells: (number | null)[] = [
+                ...Array(startOffset).fill(null),
+                ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+              ]
+
+              const dayHeaders = lang === 'en'
+                ? ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+                : ['L', 'M', 'M', 'J', 'V', 'S', 'D']
+
+              return (
+                <div>
+                  {/* Month navigation */}
+                  <div className="flex items-center justify-between mb-2">
+                    <button
+                      onClick={() => setCalendarMonth(new Date(year, month - 1, 1))}
+                      className="text-xs px-1 hover:opacity-60"
+                      style={{ color: 'var(--blue-primary)', background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      ←
+                    </button>
+                    <span className="text-xs capitalize" style={{ color: 'var(--text)' }}>{monthLabel}</span>
+                    <button
+                      onClick={() => setCalendarMonth(new Date(year, month + 1, 1))}
+                      className="text-xs px-1 hover:opacity-60"
+                      style={{ color: 'var(--blue-primary)', background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      →
+                    </button>
+                  </div>
+
+                  {/* Day headers */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px', marginBottom: '2px' }}>
+                    {dayHeaders.map((d, i) => (
+                      <div key={i} className="text-center" style={{ fontSize: '0.6rem', color: '#8A9BAC', padding: '2px 0' }}>{d}</div>
+                    ))}
+                  </div>
+
+                  {/* Calendar grid */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px' }}>
+                    {cells.map((day, i) => {
+                      if (!day) return <div key={i} />
+                      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+                      const hasSlots = !!byDate[dateStr]
+                      const isSelected = dateStr === selectedDate
+                      const isPast = dateStr < today
+                      return (
+                        <button
+                          key={i}
+                          disabled={!hasSlots || isPast}
+                          onClick={() => setSelectedDate(dateStr)}
                           style={{
-                            border: '1px solid var(--blue-primary)',
-                            color: 'var(--blue-primary)',
-                            backgroundColor: 'white'
+                            fontSize: '0.7rem',
+                            padding: '5px 0',
+                            textAlign: 'center',
+                            cursor: hasSlots && !isPast ? 'pointer' : 'default',
+                            backgroundColor: isSelected
+                              ? 'var(--blue-primary)'
+                              : hasSlots && !isPast
+                                ? 'var(--blue-accent)'
+                                : 'transparent',
+                            color: isSelected
+                              ? 'white'
+                              : hasSlots && !isPast
+                                ? 'var(--blue-primary)'
+                                : '#C0CDD6',
+                            border: 'none',
+                            fontFamily: 'inherit',
                           }}
                         >
-                          {formatTime(slot.start_time)}
-                        </Link>
-                      ))}
-                    </div>
+                          {day}
+                        </button>
+                      )
+                    })}
                   </div>
-                ))}
-              </div>
-            )}
+
+                  {/* Time slots for selected date */}
+                  {selectedDate && byDate[selectedDate] && (
+                    <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
+                      <p className="text-xs mb-2 capitalize" style={{ color: '#4A6070' }}>
+                        {formatDate(selectedDate)}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {byDate[selectedDate].map((slot) => (
+                          <Link
+                            key={slot.id}
+                            href={`/book/${slot.id}`}
+                            className="text-xs px-3 py-1 transition-colors hover:opacity-80"
+                            style={{
+                              border: '1px solid var(--blue-primary)',
+                              color: 'var(--blue-primary)',
+                              backgroundColor: 'white',
+                            }}
+                          >
+                            {formatTime(slot.start_time)}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
 
             {/* Waitlist */}
             <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
