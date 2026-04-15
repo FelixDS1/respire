@@ -84,12 +84,29 @@ export async function POST(req: NextRequest) {
     })
     const time = slot.start_time.slice(0, 5)
 
+    // Google Calendar link
+    const gcalStart = slot.date.replace(/-/g, '') + 'T' + slot.start_time.replace(/:/g, '')
+    const gcalEnd = slot.date.replace(/-/g, '') + 'T' + slot.end_time.replace(/:/g, '')
+    const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`Séance avec ${therapistName}`)}&dates=${gcalStart}/${gcalEnd}&details=${encodeURIComponent('Séance réservée via Respire')}`
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://respire-one.vercel.app'
+
     const appointmentBlock = `
       <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #DDE3EA; margin: 24px 0;">
         <tr><td style="padding: 20px;">
           <p style="margin: 0 0 8px 0; font-family: Georgia, serif; color: #1C2B3A;"><strong>Date :</strong> ${date}</p>
           <p style="margin: 0; font-family: Georgia, serif; color: #1C2B3A;"><strong>Heure :</strong> ${time}</p>
         </td></tr>
+      </table>
+      <table cellpadding="0" cellspacing="0" style="margin: 0 0 12px 0;">
+        <tr>
+          <td style="padding-right: 12px;">
+            <a href="${gcalUrl}" style="display: inline-block; padding: 12px 20px; background-color: #1C2B3A; color: #ffffff; font-family: Georgia, serif; font-size: 13px; text-decoration: none;">Ajouter à Google Agenda</a>
+          </td>
+          <td>
+            <a href="${siteUrl}" style="display: inline-block; padding: 12px 20px; border: 1px solid #1C2B3A; color: #1C2B3A; font-family: Georgia, serif; font-size: 13px; text-decoration: none;">Accéder à l'application</a>
+          </td>
+        </tr>
       </table>`
 
     const emailWrapper = (body: string) => `
