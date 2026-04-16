@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import Link from 'next/link'
 import { useLanguage } from '@/lib/language'
 
@@ -71,18 +71,18 @@ function StepBubble({ number, title, body, numColor }: {
   }
 
   return (
-    <div style={{ position: 'relative', paddingTop: '52px' }}>
-      {/* Large number overlapping the card from above */}
+    <div style={{ position: 'relative', paddingTop: '60px' }}>
+      {/* Large ghost number overlapping the card from above */}
       <span style={{
         position: 'absolute',
         top: 0,
-        left: '20px',
-        fontSize: '7rem',
+        left: '24px',
+        fontSize: '8.5rem',
         fontWeight: 300,
         lineHeight: 1,
         color: numColor ?? 'var(--blue-primary)',
         fontFamily: 'Georgia, serif',
-        opacity: 0.18,
+        opacity: 0.14,
         zIndex: 2,
         pointerEvents: 'none',
         userSelect: 'none',
@@ -97,7 +97,7 @@ function StepBubble({ number, title, body, numColor }: {
           backgroundColor: 'white',
           border: '1px solid var(--border)',
           borderRadius: '16px',
-          padding: '36px 28px 28px',
+          padding: '44px 36px 36px',
           cursor: 'default',
           transformStyle: 'preserve-3d',
           willChange: 'transform',
@@ -106,22 +106,21 @@ function StepBubble({ number, title, body, numColor }: {
           zIndex: 1,
         }}
       >
-        {/* Smaller, solid number inside card */}
         <span style={{
-          fontSize: '2.8rem',
+          fontSize: '3.2rem',
           fontWeight: 300,
           color: numColor ?? 'var(--blue-primary)',
           fontFamily: 'Georgia, serif',
           display: 'block',
-          marginBottom: '14px',
+          marginBottom: '16px',
           lineHeight: 1,
         }}>
           {number}
         </span>
-        <h3 style={{ fontSize: '1.1rem', fontWeight: 500, marginBottom: '12px', color: 'var(--text)', fontFamily: 'Georgia, serif' }}>
+        <h3 style={{ fontSize: '1.25rem', fontWeight: 500, marginBottom: '12px', color: 'var(--text)', fontFamily: 'Georgia, serif' }}>
           {title}
         </h3>
-        <p style={{ fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.8, color: '#4A6070', fontFamily: 'Georgia, serif' }}>
+        <p style={{ fontSize: '1.05rem', fontWeight: 300, lineHeight: 1.8, color: '#4A6070', fontFamily: 'Georgia, serif' }}>
           {body}
         </p>
       </div>
@@ -131,6 +130,7 @@ function StepBubble({ number, title, body, numColor }: {
 
 export default function Home() {
   const { t } = useLanguage()
+  const [treeHover, setTreeHover] = useState(false)
 
   return (
     <main style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}>
@@ -173,7 +173,12 @@ export default function Home() {
 
         {/* Right: tree visual */}
         <div style={{ position: 'relative', height: '420px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ position: 'relative', zIndex: 1, width: '340px', height: '400px' }}>
+          <div
+            style={{ position: 'relative', zIndex: 1, width: '340px', height: '400px' }}
+            className={treeHover ? 'tree-breathe' : ''}
+            onMouseEnter={() => setTreeHover(true)}
+            onMouseLeave={() => setTreeHover(false)}
+          >
             <TreeOfLife />
           </div>
           <div style={{ position: 'absolute', bottom: '24px', left: '50%', transform: 'translateX(-50%)', fontFamily: 'Georgia, serif', fontSize: '1.1rem', letterSpacing: '0.3em', color: 'var(--blue-primary)', opacity: 0.55, whiteSpace: 'nowrap' }}>

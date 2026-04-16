@@ -21,3 +21,13 @@ body {
   color: #9EB3C2;
   pointer-events: none;
 }
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.07); }
+}
+
+.tree-breathe {
+  animation: breathe 2.5s ease-in-out infinite;
+  transform-origin: center bottom;
+}
