@@ -4,40 +4,97 @@ import { useRef, useState } from 'react'
 import Link from 'next/link'
 import { useLanguage } from '@/lib/language'
 
+function Leaves({ cx, cy, s = 1 }: { cx: number, cy: number, s?: number }) {
+  const config = [
+    { a: -38, d: 7.5, op: 0.42 },
+    { a: -16, d: 8.5, op: 0.50 },
+    { a:   4, d: 9,   op: 0.55 },
+    { a:  24, d: 8.5, op: 0.50 },
+    { a:  44, d: 7.5, op: 0.42 },
+  ]
+  return (
+    <>
+      {config.map(({ a, d, op }, i) => {
+        const rad = a * Math.PI / 180
+        const ex = cx + Math.sin(rad) * d * s
+        const ey = cy - Math.cos(rad) * d * s
+        return (
+          <ellipse
+            key={i}
+            cx={ex} cy={ey}
+            rx={3.2 * s} ry={5.8 * s}
+            fill="var(--blue-primary)"
+            opacity={op}
+            transform={`rotate(${a}, ${ex}, ${ey})`}
+          />
+        )
+      })}
+    </>
+  )
+}
+
 function TreeOfLife() {
+  const C = 'var(--blue-primary)'
   return (
     <svg viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%' }}>
-      <rect x="57" y="90" width="6" height="40" rx="3" fill="var(--blue-primary)" opacity="0.7"/>
-      <path d="M60 90 Q40 70 25 55" stroke="var(--blue-primary)" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.7"/>
-      <path d="M60 90 Q80 70 95 55" stroke="var(--blue-primary)" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.7"/>
-      <path d="M60 85 Q45 65 35 45" stroke="var(--blue-primary)" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.6"/>
-      <path d="M60 85 Q75 65 85 45" stroke="var(--blue-primary)" strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.6"/>
-      <path d="M60 80 Q60 55 60 35" stroke="var(--blue-primary)" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.7"/>
-      <path d="M40 72 Q30 60 22 50" stroke="var(--blue-primary)" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.5"/>
-      <path d="M35 60 Q25 50 18 42" stroke="var(--blue-primary)" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.4"/>
-      <path d="M40 72 Q42 60 40 48" stroke="var(--blue-primary)" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.4"/>
-      <path d="M80 72 Q90 60 98 50" stroke="var(--blue-primary)" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.5"/>
-      <path d="M85 60 Q95 50 102 42" stroke="var(--blue-primary)" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.4"/>
-      <path d="M80 72 Q78 60 80 48" stroke="var(--blue-primary)" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.4"/>
-      <path d="M60 65 Q50 55 44 44" stroke="var(--blue-primary)" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.5"/>
-      <path d="M60 65 Q70 55 76 44" stroke="var(--blue-primary)" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.5"/>
-      <circle cx="25" cy="55" r="3" fill="var(--blue-primary)" opacity="0.5"/>
-      <circle cx="95" cy="55" r="3" fill="var(--blue-primary)" opacity="0.5"/>
-      <circle cx="60" cy="32" r="3.5" fill="var(--blue-primary)" opacity="0.6"/>
-      <circle cx="35" cy="45" r="2.5" fill="var(--blue-primary)" opacity="0.4"/>
-      <circle cx="85" cy="45" r="2.5" fill="var(--blue-primary)" opacity="0.4"/>
-      <circle cx="18" cy="42" r="2" fill="var(--blue-primary)" opacity="0.35"/>
-      <circle cx="102" cy="42" r="2" fill="var(--blue-primary)" opacity="0.35"/>
-      <circle cx="22" cy="50" r="2" fill="var(--blue-primary)" opacity="0.35"/>
-      <circle cx="98" cy="50" r="2" fill="var(--blue-primary)" opacity="0.35"/>
-      <circle cx="44" cy="44" r="2" fill="var(--blue-primary)" opacity="0.4"/>
-      <circle cx="76" cy="44" r="2" fill="var(--blue-primary)" opacity="0.4"/>
-      <circle cx="40" cy="48" r="2" fill="var(--blue-primary)" opacity="0.35"/>
-      <circle cx="80" cy="48" r="2" fill="var(--blue-primary)" opacity="0.35"/>
-      <path d="M60 130 Q45 125 35 118" stroke="var(--blue-primary)" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.4"/>
-      <path d="M60 130 Q75 125 85 118" stroke="var(--blue-primary)" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.4"/>
-      <path d="M55 132 Q40 128 28 124" stroke="var(--blue-primary)" strokeWidth="1" strokeLinecap="round" fill="none" opacity="0.3"/>
-      <path d="M65 132 Q80 128 92 124" stroke="var(--blue-primary)" strokeWidth="1" strokeLinecap="round" fill="none" opacity="0.3"/>
+
+      {/* Trunk — filled, tapered organic shape */}
+      <path
+        d="M56 138 C54 124 53 110 55 98 C57 91 59 88 60 85 C61 88 63 91 65 98 C67 110 66 124 64 138 Z"
+        fill={C} opacity="0.62"
+      />
+
+      {/* Roots */}
+      <path d="M57 133 Q47 137 36 139" stroke={C} strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.28"/>
+      <path d="M63 133 Q73 137 84 139" stroke={C} strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.28"/>
+      <path d="M60 136 Q55 139 50 140" stroke={C} strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.18"/>
+      <path d="M60 136 Q65 139 70 140" stroke={C} strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.18"/>
+
+      {/* Main branches */}
+      <path d="M59 88 Q40 77 18 54" stroke={C} strokeWidth="2.8" strokeLinecap="round" fill="none" opacity="0.55"/>
+      <path d="M60 87 Q51 69 40 40" stroke={C} strokeWidth="2.2" strokeLinecap="round" fill="none" opacity="0.50"/>
+      <path d="M60 85 Q59 60 60 22" stroke={C} strokeWidth="2.4" strokeLinecap="round" fill="none" opacity="0.53"/>
+      <path d="M60 87 Q69 69 80 40" stroke={C} strokeWidth="2.2" strokeLinecap="round" fill="none" opacity="0.50"/>
+      <path d="M61 88 Q80 77 102 54" stroke={C} strokeWidth="2.8" strokeLinecap="round" fill="none" opacity="0.55"/>
+
+      {/* Secondary — far left */}
+      <path d="M18 54 Q11 43 6 32" stroke={C} strokeWidth="1.6" strokeLinecap="round" fill="none" opacity="0.40"/>
+      <path d="M18 54 Q20 40 23 28" stroke={C} strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.37"/>
+
+      {/* Secondary — left center */}
+      <path d="M40 40 Q33 27 28 18" stroke={C} strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.37"/>
+      <path d="M40 40 Q43 26 45 16" stroke={C} strokeWidth="1.3" strokeLinecap="round" fill="none" opacity="0.34"/>
+
+      {/* Secondary — center */}
+      <path d="M60 22 Q54 14 50 8" stroke={C} strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.32"/>
+      <path d="M60 22 Q66 14 70 8" stroke={C} strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.32"/>
+
+      {/* Secondary — right center */}
+      <path d="M80 40 Q77 26 75 16" stroke={C} strokeWidth="1.3" strokeLinecap="round" fill="none" opacity="0.34"/>
+      <path d="M80 40 Q87 27 92 18" stroke={C} strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.37"/>
+
+      {/* Secondary — far right */}
+      <path d="M102 54 Q100 40 97 28" stroke={C} strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.37"/>
+      <path d="M102 54 Q109 43 114 32" stroke={C} strokeWidth="1.6" strokeLinecap="round" fill="none" opacity="0.40"/>
+
+      {/* Leaf clusters at branch tips */}
+      <Leaves cx={6}   cy={32} s={0.90}/>
+      <Leaves cx={23}  cy={28} s={0.82}/>
+      <Leaves cx={28}  cy={18} s={0.88}/>
+      <Leaves cx={45}  cy={16} s={0.82}/>
+      <Leaves cx={50}  cy={8}  s={0.78}/>
+      <Leaves cx={60}  cy={10} s={0.95}/>
+      <Leaves cx={70}  cy={8}  s={0.78}/>
+      <Leaves cx={75}  cy={16} s={0.82}/>
+      <Leaves cx={92}  cy={18} s={0.88}/>
+      <Leaves cx={97}  cy={28} s={0.82}/>
+      <Leaves cx={114} cy={32} s={0.90}/>
+
+      {/* Mid-canopy clusters for fullness */}
+      <Leaves cx={14}  cy={46} s={0.68}/>
+      <Leaves cx={36}  cy={32} s={0.62}/>
+      <Leaves cx={84}  cy={32} s={0.62}/>
+      <Leaves cx={106} cy={46} s={0.68}/>
     </svg>
   )
 }
