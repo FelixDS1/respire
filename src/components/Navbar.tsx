@@ -18,7 +18,6 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
 
   useEffect(() => {
     const supabase = createClient()
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: unknown, session: { user?: { id: string; email?: string } } | null) => {
       if (session?.user) {
         setUserEmail(session.user.email ?? null)
@@ -34,7 +33,6 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
         setUnreadCount(0)
       }
     })
-
     return () => subscription.unsubscribe()
   }, [])
 
@@ -52,92 +50,132 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
 
   const roleLabel = role === 'therapist'
     ? (lang === 'en' ? 'Therapist' : 'Thérapeute')
-    : role === 'patient'
-    ? 'Membre'
-    : null
+    : 'Membre'
+
+  const linkStyle: React.CSSProperties = {
+    color: 'var(--text)',
+    fontSize: '1rem',
+    textDecoration: 'none',
+    opacity: 1,
+    transition: 'opacity 0.15s',
+  }
 
   return (
-    <nav style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', position: 'sticky', top: 0, zIndex: 50 }}>
-      <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
-        <Link href="/" className="text-xl tracking-wide" style={{ color: 'var(--blue-primary)' }}>
+    <nav style={{
+      borderBottom: '1px solid var(--border)',
+      backgroundColor: 'rgba(255,255,255,0.96)',
+      backdropFilter: 'blur(10px)',
+      position: 'sticky',
+      top: 0,
+      zIndex: 50,
+    }}>
+      <div style={{
+        width: '100%',
+        padding: '14px 48px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}>
+
+        {/* Logo — far left, large */}
+        <Link href="/" style={{
+          fontFamily: 'Georgia, serif',
+          fontSize: '2rem',
+          fontWeight: 400,
+          color: 'var(--blue-primary)',
+          letterSpacing: '0.04em',
+          textDecoration: 'none',
+          flexShrink: 0,
+        }}>
           Respire
         </Link>
 
-        <div className="flex items-center gap-8 text-sm">
-          <Link href="/therapists" style={{ color: 'var(--text)' }} className="hover:opacity-70 transition-opacity">
+        {/* Nav items — right side, language toggle at far right */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '36px' }}>
+
+          <Link href="/therapists" style={linkStyle} onMouseEnter={e => (e.currentTarget.style.opacity = '0.6')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
             {t.nav.findTherapist}
           </Link>
-          <Link href="/about" style={{ color: 'var(--text)' }} className="hover:opacity-70 transition-opacity">
+          <Link href="/about" style={linkStyle} onMouseEnter={e => (e.currentTarget.style.opacity = '0.6')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
             {t.nav.about}
           </Link>
 
           {userEmail ? (
             <>
               {role === 'patient' && (
-                <Link href="/account" className="flex items-center gap-2 hover:opacity-70 transition-opacity">
-                  <span style={{ color: 'var(--blue-primary)' }}>
+                <Link href="/account" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                  <span style={{ color: 'var(--blue-primary)', fontSize: '1rem' }}>
                     {lang === 'en' ? 'My Profile' : 'Mon Profil'}
                   </span>
-                  <span className="text-xs px-2 py-0.5" style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
+                  <span style={{ fontSize: '0.72rem', padding: '2px 8px', backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
                     Membre
                   </span>
                 </Link>
               )}
               {role === 'therapist' && (
-                <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-70 transition-opacity">
-                  <span style={{ color: 'var(--blue-primary)' }}>
+                <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                  <span style={{ color: 'var(--blue-primary)', fontSize: '1rem' }}>
                     {lang === 'en' ? 'My Profile' : 'Mon Profil'}
                   </span>
-                  <span className="text-xs px-2 py-0.5" style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
+                  <span style={{ fontSize: '0.72rem', padding: '2px 8px', backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
                     {roleLabel}
                   </span>
                 </Link>
               )}
-              {/* PREMIUM — Messages link, visible only when logged in */}
-              <Link href="/messages" className="relative hover:opacity-70 transition-opacity" style={{ color: 'var(--text)' }}>
+
+              <Link href="/messages" style={{ ...linkStyle, position: 'relative' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.6')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
                 {lang === 'en' ? 'Messages' : 'Messages'}
                 {unreadCount > 0 && (
-                  <span
-                    className="absolute text-white"
-                    style={{
-                      top: '-8px',
-                      right: '-10px',
-                      backgroundColor: 'var(--blue-primary)',
-                      borderRadius: '10px',
-                      fontSize: '10px',
-                      lineHeight: 1,
-                      padding: '2px 5px',
-                      minWidth: '16px',
-                      textAlign: 'center',
-                    }}
-                  >
+                  <span style={{
+                    position: 'absolute', top: '-8px', right: '-12px',
+                    backgroundColor: 'var(--blue-primary)', color: 'white',
+                    borderRadius: '10px', fontSize: '10px', lineHeight: 1,
+                    padding: '2px 5px', minWidth: '16px', textAlign: 'center',
+                  }}>
                     {unreadCount > 99 ? '99+' : unreadCount}
                   </span>
                 )}
               </Link>
-              <a href="/api/logout" style={{ color: 'var(--text)' }} className="hover:opacity-70 transition-opacity">
+
+              <a href="/api/logout" style={linkStyle}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.6')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
                 {t.nav.logout}
               </a>
             </>
           ) : (
             <>
-              <Link href="/login" style={{ color: 'var(--text)' }} className="hover:opacity-70 transition-opacity">
+              <Link href="/login" style={linkStyle}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.6')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
                 {t.nav.login}
               </Link>
-              <Link
-                href="/signup"
-                className="px-4 py-2 text-white transition-opacity hover:opacity-80"
-                style={{ backgroundColor: 'var(--blue-primary)' }}
-              >
+              <Link href="/signup" style={{
+                backgroundColor: 'var(--blue-primary)', color: 'white',
+                padding: '9px 22px', fontSize: '1rem', textDecoration: 'none',
+                borderRadius: '6px', transition: 'opacity 0.15s',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
                 {t.nav.signup}
               </Link>
             </>
           )}
 
+          {/* Language toggle — far right */}
           <button
             onClick={toggle}
-            className="text-xs tracking-widest hover:opacity-70 transition-opacity"
-            style={{ color: '#4A6070', background: 'none', border: 'none', cursor: 'pointer' }}
+            style={{
+              fontSize: '0.85rem',
+              letterSpacing: '0.08em',
+              color: '#6B8A9E',
+              background: 'none',
+              border: '1px solid var(--border)',
+              cursor: 'pointer',
+              padding: '4px 10px',
+              borderRadius: '4px',
+              fontFamily: 'Georgia, serif',
+            }}
           >
             {lang === 'fr' ? 'EN' : 'FR'}
           </button>

@@ -42,7 +42,12 @@ function TreeOfLife() {
   )
 }
 
-function StepBubble({ number, title, body }: { number: string; title: string; body: string }) {
+function StepBubble({ number, title, body, numColor }: {
+  number: string
+  title: string
+  body: string
+  numColor?: string
+}) {
   const ref = useRef<HTMLDivElement>(null)
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
@@ -54,11 +59,7 @@ function StepBubble({ number, title, body }: { number: string; title: string; bo
     const dx = (e.clientX - cx) / rect.width
     const dy = (e.clientY - cy) / rect.height
     const intensity = Math.sqrt(dx * dx + dy * dy)
-    const tx = dx * 10 * intensity
-    const ty = dy * 10 * intensity
-    const rx = -dy * 6
-    const ry = dx * 6
-    el.style.transform = `translate(${tx}px, ${ty}px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.04)`
+    el.style.transform = `translate(${dx * 10 * intensity}px, ${dy * 10 * intensity}px) rotateX(${-dy * 6}deg) rotateY(${dx * 6}deg) scale(1.04)`
     el.style.transition = 'transform 0.1s ease-out'
   }
 
@@ -70,30 +71,60 @@ function StepBubble({ number, title, body }: { number: string; title: string; bo
   }
 
   return (
-    <div
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        backgroundColor: 'white',
-        border: '1px solid var(--border)',
-        borderRadius: '16px',
-        padding: '32px 28px',
-        cursor: 'default',
-        transformStyle: 'preserve-3d',
-        willChange: 'transform',
-        boxShadow: '0 2px 12px rgba(28,43,58,0.06)',
-      }}
-    >
-      <span style={{ fontSize: '2rem', fontWeight: 300, color: 'var(--blue-primary)', display: 'block', marginBottom: '16px', fontFamily: 'Georgia, serif' }}>
+    <div style={{ position: 'relative', paddingTop: '52px' }}>
+      {/* Large number overlapping the card from above */}
+      <span style={{
+        position: 'absolute',
+        top: 0,
+        left: '20px',
+        fontSize: '7rem',
+        fontWeight: 300,
+        lineHeight: 1,
+        color: numColor ?? 'var(--blue-primary)',
+        fontFamily: 'Georgia, serif',
+        opacity: 0.18,
+        zIndex: 2,
+        pointerEvents: 'none',
+        userSelect: 'none',
+      }}>
         {number}
       </span>
-      <h3 style={{ fontSize: '1.05rem', fontWeight: 500, marginBottom: '10px', color: 'var(--text)', fontFamily: 'Georgia, serif' }}>
-        {title}
-      </h3>
-      <p style={{ fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.75, color: '#4A6070', fontFamily: 'Georgia, serif' }}>
-        {body}
-      </p>
+      <div
+        ref={ref}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          backgroundColor: 'white',
+          border: '1px solid var(--border)',
+          borderRadius: '16px',
+          padding: '36px 28px 28px',
+          cursor: 'default',
+          transformStyle: 'preserve-3d',
+          willChange: 'transform',
+          boxShadow: '0 2px 16px rgba(28,43,58,0.07)',
+          position: 'relative',
+          zIndex: 1,
+        }}
+      >
+        {/* Smaller, solid number inside card */}
+        <span style={{
+          fontSize: '2.8rem',
+          fontWeight: 300,
+          color: numColor ?? 'var(--blue-primary)',
+          fontFamily: 'Georgia, serif',
+          display: 'block',
+          marginBottom: '14px',
+          lineHeight: 1,
+        }}>
+          {number}
+        </span>
+        <h3 style={{ fontSize: '1.1rem', fontWeight: 500, marginBottom: '12px', color: 'var(--text)', fontFamily: 'Georgia, serif' }}>
+          {title}
+        </h3>
+        <p style={{ fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.8, color: '#4A6070', fontFamily: 'Georgia, serif' }}>
+          {body}
+        </p>
+      </div>
     </div>
   )
 }
@@ -102,22 +133,32 @@ export default function Home() {
   const { t } = useLanguage()
 
   return (
-    <main style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100vh' }}>
+    <main style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}>
+
+      {/* Full-page decorative background layer */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', width: '700px', height: '700px', borderRadius: '50%', backgroundColor: 'var(--blue-accent)', opacity: 0.45, top: '-250px', right: '-150px' }} />
+        <div style={{ position: 'absolute', width: '500px', height: '500px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.3, bottom: '-100px', left: '-120px' }} />
+        <div style={{ position: 'absolute', width: '360px', height: '360px', borderRadius: '60px', backgroundColor: 'var(--blue-accent)', opacity: 0.2, top: '200px', left: '25%', transform: 'rotate(25deg)' }} />
+        <div style={{ position: 'absolute', width: '220px', height: '220px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.2, top: '80px', right: '30%' }} />
+        <div style={{ position: 'absolute', width: '160px', height: '160px', borderRadius: '50%', border: '2px solid var(--blue-primary)', opacity: 0.08, top: '320px', left: '12%' }} />
+        <div style={{ position: 'absolute', width: '100px', height: '100px', borderRadius: '20px', backgroundColor: 'var(--green-soft)', opacity: 0.18, bottom: '30%', right: '15%', transform: 'rotate(15deg)' }} />
+      </div>
 
       {/* Hero */}
-      <section style={{ maxWidth: '1100px', margin: '0 auto', padding: '60px 32px 48px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'center' }}>
+      <section style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '72px 56px 60px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '3rem', fontWeight: 300, lineHeight: 1.25, marginBottom: '24px', fontFamily: 'Georgia, serif', whiteSpace: 'pre-line' }}>
+          <h1 style={{ fontSize: '3.4rem', fontWeight: 300, lineHeight: 1.2, marginBottom: '24px', fontFamily: 'Georgia, serif', whiteSpace: 'pre-line' }}>
             {t.home.heroTitle}
           </h1>
-          <p style={{ fontSize: '1.05rem', fontWeight: 300, lineHeight: 1.85, color: '#4A6070', marginBottom: '36px', fontFamily: 'Georgia, serif' }}>
+          <p style={{ fontSize: '1.1rem', fontWeight: 300, lineHeight: 1.9, color: '#4A6070', marginBottom: '40px', fontFamily: 'Georgia, serif' }}>
             {t.home.heroSubtitle}
           </p>
           <Link
             href="/therapists"
             style={{
               display: 'inline-block',
-              padding: '14px 32px',
+              padding: '15px 38px',
               backgroundColor: 'var(--blue-primary)',
               color: 'white',
               borderRadius: '8px',
@@ -130,44 +171,37 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Right: decorative visual */}
-        <div style={{ position: 'relative', height: '360px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ position: 'absolute', width: '200px', height: '200px', borderRadius: '50%', backgroundColor: 'var(--blue-accent)', opacity: 0.6, top: '30px', right: '60px' }} />
-          <div style={{ position: 'absolute', width: '140px', height: '140px', borderRadius: '24px', backgroundColor: 'var(--blue-accent)', opacity: 0.4, bottom: '40px', left: '40px', transform: 'rotate(15deg)' }} />
-          <div style={{ position: 'absolute', width: '80px', height: '80px', borderRadius: '50%', border: '2px solid var(--blue-primary)', opacity: 0.2, top: '60px', left: '80px' }} />
-          <div style={{ position: 'relative', zIndex: 1, width: '160px', height: '180px' }}>
+        {/* Right: tree visual */}
+        <div style={{ position: 'relative', height: '380px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ position: 'relative', zIndex: 1, width: '180px', height: '210px' }}>
             <TreeOfLife />
           </div>
-          <div style={{ position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', fontFamily: 'Georgia, serif', fontSize: '1.1rem', letterSpacing: '0.25em', color: 'var(--blue-primary)', opacity: 0.7, whiteSpace: 'nowrap' }}>
+          <div style={{ position: 'absolute', bottom: '24px', left: '50%', transform: 'translateX(-50%)', fontFamily: 'Georgia, serif', fontSize: '1.1rem', letterSpacing: '0.3em', color: 'var(--blue-primary)', opacity: 0.55, whiteSpace: 'nowrap' }}>
             RESPIRE
           </div>
         </div>
       </section>
 
       {/* Divider */}
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 32px' }}>
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '0 56px' }}>
         <hr style={{ borderColor: 'var(--border)' }} />
       </div>
 
       {/* How it works */}
-      <section style={{ maxWidth: '1100px', margin: '0 auto', padding: '56px 32px 80px' }}>
-        <h2 style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--blue-primary)', marginBottom: '48px', fontFamily: 'Georgia, serif' }}>
+      <section style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '72px 56px 100px' }}>
+        <h2 style={{ fontSize: '3rem', fontWeight: 300, color: 'var(--text)', marginBottom: '72px', fontFamily: 'Georgia, serif' }}>
           {t.home.howItWorks}
         </h2>
-        <div style={{ position: 'relative' }}>
-          <div style={{ position: 'absolute', width: '300px', height: '300px', borderRadius: '50%', backgroundColor: 'var(--blue-accent)', opacity: 0.35, top: '-40px', left: '-60px', zIndex: 0, pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', width: '200px', height: '200px', borderRadius: '50%', backgroundColor: 'var(--blue-accent)', opacity: 0.25, bottom: '-20px', right: '-40px', zIndex: 0, pointerEvents: 'none' }} />
-          <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', perspective: '1000px' }}>
-            <StepBubble number="01" title={t.home.step1Title} body={t.home.step1Body} />
-            <StepBubble number="02" title={t.home.step2Title} body={t.home.step2Body} />
-            <StepBubble number="03" title={t.home.step3Title} body={t.home.step3Body} />
-          </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', perspective: '1000px' }}>
+          <StepBubble number="1" title={t.home.step1Title} body={t.home.step1Body} />
+          <StepBubble number="2" title={t.home.step2Title} body={t.home.step2Body} numColor="var(--green-primary)" />
+          <StepBubble number="3" title={t.home.step3Title} body={t.home.step3Body} />
         </div>
       </section>
 
       {/* Footer */}
-      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'white' }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '28px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', color: '#4A6070', fontFamily: 'Georgia, serif' }}>
+      <footer style={{ position: 'relative', zIndex: 1, borderTop: '1px solid var(--border)', backgroundColor: 'white' }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '28px 56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', color: '#4A6070', fontFamily: 'Georgia, serif' }}>
           <span>© 2026 Respire</span>
           <div style={{ display: 'flex', gap: '24px' }}>
             <Link href="/privacy" style={{ color: '#4A6070', textDecoration: 'none' }}>{t.footer.privacy}</Link>
