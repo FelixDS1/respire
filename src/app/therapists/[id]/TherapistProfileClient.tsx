@@ -94,7 +94,7 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
   return (
     <main className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
 
-      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '48px 32px' }}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '48px 56px' }}>
 
         {/* Top section: large photo + info side by side */}
         <div style={{ display: 'flex', gap: '48px', alignItems: 'flex-start', marginBottom: '40px' }}>
@@ -361,7 +361,7 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
       </div>
 
       <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'white', marginTop: '4rem' }}>
-        <div className="max-w-5xl mx-auto px-6 py-8 flex justify-between items-center text-sm" style={{ color: '#4A6070' }}>
+        <div className="max-w-[1400px] mx-auto px-14 py-8 flex justify-between items-center text-sm" style={{ color: '#4A6070' }}>
           <span>© 2026 Respire</span>
           <div className="flex gap-6">
             <Link href="/privacy" className="hover:opacity-70 transition-opacity">{t.footer.privacy}</Link>

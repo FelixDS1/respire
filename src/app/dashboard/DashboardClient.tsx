@@ -426,7 +426,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
   return (
     <main className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
-      <div className="max-w-6xl mx-auto px-6 py-12">
+      <div className="max-w-[1400px] mx-auto px-14 py-12">
 
         <h1 className="text-2xl font-light mb-1" style={{ color: 'var(--text)' }}>
           Tableau de bord

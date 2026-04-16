@@ -349,7 +349,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
 
   return (
     <main className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
-      <div className="max-w-4xl mx-auto px-6 py-8">
+      <div className="max-w-[1400px] mx-auto px-14 py-8">
 
         <div className="flex justify-between items-start mb-6">
           <div>

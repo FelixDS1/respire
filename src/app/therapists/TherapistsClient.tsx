@@ -63,7 +63,7 @@ export default function TherapistsClient({ therapists }: { therapists: Therapist
   return (
     <main className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
 
-      <div className="max-w-5xl mx-auto px-6 py-12">
+      <div className="max-w-[1400px] mx-auto px-14 py-12">
         <h1 className="text-3xl font-light mb-2" style={{ color: 'var(--text)' }}>
           {t.therapists.title}
         </h1>
@@ -72,12 +72,12 @@ export default function TherapistsClient({ therapists }: { therapists: Therapist
         </p>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6">
+      <div className="max-w-[1400px] mx-auto px-14">
         <hr style={{ borderColor: 'var(--border)' }} />
       </div>
 
       {/* Filter bar */}
-      <div className="max-w-5xl mx-auto px-6 py-6">
+      <div className="max-w-[1400px] mx-auto px-14 py-6">
         {/* Quick filters */}
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '16px' }}>
           <select
@@ -165,7 +165,7 @@ export default function TherapistsClient({ therapists }: { therapists: Therapist
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 pb-12">
+      <div className="max-w-[1400px] mx-auto px-14 pb-12">
         {filtered.length === 0 ? (
           <p className="text-sm" style={{ color: '#4A6070' }}>
             {filters.length > 0
@@ -258,7 +258,7 @@ export default function TherapistsClient({ therapists }: { therapists: Therapist
       </div>
 
       <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'white', marginTop: '4rem' }}>
-        <div className="max-w-5xl mx-auto px-6 py-8 flex justify-between items-center text-sm" style={{ color: '#4A6070' }}>
+        <div className="max-w-[1400px] mx-auto px-14 py-8 flex justify-between items-center text-sm" style={{ color: '#4A6070' }}>
           <span>© 2026 Respire</span>
           <div className="flex gap-6">
             <Link href="/about" className="hover:opacity-70 transition-opacity">{lang === 'fr' ? 'Nous contacter' : 'Contact us'}</Link>

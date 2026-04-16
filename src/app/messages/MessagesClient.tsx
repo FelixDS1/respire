@@ -306,7 +306,7 @@ export default function MessagesClient({
     >
       {/* Page heading */}
       <div style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'white' }}>
-        <div className="max-w-5xl mx-auto px-6 py-5">
+        <div className="max-w-[1400px] mx-auto px-14 py-5">
           <h1 style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--text)', fontFamily: 'Georgia, serif' }}>
             {lang === 'en' ? 'Messages' : 'Messages'}
           </h1>
@@ -314,7 +314,7 @@ export default function MessagesClient({
       </div>
 
       {/* PREMIUM — Main messaging layout */}
-      <div className="max-w-5xl mx-auto w-full px-6 py-8 flex-1 flex gap-0" style={{ minHeight: 0 }}>
+      <div className="max-w-[1400px] mx-auto w-full px-14 py-8 flex-1 flex gap-0" style={{ minHeight: 0 }}>
         <div
           className="flex flex-1 overflow-hidden"
           style={{
@@ -551,7 +551,7 @@ export default function MessagesClient({
       {/* Footer */}
       <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'white' }}>
         <div
-          className="max-w-5xl mx-auto px-6 py-8 flex justify-between items-center text-sm"
+          className="max-w-[1400px] mx-auto px-14 py-8 flex justify-between items-center text-sm"
           style={{ color: '#4A6070' }}
         >
           <span>© 2026 Respire</span>
