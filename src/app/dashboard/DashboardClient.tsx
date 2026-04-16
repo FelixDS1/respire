@@ -513,7 +513,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                 marginBottom: '-1px',
               }}
             >
-              {t === 'profile' ? (lang === 'fr' ? 'Mon profil' : 'My profile') : t === 'availability' ? (lang === 'fr' ? 'Disponibilités' : 'Availability') : t === 'appointments' ? (lang === 'fr' ? 'Rendez-vous' : 'Appointments') : t === 'calendar' ? (lang === 'fr' ? 'Calendrier' : 'Calendar') : lang === 'fr' ? 'Revenus' : 'Revenue'}
+              {t === 'profile' ? (lang === 'fr' ? 'Mon profil' : 'My profile') : t === 'availability' ? (lang === 'fr' ? 'Mes disponibilités' : 'My availability') : t === 'appointments' ? (lang === 'fr' ? 'Mes rendez-vous' : 'My appointments') : t === 'calendar' ? (lang === 'fr' ? 'Mon calendrier' : 'My calendar') : lang === 'fr' ? 'Mes revenus' : 'My revenue'}
             </button>
           ))}
         </div>
@@ -1057,10 +1057,12 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
         {tab === 'calendar' && (
           <CalendarTab
             slots={slots}
+            appointments={appointments}
             scheduleStart={scheduleStart}
             scheduleEnd={scheduleEnd}
             sessionDuration={sessionDuration}
             bufferMinutes={bufferMinutes}
+            lang={lang}
           />
         )}
 
@@ -1165,6 +1167,42 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                 </div>
               </div>
 
+              {/* Per-patient breakdown */}
+              {completedAll.length > 0 && (() => {
+                const byPatient: Record<string, { name: string; count: number; total: number }> = {}
+                for (const appt of completedAll) {
+                  const name = appt.profiles?.full_name ?? (lang === 'fr' ? 'Membre' : 'Member')
+                  if (!byPatient[name]) byPatient[name] = { name, count: 0, total: 0 }
+                  byPatient[name].count++
+                  byPatient[name].total += fee
+                }
+                const patientList = Object.values(byPatient).sort((a, b) => b.total - a.total)
+                const maxTotal = patientList[0]?.total ?? 1
+                return (
+                  <div style={{ ...cardStyle, marginBottom: '16px' }}>
+                    <p style={{ fontSize: '13px', marginBottom: '16px', color: 'var(--text)', fontFamily: 'Georgia, serif' }}>
+                      {lang === 'fr' ? 'Répartition par patient' : 'By patient'}
+                    </p>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {patientList.map(p => (
+                        <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <span style={{ minWidth: '140px', fontSize: '13px', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
+                          <div style={{ flex: 1, height: '6px', backgroundColor: 'var(--blue-accent)', borderRadius: '3px', overflow: 'hidden' }}>
+                            <div style={{ width: `${(p.total / maxTotal) * 100}%`, height: '100%', backgroundColor: 'var(--blue-primary)', borderRadius: '3px', transition: 'width 0.4s ease' }} />
+                          </div>
+                          <span style={{ minWidth: '52px', textAlign: 'right', fontSize: '13px', color: '#4A6070', fontFamily: 'Georgia, serif' }}>
+                            {p.total.toLocaleString('fr-FR')} €
+                          </span>
+                          <span style={{ minWidth: '28px', textAlign: 'right', fontSize: '11px', color: '#8A9BAD' }}>
+                            ×{p.count}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })()}
+
               {/* Recent completed sessions table */}
               <div style={cardStyle}>
                 <p className="text-sm mb-4" style={{ color: 'var(--text)', fontFamily: 'Georgia, serif', fontWeight: 400 }}>
@@ -1219,12 +1257,14 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
   )
 }
 
-function CalendarTab({ slots, scheduleStart, scheduleEnd, sessionDuration, bufferMinutes }: {
+function CalendarTab({ slots, appointments, scheduleStart, scheduleEnd, sessionDuration, bufferMinutes, lang }: {
   slots: Slot[]
+  appointments: Appointment[]
   scheduleStart: string
   scheduleEnd: string
   sessionDuration: number
   bufferMinutes: number
+  lang: string
 }) {
   const [weekOffset, setWeekOffset] = useState(0)
 
@@ -1359,20 +1399,27 @@ function CalendarTab({ slots, scheduleStart, scheduleEnd, sessionDuration, buffe
                       height: '42px',
                       padding: '3px',
                     }}>
-                      {isBooked && (
-                        <div style={{
-                          height: '100%',
-                          backgroundColor: blue,
-                          borderRadius: '2px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}>
-                          <span style={{ fontSize: '0.6rem', color: 'white', letterSpacing: '0.02em' }}>
-                            Réservé
-                          </span>
-                        </div>
-                      )}
+                      {isBooked && (() => {
+                        const apptId = slot?.appointments?.[0]?.id
+                        const appt = apptId ? appointments.find(a => a.id === apptId) : null
+                        const fullName = appt?.profiles?.full_name ?? ''
+                        const firstName = fullName.split(' ')[0] || (lang === 'fr' ? 'Réservé' : 'Booked')
+                        return (
+                          <div style={{
+                            height: '100%',
+                            backgroundColor: blue,
+                            borderRadius: '2px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            padding: '0 4px',
+                            overflow: 'hidden',
+                          }}>
+                            <span style={{ fontSize: '0.55rem', color: 'white', letterSpacing: '0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {firstName}
+                            </span>
+                          </div>
+                        )
+                      })()}
                     </div>
                   )
                 })}

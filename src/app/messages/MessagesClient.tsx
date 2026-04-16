@@ -41,6 +41,31 @@ function formatTime(iso: string): string {
   return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
 }
 
+function initials(name: string): string {
+  const parts = name.trim().split(' ').filter(Boolean)
+  if (parts.length === 0) return '?'
+  if (parts.length === 1) return parts[0][0].toUpperCase()
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+}
+
+function Avatar({ name, size = 36 }: { name: string; size?: number }) {
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: '50%',
+      backgroundColor: 'var(--blue-accent)',
+      border: '1px solid var(--border)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      flexShrink: 0,
+      fontSize: size * 0.36,
+      fontWeight: 500,
+      color: 'var(--blue-primary)',
+      letterSpacing: '0.02em',
+    }}>
+      {initials(name)}
+    </div>
+  )
+}
+
 function formatFullTime(iso: string): string {
   return new Date(iso).toLocaleTimeString('fr-FR', {
     hour: '2-digit',
@@ -279,25 +304,12 @@ export default function MessagesClient({
       className="min-h-screen flex flex-col"
       style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}
     >
-      {/* PREMIUM — Page heading */}
-      <div
-        style={{
-          borderBottom: '1px solid var(--border)',
-          backgroundColor: 'white',
-        }}
-      >
-        <div className="max-w-5xl mx-auto px-6 py-6">
-          <h1
-            className="text-2xl font-light"
-            style={{ color: 'var(--text)' }}
-          >
+      {/* Page heading */}
+      <div style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'white' }}>
+        <div className="max-w-5xl mx-auto px-6 py-5">
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--text)', fontFamily: 'Georgia, serif' }}>
             {lang === 'en' ? 'Messages' : 'Messages'}
           </h1>
-          <p className="text-sm mt-1" style={{ color: '#4A6070' }}>
-            {lang === 'en'
-              ? 'Secure, private communication with your therapist or patients.'
-              : 'Communication sécurisée et privée avec votre thérapeute ou vos patients.'}
-          </p>
         </div>
       </div>
 
@@ -333,10 +345,7 @@ export default function MessagesClient({
             </div>
 
             {conversations.length === 0 ? (
-              <div
-                className="px-4 py-6 text-sm text-center"
-                style={{ color: '#4A6070' }}
-              >
+              <div className="px-4 py-8 text-sm text-center" style={{ color: '#9EB3C2' }}>
                 {noConversations}
               </div>
             ) : (
@@ -346,51 +355,52 @@ export default function MessagesClient({
                   <button
                     key={conv.other_user_id}
                     onClick={() => selectConversation(conv.other_user_id)}
-                    className="w-full text-left px-4 py-3 transition-colors"
+                    className="w-full text-left transition-colors"
                     style={{
-                      backgroundColor: isActive ? 'var(--blue-accent)' : 'transparent',
+                      backgroundColor: isActive ? 'var(--blue-accent)' : 'white',
                       cursor: 'pointer',
-                      display: 'block',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '12px 16px',
                       border: 'none',
                       borderBottom: '1px solid var(--border)',
                     }}
                   >
-                    <div className="flex justify-between items-center mb-1">
-                      <span
-                        className="text-sm font-normal truncate"
-                        style={{
+                    <Avatar name={conv.other_user_name} size={38} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
+                        <span style={{
+                          fontSize: '0.875rem',
+                          fontWeight: conv.unread_count > 0 ? 600 : 400,
                           color: isActive ? 'var(--blue-primary)' : 'var(--text)',
-                          maxWidth: '160px',
-                        }}
-                      >
-                        {conv.other_user_name}
-                      </span>
-                      <span className="text-xs" style={{ color: '#9EB3C2', flexShrink: 0 }}>
-                        {formatTime(conv.last_message_at)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span
-                        className="text-xs truncate"
-                        style={{ color: '#4A6070', maxWidth: '170px' }}
-                      >
-                        {conv.last_message}
-                      </span>
-                      {conv.unread_count > 0 && (
-                        <span
-                          className="text-xs px-1.5 py-0.5 ml-1"
-                          style={{
-                            backgroundColor: 'var(--blue-primary)',
-                            color: 'white',
-                            borderRadius: '10px',
-                            minWidth: '18px',
-                            textAlign: 'center',
-                            flexShrink: 0,
-                          }}
-                        >
-                          {conv.unread_count}
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          maxWidth: '130px',
+                        }}>
+                          {conv.other_user_name}
                         </span>
-                      )}
+                        <span style={{ fontSize: '0.7rem', color: '#9EB3C2', flexShrink: 0 }}>
+                          {formatTime(conv.last_message_at)}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{
+                          fontSize: '0.78rem', color: conv.unread_count > 0 ? 'var(--text)' : '#8A9BAD',
+                          fontWeight: conv.unread_count > 0 ? 500 : 400,
+                          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '150px',
+                        }}>
+                          {conv.last_message || '—'}
+                        </span>
+                        {conv.unread_count > 0 && (
+                          <span style={{
+                            backgroundColor: 'var(--blue-primary)', color: 'white',
+                            borderRadius: '10px', fontSize: '0.65rem', lineHeight: 1,
+                            padding: '2px 6px', minWidth: '18px', textAlign: 'center', flexShrink: 0,
+                          }}>
+                            {conv.unread_count}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </button>
                 )
@@ -404,17 +414,17 @@ export default function MessagesClient({
             {selectedConversation ? (
               <>
                 <div
-                  className="px-6 py-3 flex items-center"
-                  style={{ borderBottom: '1px solid var(--border)', flexShrink: 0 }}
+                  style={{ borderBottom: '1px solid var(--border)', flexShrink: 0, padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '12px' }}
                 >
+                  <Avatar name={selectedConversation.other_user_name} size={36} />
                   <div>
-                    <div className="text-sm font-normal" style={{ color: 'var(--text)' }}>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--text)' }}>
                       {selectedConversation.other_user_name}
                     </div>
-                    <div className="text-xs" style={{ color: '#9EB3C2' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#9EB3C2', marginTop: '1px' }}>
                       {currentUserRole === 'therapist'
-                        ? lang === 'en' ? 'Patient' : 'Patient'
-                        : lang === 'en' ? 'Therapist' : 'Thérapeute'}
+                        ? (lang === 'en' ? 'Patient' : 'Patient')
+                        : (lang === 'en' ? 'Therapist' : 'Thérapeute')}
                     </div>
                   </div>
                 </div>
@@ -501,20 +511,26 @@ export default function MessagesClient({
                   <button
                     onClick={sendMessage}
                     disabled={sending || !input.trim()}
+                    title={lang === 'en' ? 'Send' : 'Envoyer'}
                     style={{
                       backgroundColor: 'var(--blue-primary)',
                       color: 'white',
                       border: 'none',
-                      padding: '10px 20px',
-                      fontSize: '13px',
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                       cursor: sending || !input.trim() ? 'not-allowed' : 'pointer',
-                      opacity: sending || !input.trim() ? 0.5 : 1,
+                      opacity: sending || !input.trim() ? 0.4 : 1,
                       transition: 'opacity 0.15s',
                       flexShrink: 0,
-                      fontFamily: 'Georgia, serif',
                     }}
                   >
-                    {lang === 'en' ? 'Send' : 'Envoyer'}
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M2 8h12M10 4l6 4-6 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </button>
                 </div>
               </>

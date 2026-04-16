@@ -360,8 +360,12 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
           </div>
           <Link
             href="/therapists"
-            className="text-sm transition-opacity hover:opacity-70"
-            style={{ color: 'var(--blue-primary)', border: '1px solid var(--blue-primary)', padding: '6px 16px', whiteSpace: 'nowrap' }}
+            className="transition-opacity hover:opacity-80"
+            style={{
+              backgroundColor: 'var(--blue-primary)', color: 'white',
+              padding: '10px 22px', fontSize: '0.9rem', whiteSpace: 'nowrap',
+              borderRadius: '6px', textDecoration: 'none', display: 'inline-block',
+            }}
           >
             {lang === 'fr' ? 'Prendre un rendez-vous' : 'Book a session'}
           </Link>
@@ -440,10 +444,19 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                 {/* Streak indicator */}
                 {streakFrequency && (
                   <div style={{ paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
-                    <p style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#8A9BAD', marginBottom: '6px' }}>
+                    <p style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#8A9BAD', marginBottom: '10px' }}>
                       {lang === 'fr' ? 'Suivi' : 'Streak'}
                     </p>
-                    <p style={{ fontSize: '2rem', fontWeight: 300, color: 'var(--blue-primary)', lineHeight: 1 }}>
+                    {/* Visual circles */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '8px' }}>
+                      {Array.from({ length: Math.min(streakCount, 16) }, (_, i) => (
+                        <span key={i} style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: 'var(--blue-primary)', display: 'inline-block', flexShrink: 0 }} />
+                      ))}
+                      {Array.from({ length: Math.max(0, Math.min(16, 16) - Math.min(streakCount, 16)) }, (_, i) => (
+                        <span key={`e${i}`} style={{ width: '9px', height: '9px', borderRadius: '50%', border: '1px solid var(--border)', display: 'inline-block', flexShrink: 0 }} />
+                      ))}
+                    </div>
+                    <p style={{ fontSize: '1.6rem', fontWeight: 300, color: 'var(--blue-primary)', lineHeight: 1 }}>
                       {streakCount}
                     </p>
                     <p style={{ fontSize: '0.65rem', color: '#4A6070', marginTop: '4px', lineHeight: 1.4 }}>
