@@ -349,9 +349,9 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
 
   return (
     <main className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
-      <div className="max-w-4xl mx-auto px-6 py-12">
+      <div className="max-w-4xl mx-auto px-6 py-8">
 
-        <div className="flex justify-between items-start mb-8">
+        <div className="flex justify-between items-start mb-6">
           <div>
             <h1 className="text-2xl font-light mb-1" style={{ color: 'var(--text)' }}>
               {lang === 'en' ? 'My profile' : 'Mon profil'}
@@ -372,7 +372,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
         </div>
 
         {/* Tabs */}
-        <div className="flex mb-8" style={{ borderBottom: '1px solid var(--border)' }}>
+        <div className="flex mb-6" style={{ borderBottom: '1px solid var(--border)' }}>
           {tabs.map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
               className="px-6 py-3 text-sm transition-colors"
@@ -389,7 +389,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
         {/* Profile tab */}
         {tab === 'profile' && (
           <div>
-            <div className="flex gap-8">
+            <div className="flex gap-6">
 
               {/* Left: portrait photo + name + streak */}
               <div style={{ width: '190px', flexShrink: 0 }}>
@@ -403,6 +403,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                     cursor: 'pointer', position: 'relative',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     border: '1px solid var(--border)',
+                    borderRadius: '8px', overflow: 'hidden',
                   }}
                 >
                   {!photoPreview && (
@@ -551,12 +552,12 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
             </div>
 
             {/* Account deletion */}
-            <div style={{ marginTop: '48px', paddingTop: '24px', borderTop: '1px solid var(--border)' }}>
+            <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>
               {!showDeleteConfirm ? (
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
                   className="text-sm hover:opacity-70 transition-opacity"
-                  style={{ color: '#C0392B', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  style={{ color: '#8A9BAD', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                 >
                   {lang === 'fr' ? 'Supprimer mon compte' : 'Delete my account'}
                 </button>
@@ -572,7 +573,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                       onClick={deleteAccount}
                       disabled={deleting}
                       className="px-6 py-2 text-white text-sm transition-opacity hover:opacity-80 disabled:opacity-50"
-                      style={{ backgroundColor: '#C0392B', cursor: 'pointer' }}
+                      style={{ backgroundColor: '#8A9BAD', cursor: 'pointer', borderRadius: '6px' }}
                     >
                       {deleting
                         ? (lang === 'fr' ? 'Suppression...' : 'Deleting...')
@@ -611,7 +612,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                   const confirming = cancelConfirmId === appt.id
                   return (
                     <div key={appt.id} className="bg-white px-6 py-5"
-                      style={{ border: '1px solid var(--border)' }}>
+                      style={{ border: '1px solid var(--border)', borderRadius: '8px' }}>
                       <div className="flex justify-between items-start">
                         <div>
                           {appt.availability && (

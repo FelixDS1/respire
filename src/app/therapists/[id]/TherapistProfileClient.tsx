@@ -98,7 +98,7 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
 
         {/* Top section: large photo + info side by side */}
         <div style={{ display: 'flex', gap: '48px', alignItems: 'flex-start', marginBottom: '40px' }}>
-          <div style={{ flexShrink: 0, width: '240px', height: '280px', backgroundColor: 'var(--blue-accent)', border: '1px solid var(--border)' }}>
+          <div style={{ flexShrink: 0, width: '240px', height: '280px', backgroundColor: 'var(--blue-accent)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden' }}>
             {therapist.photo_url && (
               <img
                 src={therapist.photo_url}

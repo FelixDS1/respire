@@ -449,7 +449,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
           const allDone = checks.every(c => c.done)
           if (allDone) return null
           return (
-            <div className="mb-8 p-5" style={{ border: '1px solid var(--border)', backgroundColor: 'white' }}>
+            <div className="mb-8 p-5" style={{ border: '1px solid var(--border)', backgroundColor: 'white', borderRadius: '8px' }}>
               <p className="text-sm font-medium mb-1" style={{ color: 'var(--text)' }}>
                 Avant d'apparaître dans l'annuaire
               </p>
@@ -474,7 +474,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
         {/* Stripe Connect card */}
         {!stripeComplete && (
-          <div className="mb-8 p-5" style={{ border: '1px solid var(--border)', backgroundColor: 'white' }}>
+          <div className="mb-8 p-5" style={{ border: '1px solid var(--border)', backgroundColor: 'white', borderRadius: '8px' }}>
             <p className="text-sm font-medium mb-1" style={{ color: 'var(--text)' }}>
               Recevoir des paiements
             </p>
@@ -537,6 +537,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                     cursor: 'pointer', position: 'relative',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     border: '1px solid var(--border)',
+                    borderRadius: '8px', overflow: 'hidden',
                   }}
                 >
                   {!avatarUrl && !avatarUploading && (
@@ -759,7 +760,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
             {/* Schedule editor + blocks + slots */}
             <div className="flex-1 min-w-0">
             {/* Schedule editor */}
-            <div className="bg-white p-6 mb-6" style={{ border: '1px solid var(--border)' }}>
+            <div className="bg-white p-6 mb-6" style={{ border: '1px solid var(--border)', borderRadius: '8px' }}>
               <h2 className="text-xs uppercase tracking-widest mb-5" style={{ color: 'var(--blue-primary)' }}>
                 Mes horaires de travail
               </h2>
@@ -884,7 +885,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
             </div>
 
             {/* One-off time blocks */}
-            <div className="bg-white p-6 mb-6" style={{ border: '1px solid var(--border)' }}>
+            <div className="bg-white p-6 mb-6" style={{ border: '1px solid var(--border)', borderRadius: '8px' }}>
               <h2 className="text-xs uppercase tracking-widest mb-1" style={{ color: 'var(--blue-primary)' }}>
                 Bloquer une plage horaire
               </h2>
@@ -966,7 +967,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
               const past = isPastAppointment(appt)
               return (
                 <div key={appt.id} className="bg-white px-5 py-4"
-                  style={{ border: '1px solid var(--border)' }}>
+                  style={{ border: '1px solid var(--border)', borderRadius: '8px' }}>
                   <div className="flex justify-between items-start mb-0">
                     <div>
                       <p className="text-sm font-medium mb-1" style={{ color: 'var(--text)' }}>
@@ -1103,6 +1104,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
             border: '1px solid var(--border)',
             backgroundColor: 'white',
             padding: '20px 24px',
+            borderRadius: '8px',
           }
 
           const labelStyle: React.CSSProperties = {

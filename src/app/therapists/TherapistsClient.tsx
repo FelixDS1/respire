@@ -181,13 +181,13 @@ export default function TherapistsClient({ therapists }: { therapists: Therapist
                   key={therapist.id}
                   href={`/therapists/${therapist.id}`}
                   className="block bg-white p-6 transition-shadow hover:shadow-sm"
-                  style={{ border: '1px solid var(--border)', textDecoration: 'none' }}
+                  style={{ border: '1px solid var(--border)', textDecoration: 'none', borderRadius: '8px' }}
                 >
                   <div className="flex gap-6 items-start">
 
                     <div
                       className="flex-shrink-0 w-20 h-20"
-                      style={{ backgroundColor: 'var(--blue-accent)', border: '1px solid var(--border)' }}
+                      style={{ backgroundColor: 'var(--blue-accent)', border: '1px solid var(--border)', borderRadius: '6px', overflow: 'hidden' }}
                     >
                       {therapist.photo_url && (
                         <img
