@@ -4,97 +4,64 @@ import { useRef, useState } from 'react'
 import Link from 'next/link'
 import { useLanguage } from '@/lib/language'
 
-function Leaves({ cx, cy, s = 1 }: { cx: number, cy: number, s?: number }) {
-  const config = [
-    { a: -38, d: 7.5, op: 0.42 },
-    { a: -16, d: 8.5, op: 0.50 },
-    { a:   4, d: 9,   op: 0.55 },
-    { a:  24, d: 8.5, op: 0.50 },
-    { a:  44, d: 7.5, op: 0.42 },
-  ]
+const LILY_PINK = '#C4849A'
+
+function Lily() {
+  const blue = 'var(--blue-primary)'
+  const pink = LILY_PINK
+  const cx = 60, cy = 62
+
+  // Lance-shaped petal pointing straight up from center
+  const petalPath = 'M 60,62 C 52,60 47,48 47,36 C 47,24 53,16 60,14 C 67,16 73,24 73,36 C 73,48 68,60 60,62 Z'
+  const midribPath = 'M 60,62 L 60,16'
+
   return (
-    <>
-      {config.map(({ a, d, op }, i) => {
-        const rad = a * Math.PI / 180
-        const ex = cx + Math.sin(rad) * d * s
-        const ey = cy - Math.cos(rad) * d * s
+    <svg viewBox="0 0 120 145" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%' }}>
+
+      {/* Stem */}
+      <path d="M 60,68 C 59,86 59,108 60,138" stroke={blue} strokeWidth="1.5" strokeLinecap="round" opacity="0.46"/>
+
+      {/* Narrow lance leaves along stem */}
+      <path d="M 60,97 C 51,93 40,90 28,88" stroke={blue} strokeWidth="0.9" strokeLinecap="round" fill="none" opacity="0.32"/>
+      <path d="M 60,113 C 69,108 80,104 91,101" stroke={blue} strokeWidth="0.9" strokeLinecap="round" fill="none" opacity="0.32"/>
+
+      {/* Back petals — alternate triplet (slightly less opaque) */}
+      {[0, 120, 240].map(angle => (
+        <g key={`b${angle}`} transform={`rotate(${angle}, ${cx}, ${cy})`}>
+          <path d={petalPath} fill="white" fillOpacity="0.74" stroke={blue} strokeWidth="0.75" opacity="0.48"/>
+          <path d={midribPath} stroke={blue} strokeWidth="0.38" strokeLinecap="round" opacity="0.13"/>
+        </g>
+      ))}
+
+      {/* Front petals — alternate triplet */}
+      {[60, 180, 300].map(angle => (
+        <g key={`f${angle}`} transform={`rotate(${angle}, ${cx}, ${cy})`}>
+          <path d={petalPath} fill="white" fillOpacity="0.80" stroke={blue} strokeWidth="0.80" opacity="0.54"/>
+          <path d={midribPath} stroke={blue} strokeWidth="0.38" strokeLinecap="round" opacity="0.17"/>
+        </g>
+      ))}
+
+      {/* Faint pink glow at heart — innermost to outermost */}
+      <circle cx={cx} cy={cy} r="18" fill={pink} opacity="0.09"/>
+      <circle cx={cx} cy={cy} r="11" fill={pink} opacity="0.15"/>
+      <circle cx={cx} cy={cy} r="5.5" fill={pink} opacity="0.26"/>
+
+      {/* 6 stamens — thin filaments with elongated anthers */}
+      {[0, 60, 120, 180, 240, 300].map((angle, i) => {
+        const rad = angle * Math.PI / 180
+        const ex = cx + Math.sin(rad) * 18
+        const ey = cy - Math.cos(rad) * 18
         return (
-          <ellipse
-            key={i}
-            cx={ex} cy={ey}
-            rx={3.2 * s} ry={5.8 * s}
-            fill="var(--blue-primary)"
-            opacity={op}
-            transform={`rotate(${a}, ${ex}, ${ey})`}
-          />
+          <g key={`s${i}`}>
+            <line x1={cx} y1={cy} x2={ex} y2={ey} stroke={pink} strokeWidth="0.55" opacity="0.48" strokeLinecap="round"/>
+            <ellipse cx={ex} cy={ey} rx="1" ry="1.8" fill={pink} opacity="0.58" transform={`rotate(${angle}, ${ex}, ${ey})`}/>
+          </g>
         )
       })}
-    </>
-  )
-}
 
-function TreeOfLife() {
-  const C = 'var(--blue-primary)'
-  return (
-    <svg viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: '100%', height: '100%' }}>
-
-      {/* Trunk — filled, tapered organic shape */}
-      <path
-        d="M56 138 C54 124 53 110 55 98 C57 91 59 88 60 85 C61 88 63 91 65 98 C67 110 66 124 64 138 Z"
-        fill={C} opacity="0.62"
-      />
-
-      {/* Roots */}
-      <path d="M57 133 Q47 137 36 139" stroke={C} strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.28"/>
-      <path d="M63 133 Q73 137 84 139" stroke={C} strokeWidth="2" strokeLinecap="round" fill="none" opacity="0.28"/>
-      <path d="M60 136 Q55 139 50 140" stroke={C} strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.18"/>
-      <path d="M60 136 Q65 139 70 140" stroke={C} strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.18"/>
-
-      {/* Main branches */}
-      <path d="M59 88 Q40 77 18 54" stroke={C} strokeWidth="2.8" strokeLinecap="round" fill="none" opacity="0.55"/>
-      <path d="M60 87 Q51 69 40 40" stroke={C} strokeWidth="2.2" strokeLinecap="round" fill="none" opacity="0.50"/>
-      <path d="M60 85 Q59 60 60 22" stroke={C} strokeWidth="2.4" strokeLinecap="round" fill="none" opacity="0.53"/>
-      <path d="M60 87 Q69 69 80 40" stroke={C} strokeWidth="2.2" strokeLinecap="round" fill="none" opacity="0.50"/>
-      <path d="M61 88 Q80 77 102 54" stroke={C} strokeWidth="2.8" strokeLinecap="round" fill="none" opacity="0.55"/>
-
-      {/* Secondary — far left */}
-      <path d="M18 54 Q11 43 6 32" stroke={C} strokeWidth="1.6" strokeLinecap="round" fill="none" opacity="0.40"/>
-      <path d="M18 54 Q20 40 23 28" stroke={C} strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.37"/>
-
-      {/* Secondary — left center */}
-      <path d="M40 40 Q33 27 28 18" stroke={C} strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.37"/>
-      <path d="M40 40 Q43 26 45 16" stroke={C} strokeWidth="1.3" strokeLinecap="round" fill="none" opacity="0.34"/>
-
-      {/* Secondary — center */}
-      <path d="M60 22 Q54 14 50 8" stroke={C} strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.32"/>
-      <path d="M60 22 Q66 14 70 8" stroke={C} strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.32"/>
-
-      {/* Secondary — right center */}
-      <path d="M80 40 Q77 26 75 16" stroke={C} strokeWidth="1.3" strokeLinecap="round" fill="none" opacity="0.34"/>
-      <path d="M80 40 Q87 27 92 18" stroke={C} strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.37"/>
-
-      {/* Secondary — far right */}
-      <path d="M102 54 Q100 40 97 28" stroke={C} strokeWidth="1.4" strokeLinecap="round" fill="none" opacity="0.37"/>
-      <path d="M102 54 Q109 43 114 32" stroke={C} strokeWidth="1.6" strokeLinecap="round" fill="none" opacity="0.40"/>
-
-      {/* Leaf clusters at branch tips */}
-      <Leaves cx={6}   cy={32} s={0.90}/>
-      <Leaves cx={23}  cy={28} s={0.82}/>
-      <Leaves cx={28}  cy={18} s={0.88}/>
-      <Leaves cx={45}  cy={16} s={0.82}/>
-      <Leaves cx={50}  cy={8}  s={0.78}/>
-      <Leaves cx={60}  cy={10} s={0.95}/>
-      <Leaves cx={70}  cy={8}  s={0.78}/>
-      <Leaves cx={75}  cy={16} s={0.82}/>
-      <Leaves cx={92}  cy={18} s={0.88}/>
-      <Leaves cx={97}  cy={28} s={0.82}/>
-      <Leaves cx={114} cy={32} s={0.90}/>
-
-      {/* Mid-canopy clusters for fullness */}
-      <Leaves cx={14}  cy={46} s={0.68}/>
-      <Leaves cx={36}  cy={32} s={0.62}/>
-      <Leaves cx={84}  cy={32} s={0.62}/>
-      <Leaves cx={106} cy={46} s={0.68}/>
+      {/* Central pistil */}
+      <circle cx={cx} cy={cy} r="2.8" fill={pink} opacity="0.45"/>
+      <circle cx={cx} cy={cy} r="1.2" fill={pink} opacity="0.65"/>
     </svg>
   )
 }
@@ -208,7 +175,7 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Right: tree visual */}
+        {/* Right: lily illustration */}
         <div style={{ position: 'relative', height: '420px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div
             style={{ position: 'relative', zIndex: 1, width: '340px', height: '400px' }}
@@ -216,7 +183,7 @@ export default function Home() {
             onMouseEnter={() => setTreeHover(true)}
             onMouseLeave={() => setTreeHover(false)}
           >
-            <TreeOfLife />
+            <Lily />
           </div>
           <div style={{ position: 'absolute', bottom: '24px', left: '50%', transform: 'translateX(-50%)', fontFamily: 'Georgia, serif', fontSize: '1.1rem', letterSpacing: '0.3em', color: 'var(--blue-primary)', opacity: 0.55, whiteSpace: 'nowrap' }}>
             RESPIRE
@@ -243,19 +210,19 @@ export default function Home() {
           >
             <path
               d="M 0,65 C 16,65 24,22 47,22 C 70,22 78,65 95,65 L 105,65 C 121,65 129,22 152,22 C 175,22 183,65 200,65 L 210,65 C 226,65 234,22 257,22 C 275,22 285,52 302,50"
-              stroke="var(--blue-primary)"
+              stroke={LILY_PINK}
               strokeWidth="0.8"
               fill="none"
-              opacity="0.22"
+              opacity="0.30"
               strokeLinecap="round"
             />
             {/* Arrowhead */}
             <path
               d="M 297,45 L 304,50 L 297,55"
-              stroke="var(--blue-primary)"
+              stroke={LILY_PINK}
               strokeWidth="0.8"
               fill="none"
-              opacity="0.22"
+              opacity="0.30"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
