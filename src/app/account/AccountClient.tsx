@@ -350,10 +350,10 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
   ]
 
   return (
-    <main className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '32px 56px', flex: 1 }}>
+    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg)', width: '100%' }}>
+      <div style={{ maxWidth: '1400px', width: '100%', margin: '0 auto', padding: '32px 56px', flex: 1, boxSizing: 'border-box' }}>
 
-        <div className="flex justify-between items-start mb-6">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
           <div>
             <h1 className="text-2xl font-light mb-1" style={{ color: 'var(--text)' }}>
               {lang === 'en' ? 'My profile' : 'Mon profil'}
@@ -374,7 +374,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
         </div>
 
         {/* Tabs */}
-        <div className="flex mb-6" style={{ borderBottom: '1px solid var(--border)' }}>
+        <div style={{ display: 'flex', marginBottom: '24px', borderBottom: '1px solid var(--border)' }}>
           {tabs.map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
               className="px-6 py-3 text-sm transition-colors"
@@ -391,7 +391,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
         {/* Profile tab */}
         {tab === 'profile' && (
           <div>
-            <div className="flex gap-6">
+            <div style={{ display: 'flex', gap: '24px' }}>
 
               {/* Left: portrait photo + name + streak */}
               <div style={{ width: '190px', flexShrink: 0 }}>
