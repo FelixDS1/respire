@@ -42,11 +42,10 @@ function TreeOfLife() {
   )
 }
 
-function StepBubble({ number, title, body, numColor }: {
+function StepBubble({ number, title, body }: {
   number: string
   title: string
   body: string
-  numColor?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
 
@@ -71,59 +70,40 @@ function StepBubble({ number, title, body, numColor }: {
   }
 
   return (
-    <div style={{ position: 'relative', paddingTop: '60px' }}>
-      {/* Large ghost number overlapping the card from above */}
+    <div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        backgroundColor: 'white',
+        border: '1px solid var(--border)',
+        borderRadius: '16px',
+        padding: '44px 36px 36px',
+        cursor: 'default',
+        transformStyle: 'preserve-3d',
+        willChange: 'transform',
+        boxShadow: '0 2px 16px rgba(28,43,58,0.07)',
+        height: '100%',
+        boxSizing: 'border-box',
+      }}
+    >
       <span style={{
-        position: 'absolute',
-        top: 0,
-        left: '24px',
-        fontSize: '8.5rem',
+        fontSize: '3.2rem',
         fontWeight: 300,
-        lineHeight: 1,
-        color: numColor ?? 'var(--blue-primary)',
+        color: 'var(--blue-primary)',
         fontFamily: 'Georgia, serif',
-        opacity: 0.14,
-        zIndex: 2,
-        pointerEvents: 'none',
-        userSelect: 'none',
+        display: 'block',
+        marginBottom: '16px',
+        lineHeight: 1,
       }}>
         {number}
       </span>
-      <div
-        ref={ref}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          backgroundColor: 'white',
-          border: '1px solid var(--border)',
-          borderRadius: '16px',
-          padding: '44px 36px 36px',
-          cursor: 'default',
-          transformStyle: 'preserve-3d',
-          willChange: 'transform',
-          boxShadow: '0 2px 16px rgba(28,43,58,0.07)',
-          position: 'relative',
-          zIndex: 1,
-        }}
-      >
-        <span style={{
-          fontSize: '3.2rem',
-          fontWeight: 300,
-          color: numColor ?? 'var(--blue-primary)',
-          fontFamily: 'Georgia, serif',
-          display: 'block',
-          marginBottom: '16px',
-          lineHeight: 1,
-        }}>
-          {number}
-        </span>
-        <h3 style={{ fontSize: '1.25rem', fontWeight: 500, marginBottom: '12px', color: 'var(--text)', fontFamily: 'Georgia, serif' }}>
-          {title}
-        </h3>
-        <p style={{ fontSize: '1.05rem', fontWeight: 300, lineHeight: 1.8, color: '#4A6070', fontFamily: 'Georgia, serif' }}>
-          {body}
-        </p>
-      </div>
+      <h3 style={{ fontSize: '1.25rem', fontWeight: 500, marginBottom: '12px', color: 'var(--text)', fontFamily: 'Georgia, serif' }}>
+        {title}
+      </h3>
+      <p style={{ fontSize: '1.05rem', fontWeight: 300, lineHeight: 1.8, color: '#4A6070', fontFamily: 'Georgia, serif' }}>
+        {body}
+      </p>
     </div>
   )
 }
@@ -197,9 +177,9 @@ export default function Home() {
         <h2 style={{ fontSize: '2.4rem', fontWeight: 300, color: 'var(--text)', marginBottom: '36px', fontFamily: 'Georgia, serif' }}>
           {t.home.howItWorks}
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', perspective: '1000px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', perspective: '1000px', alignItems: 'stretch' }}>
           <StepBubble number="1" title={t.home.step1Title} body={t.home.step1Body} />
-          <StepBubble number="2" title={t.home.step2Title} body={t.home.step2Body} numColor="var(--green-primary)" />
+          <StepBubble number="2" title={t.home.step2Title} body={t.home.step2Body} />
           <StepBubble number="3" title={t.home.step3Title} body={t.home.step3Body} />
         </div>
       </section>
