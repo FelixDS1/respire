@@ -16,7 +16,7 @@ const translations = {
     },
     home: {
       heroTitle: 'Trouvez le thérapeute\nqui vous correspond.',
-      heroSubtitle: 'Parcourez les profils, consultez les disponibilités,\net prenez rendez-vous à votre rythme.',
+      heroSubtitle: 'Parcourez les profils de nos thérapeutes vérifiés, filtrez selon vos besoins, et prenez rendez-vous en quelques clics.',
       cta: 'Voir les thérapeutes',
       howItWorks: 'Comment ça marche',
       step1Title: 'Parcourez les profils',
@@ -72,7 +72,7 @@ const translations = {
     },
     home: {
       heroTitle: "Find the therapist\nthat's right for you.",
-      heroSubtitle: 'Browse profiles, check availability,\nand book an appointment at your own pace.',
+      heroSubtitle: 'Browse our verified therapist profiles, filter by specialty or approach, and book an appointment in minutes.',
       cta: 'View therapists',
       howItWorks: 'How it works',
       step1Title: 'Browse profiles',

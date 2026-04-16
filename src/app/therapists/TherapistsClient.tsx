@@ -31,6 +31,8 @@ export default function TherapistsClient({ therapists }: { therapists: Therapist
   const [filters, setFilters] = useState<string[]>([])
   const [filterInput, setFilterInput] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
+  const [availFilter, setAvailFilter] = useState<'all' | 'this_week' | 'next_week'>('all')
+  const [consultFilter, setConsultFilter] = useState<'all' | 'presentiel' | 'video' | 'both'>('all')
   const inputRef = useRef<HTMLInputElement>(null)
 
   const suggestions = filterInput.trim()
@@ -76,6 +78,28 @@ export default function TherapistsClient({ therapists }: { therapists: Therapist
 
       {/* Filter bar */}
       <div className="max-w-5xl mx-auto px-6 py-6">
+        {/* Quick filters */}
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '16px' }}>
+          <select
+            value={availFilter}
+            onChange={e => setAvailFilter(e.target.value as typeof availFilter)}
+            style={{ border: '1px solid var(--border)', padding: '8px 14px', fontSize: '0.9rem', backgroundColor: 'white', color: 'var(--text)', cursor: 'pointer', borderRadius: '6px' }}
+          >
+            <option value="all">{lang === 'fr' ? 'Toutes disponibilités' : 'All availability'}</option>
+            <option value="this_week">{lang === 'fr' ? 'Cette semaine' : 'This week'}</option>
+            <option value="next_week">{lang === 'fr' ? 'Semaine prochaine' : 'Next week'}</option>
+          </select>
+          <select
+            value={consultFilter}
+            onChange={e => setConsultFilter(e.target.value as typeof consultFilter)}
+            style={{ border: '1px solid var(--border)', padding: '8px 14px', fontSize: '0.9rem', backgroundColor: 'white', color: 'var(--text)', cursor: 'pointer', borderRadius: '6px' }}
+          >
+            <option value="all">{lang === 'fr' ? 'Présentiel & vidéo' : 'In-person & video'}</option>
+            <option value="presentiel">{lang === 'fr' ? 'Présentiel uniquement' : 'In-person only'}</option>
+            <option value="video">{lang === 'fr' ? 'Vidéo uniquement' : 'Video only'}</option>
+            <option value="both">{lang === 'fr' ? 'Les deux' : 'Both'}</option>
+          </select>
+        </div>
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-xs uppercase tracking-widest" style={{ color: '#8A9BAD' }}>
             {lang === 'fr' ? 'Filtrer par' : 'Filter by'}
@@ -176,25 +200,18 @@ export default function TherapistsClient({ therapists }: { therapists: Therapist
 
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h2 className="text-base font-normal" style={{ color: 'var(--text)' }}>
+                        <h2 className="text-lg font-normal" style={{ color: 'var(--text)' }}>
                           {therapist.profiles?.full_name ?? 'Thérapeute'}
                         </h2>
-                        {therapist.is_verified
-                          ? <span className="text-xs px-2 py-0.5" style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
-                              {lang === 'en' ? '✓ Verified' : '✓ Vérifié'}
-                            </span>
-                          : <span className="text-xs px-2 py-0.5" style={{ backgroundColor: '#F5F5F5', color: '#4A6070' }}>
-                              {lang === 'en' ? 'Pending verification' : 'En cours de vérification'}
-                            </span>
-                        }
                       </div>
                       {therapist.specialties && therapist.specialties.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-3">
                           {therapist.specialties.map((s) => (
-                            <span key={s} className="text-xs px-2 py-1"
+                            <span key={s} className="text-sm px-3 py-1"
                               style={{
                                 backgroundColor: filters.includes(s) ? 'var(--blue-primary)' : 'var(--blue-accent)',
                                 color: filters.includes(s) ? 'white' : 'var(--blue-primary)',
+                                borderRadius: '4px',
                               }}>
                               {lang === 'en' ? (specialtyTranslations[s] ?? s) : s}
                             </span>
@@ -202,7 +219,7 @@ export default function TherapistsClient({ therapists }: { therapists: Therapist
                         </div>
                       )}
                       {bio && (
-                        <p className="text-sm font-light leading-relaxed" style={{ color: '#4A6070' }}>
+                        <p className="text-base font-light leading-relaxed" style={{ color: '#4A6070' }}>
                           {bio.length > 160 ? bio.slice(0, 160) + '...' : bio}
                         </p>
                       )}

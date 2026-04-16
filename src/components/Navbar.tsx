@@ -57,7 +57,7 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
     : null
 
   return (
-    <nav style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'white' }}>
+    <nav style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', position: 'sticky', top: 0, zIndex: 50 }}>
       <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
         <Link href="/" className="text-xl tracking-wide" style={{ color: 'var(--blue-primary)' }}>
           Respire

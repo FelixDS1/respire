@@ -340,7 +340,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
   function addSpecialty(value?: string) {
     const term = (value ?? specialtyInput).trim()
-    if (term && ALL_SPECIALTIES.includes(term) && !therapist.specialties.includes(term) && therapist.specialties.length < 3) {
+    if (term && ALL_SPECIALTIES.includes(term) && !therapist.specialties.includes(term) && therapist.specialties.length < 6) {
       setTherapist(prev => ({ ...prev, specialties: [...prev.specialties, term] }))
       setSpecialtyInput('')
     }
@@ -513,7 +513,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                 marginBottom: '-1px',
               }}
             >
-              {t === 'profile' ? 'Mon profil' : t === 'availability' ? 'Disponibilités' : t === 'appointments' ? 'Rendez-vous' : t === 'calendar' ? 'Calendrier' : lang === 'fr' ? 'Revenus' : 'Revenue'}
+              {t === 'profile' ? (lang === 'fr' ? 'Mon profil' : 'My profile') : t === 'availability' ? (lang === 'fr' ? 'Disponibilités' : 'Availability') : t === 'appointments' ? (lang === 'fr' ? 'Rendez-vous' : 'Appointments') : t === 'calendar' ? (lang === 'fr' ? 'Calendrier' : 'Calendar') : lang === 'fr' ? 'Revenus' : 'Revenue'}
             </button>
           ))}
         </div>
@@ -671,7 +671,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                       </span>
                     ))}
                   </div>
-                  {therapist.specialties.length < 3 ? (
+                  {therapist.specialties.length < 6 ? (
                     <SpecialtyInput
                       value={specialtyInput}
                       onChange={setSpecialtyInput}
@@ -682,7 +682,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                     />
                   ) : (
                     <p style={{ fontSize: '0.7rem', color: '#8A9BAD' }}>
-                      {lang === 'fr' ? 'Maximum 3 spécialités atteint.' : 'Maximum of 3 areas of expertise reached.'}
+                      {lang === 'fr' ? 'Maximum 6 spécialités atteint.' : 'Maximum of 6 areas of expertise reached.'}
                     </p>
                   )}
                 </div>
@@ -754,35 +754,9 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
         {/* Availability tab */}
         {tab === 'availability' && (
-          <div className="flex gap-6 items-start">
+          <div>
 
-            {/* Left: Confirmed appointments */}
-            <div style={{ width: '220px', flexShrink: 0 }}>
-              <h2 className="text-xs uppercase tracking-widest mb-4" style={{ color: 'var(--blue-primary)' }}>
-                Rendez-vous confirmés
-              </h2>
-              {appointments.length === 0 ? (
-                <p className="text-sm" style={{ color: '#4A6070' }}>Aucun rendez-vous confirmé.</p>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  {appointments.map(appt => (
-                    <div key={appt.id} className="bg-white p-3" style={{ border: '1px solid var(--border)' }}>
-                      <p className="text-sm mb-1" style={{ color: 'var(--text)' }}>
-                        {appt.profiles?.full_name ?? 'Membre'}
-                      </p>
-                      <p className="text-xs capitalize" style={{ color: '#4A6070' }}>
-                        {appt.availability ? formatDate(appt.availability.date) : ''}
-                      </p>
-                      <p className="text-xs" style={{ color: '#4A6070' }}>
-                        {appt.availability ? formatTime(appt.availability.start_time) : ''}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Right: Schedule editor + blocks + slots */}
+            {/* Schedule editor + blocks + slots */}
             <div className="flex-1 min-w-0">
             {/* Schedule editor */}
             <div className="bg-white p-6 mb-6" style={{ border: '1px solid var(--border)' }}>

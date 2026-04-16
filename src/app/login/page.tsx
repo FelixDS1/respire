@@ -11,6 +11,7 @@ function LoginForm() {
   const redirectTo = searchParams.get('redirectTo') ?? '/'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [remember, setRemember] = useState(true)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -81,6 +82,16 @@ function LoginForm() {
                 }}
               />
             </div>
+
+            <label className="flex items-center gap-2 text-sm" style={{ color: '#4A6070', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={e => setRemember(e.target.checked)}
+                style={{ accentColor: 'var(--blue-primary)', cursor: 'pointer' }}
+              />
+              Se souvenir de moi
+            </label>
 
             {error && (
               <p className="text-sm" style={{ color: '#C0392B' }}>{error}</p>

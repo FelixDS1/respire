@@ -94,92 +94,73 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
   return (
     <main className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
 
-      <div className="max-w-5xl mx-auto px-6 py-12 grid grid-cols-3 gap-12">
+      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '48px 32px' }}>
 
-        {/* Left column */}
-        <div className="col-span-2">
-
-          <div className="flex gap-6 items-start mb-8">
-            <div
-              className="flex-shrink-0 w-24 h-24"
-              style={{ backgroundColor: 'var(--blue-accent)', border: '1px solid var(--border)' }}
-            >
-              {therapist.photo_url && (
-                <img
-                  src={therapist.photo_url}
-                  alt={therapist.profiles?.full_name ?? ''}
-                  className="w-full h-full object-cover"
-                />
-              )}
-            </div>
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-2xl font-light" style={{ color: 'var(--text)' }}>
-                  {therapist.profiles?.full_name ?? 'Thérapeute'}
-                </h1>
-                {therapist.is_verified
-                  ? <span className="text-xs px-2 py-0.5" style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
-                      {lang === 'en' ? '✓ Verified' : '✓ Vérifié'}
-                    </span>
-                  : <span className="text-xs px-2 py-0.5" style={{ backgroundColor: '#F5F5F5', color: '#4A6070' }}>
-                      {lang === 'en' ? 'Pending verification' : 'En cours de vérification'}
-                    </span>
-                }
-              </div>
-              {therapist.location && (
-                <p className="text-sm" style={{ color: '#4A6070' }}>{therapist.location}</p>
-              )}
-              {therapist.languages && therapist.languages.length > 0 && (
-                <p className="text-sm mt-1" style={{ color: '#4A6070' }}>
-                  {t.profile.languages} : {therapist.languages.join(', ')}
-                </p>
-              )}
-            </div>
+        {/* Top section: large photo + info side by side */}
+        <div style={{ display: 'flex', gap: '48px', alignItems: 'flex-start', marginBottom: '40px' }}>
+          <div style={{ flexShrink: 0, width: '240px', height: '280px', backgroundColor: 'var(--blue-accent)', border: '1px solid var(--border)' }}>
+            {therapist.photo_url && (
+              <img
+                src={therapist.photo_url}
+                alt={therapist.profiles?.full_name ?? ''}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            )}
           </div>
-
-          <hr style={{ borderColor: 'var(--border)', marginBottom: '2rem' }} />
-
-          {therapist.specialties && therapist.specialties.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-xs uppercase tracking-widest mb-4" style={{ color: 'var(--blue-primary)' }}>
-                {t.profile.specialties}
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {therapist.specialties.map((s) => (
-                  <span key={s} className="text-xs px-3 py-1"
-                    style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
-                    {lang === 'en' ? (specialtyTranslations[s] ?? s) : s}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {bio && (
-            <div className="mb-8">
-              <h2 className="text-xs uppercase tracking-widest mb-4" style={{ color: 'var(--blue-primary)' }}>
-                {t.profile.about}
-              </h2>
-              <p className="text-sm font-light leading-relaxed" style={{ color: 'var(--text)', lineHeight: '1.9', textAlign: 'justify' }}>
-                {bio}
+          <div style={{ flex: 1 }}>
+            <h1 style={{ fontSize: '2rem', fontWeight: 300, color: 'var(--text)', marginBottom: '8px' }}>
+              {therapist.profiles?.full_name ?? 'Thérapeute'}
+            </h1>
+            {therapist.location && (
+              <p style={{ fontSize: '0.95rem', color: '#4A6070', marginBottom: '4px' }}>{therapist.location}</p>
+            )}
+            {therapist.languages && therapist.languages.length > 0 && (
+              <p style={{ fontSize: '0.95rem', color: '#4A6070', marginBottom: '20px' }}>
+                {t.profile.languages} : {therapist.languages.join(', ')}
               </p>
-            </div>
-          )}
+            )}
 
+            {therapist.specialties && therapist.specialties.length > 0 && (
+              <div style={{ marginBottom: '20px' }}>
+                <h2 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--blue-primary)', marginBottom: '12px' }}>
+                  {t.profile.specialties}
+                </h2>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {therapist.specialties.map((s) => (
+                    <span key={s} style={{ fontSize: '0.9rem', padding: '6px 14px', backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', borderRadius: '4px' }}>
+                      {lang === 'en' ? (specialtyTranslations[s] ?? s) : s}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {bio && (
+              <div>
+                <h2 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--blue-primary)', marginBottom: '12px' }}>
+                  {t.profile.about}
+                </h2>
+                <p style={{ fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.9, color: 'var(--text)' }}>
+                  {bio}
+                </p>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Right column — booking */}
-        <div>
-          <div className="bg-white p-6" style={{ border: '1px solid var(--border)' }}>
+        {/* Bottom section: price + calendar as a row */}
+        <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '40px', backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: '8px', padding: '32px' }}>
 
+          {/* Price info */}
+          <div>
             {therapist.consultation_fee && (
-              <p className="text-lg font-light mb-1" style={{ color: 'var(--text)' }}>
+              <p style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--text)', marginBottom: '4px' }}>
                 {therapist.consultation_fee + 4}€
-                <span className="text-sm ml-1" style={{ color: '#4A6070' }}>{t.profile.perSession}</span>
+                <span style={{ fontSize: '0.9rem', marginLeft: '6px', color: '#4A6070' }}>{t.profile.perSession}</span>
               </p>
             )}
             {therapist.sector && (
-              <p className="text-xs mb-1" style={{ color: '#4A6070' }}>
+              <p style={{ fontSize: '0.85rem', color: '#4A6070', marginBottom: '8px' }}>
                 Secteur {therapist.sector}
                 {therapist.sector === '1'
                   ? (lang === 'fr' ? ' · remboursé par la Sécu' : ' · reimbursed by Sécurité sociale')
@@ -188,17 +169,17 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
             )}
             {therapist.consultation_fee && therapist.sector && (() => {
               const displayed = therapist.consultation_fee + 4
-              const covered = 55 // Sécu (70% × €57 − €2) + mutuelle ticket modérateur (30% × €57)
+              const covered = 55
               const outOfPocket = Math.max(displayed - covered, 6)
               return (
-                <div style={{ backgroundColor: 'var(--blue-accent)', padding: '8px 10px', marginBottom: '4px' }}>
-                  <p className="text-xs" style={{ color: 'var(--blue-primary)', lineHeight: 1.6 }}>
+                <div style={{ backgroundColor: 'var(--blue-accent)', padding: '10px 12px', marginBottom: '16px', borderRadius: '4px' }}>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--blue-primary)', lineHeight: 1.6 }}>
                     {lang === 'fr'
                       ? <>Reste à charge estimé : <strong>~{outOfPocket}€</strong> avec Sécu + mutuelle</>
                       : <>Estimated out-of-pocket: <strong>~{outOfPocket}€</strong> with Sécu + mutuelle</>}
                   </p>
                   {therapist.sector === '2' && (
-                    <p style={{ fontSize: '0.6rem', color: '#4A6070', marginTop: '2px' }}>
+                    <p style={{ fontSize: '0.7rem', color: '#4A6070', marginTop: '4px' }}>
                       {lang === 'fr'
                         ? 'Hors dépassements couverts par certaines mutuelles premium'
                         : 'Excess fees may be partially covered by premium mutuelles'}
@@ -208,7 +189,30 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
               )
             })()}
 
-            <hr style={{ borderColor: 'var(--border)', margin: '1rem 0' }} />
+            {/* Waitlist */}
+            <div style={{ marginTop: '16px' }}>
+              {waitlistDone ? (
+                <p style={{ fontSize: '0.85rem', color: 'var(--blue-primary)' }}>
+                  {lang === 'fr' ? '✓ Vous êtes sur la liste d\'attente' : '✓ You\'re on the waitlist'}
+                </p>
+              ) : (
+                <button
+                  onClick={toggleWaitlist}
+                  disabled={waitlistLoading}
+                  style={{ fontSize: '0.85rem', color: onWaitlist ? '#8A9BAD' : 'var(--blue-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, opacity: waitlistLoading ? 0.4 : 1 }}
+                >
+                  {waitlistLoading
+                    ? '...'
+                    : onWaitlist
+                      ? (lang === 'fr' ? 'Quitter la liste d\'attente' : 'Leave waitlist')
+                      : (lang === 'fr' ? 'Aucun créneau ? Rejoindre la liste d\'attente →' : 'No slot? Join the waitlist →')}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Calendar */}
+          <div>
 
             <h2 className="text-xs uppercase tracking-widest mb-3" style={{ color: 'var(--blue-primary)' }}>
               {t.profile.availability}

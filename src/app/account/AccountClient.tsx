@@ -539,9 +539,6 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
 
             {/* Account deletion */}
             <div style={{ marginTop: '48px', paddingTop: '24px', borderTop: '1px solid var(--border)' }}>
-              <p className="text-xs uppercase tracking-widest mb-3" style={{ color: '#8A9BAD' }}>
-                {lang === 'fr' ? 'Zone de danger' : 'Danger zone'}
-              </p>
               {!showDeleteConfirm ? (
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
