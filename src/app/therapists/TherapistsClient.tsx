@@ -61,7 +61,7 @@ export default function TherapistsClient({ therapists }: { therapists: Therapist
       )
 
   return (
-    <main className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
+    <main className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
 
       <div className="max-w-[1400px] mx-auto px-14 py-12">
         <h1 className="text-3xl font-light mb-2" style={{ color: 'var(--text)' }}>
@@ -165,7 +165,7 @@ export default function TherapistsClient({ therapists }: { therapists: Therapist
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-14 pb-12">
+      <div className="max-w-[1400px] mx-auto px-14 pb-12" style={{ flex: 1 }}>
         {filtered.length === 0 ? (
           <p className="text-sm" style={{ color: '#4A6070' }}>
             {filters.length > 0

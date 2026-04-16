@@ -350,8 +350,8 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
   ]
 
   return (
-    <main className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
-      <div className="max-w-[1400px] mx-auto px-14 py-8">
+    <main className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
+      <div className="max-w-[1400px] mx-auto px-14 py-8" style={{ flex: 1 }}>
 
         <div className="flex justify-between items-start mb-6">
           <div>
@@ -937,6 +937,17 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
           lang={lang}
         />
       )}
+
+      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'white' }}>
+        <div className="max-w-[1400px] mx-auto px-14 py-7 flex justify-between items-center text-sm" style={{ color: '#4A6070', fontFamily: 'Georgia, serif' }}>
+          <span>© 2026 Respire</span>
+          <div className="flex gap-6">
+            <a href="/about" style={{ color: '#4A6070', textDecoration: 'none' }}>{lang === 'fr' ? 'Nous contacter' : 'Contact us'}</a>
+            <a href="/privacy" style={{ color: '#4A6070', textDecoration: 'none' }}>{lang === 'fr' ? 'Politique de confidentialité' : 'Privacy policy'}</a>
+            <a href="/terms" style={{ color: '#4A6070', textDecoration: 'none' }}>{lang === 'fr' ? 'CGU' : 'Terms'}</a>
+          </div>
+        </div>
+      </footer>
     </main>
   )
 }

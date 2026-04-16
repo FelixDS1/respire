@@ -92,9 +92,9 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
   }
 
   return (
-    <main className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
+    <main className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
 
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '48px 56px' }}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '48px 56px', flex: 1 }}>
 
         {/* Top section: large photo + info side by side */}
         <div style={{ display: 'flex', gap: '48px', alignItems: 'flex-start', marginBottom: '40px' }}>
