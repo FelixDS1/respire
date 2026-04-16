@@ -212,22 +212,24 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
   async function saveProfile() {
     setSaving(true)
     setError('')
-    const supabase = createClient()
-
-    await supabase.from('profiles').update({
-      bio: bio.trim() || null,
-      date_of_birth: dob || null,
-    }).eq('id', userId)
-
-    await supabase.from('patient_sensitive').upsert({
-      patient_id: userId,
-      nir: nir.trim() || null,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'patient_id' })
-
-    setSaving(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+    try {
+      const res = await fetch('/api/save-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bio, dob, nir }),
+      })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setError(json.error ?? (lang === 'en' ? 'Save failed' : 'Erreur lors de la sauvegarde'))
+        return
+      }
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
+    } catch (e: any) {
+      setError(e?.message ?? (lang === 'en' ? 'Save failed' : 'Erreur lors de la sauvegarde'))
+    } finally {
+      setSaving(false)
+    }
   }
 
   async function saveStreakFrequency(freq: FrequencyOption) {

@@ -9,6 +9,7 @@ import { useLanguage } from '@/lib/language'
 interface Conversation {
   other_user_id: string
   other_user_name: string
+  other_user_avatar: string | null
   last_message: string
   last_message_at: string
   unread_count: number
@@ -48,7 +49,20 @@ function initials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
 }
 
-function Avatar({ name, size = 36 }: { name: string; size?: number }) {
+function Avatar({ name, photoUrl, size = 36 }: { name: string; photoUrl?: string | null; size?: number }) {
+  if (photoUrl) {
+    return (
+      <div style={{
+        width: size, height: size, borderRadius: '50%',
+        border: '1px solid var(--border)',
+        flexShrink: 0,
+        overflow: 'hidden',
+        backgroundColor: 'var(--blue-accent)',
+      }}>
+        <img src={photoUrl} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      </div>
+    )
+  }
   return (
     <div style={{
       width: size, height: size, borderRadius: '50%',
@@ -90,7 +104,7 @@ export default function MessagesClient({
     const exists = initialConversations.some(c => c.other_user_id === withId)
     if (exists) return initialConversations
     return [
-      { other_user_id: withId, other_user_name: withName, last_message: '', last_message_at: new Date().toISOString(), unread_count: 0 },
+      { other_user_id: withId, other_user_name: withName, other_user_avatar: null, last_message: '', last_message_at: new Date().toISOString(), unread_count: 0 },
       ...initialConversations,
     ]
   }, [withId, withName, initialConversations])
@@ -213,7 +227,7 @@ export default function MessagesClient({
             return [
               {
                 other_user_id: newMsg.sender_id,
-                other_user_name: currentUserRole === 'therapist' ? 'Patient' : 'Thérapeute',
+                other_user_name: currentUserRole === 'therapist' ? 'Patient' : 'Thérapeute', other_user_avatar: null,
                 last_message: newMsg.content,
                 last_message_at: newMsg.created_at,
                 unread_count: 1,
@@ -367,7 +381,7 @@ export default function MessagesClient({
                       borderBottom: '1px solid var(--border)',
                     }}
                   >
-                    <Avatar name={conv.other_user_name} size={38} />
+                    <Avatar name={conv.other_user_name} photoUrl={conv.other_user_avatar} size={38} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
                         <span style={{
@@ -416,7 +430,7 @@ export default function MessagesClient({
                 <div
                   style={{ borderBottom: '1px solid var(--border)', flexShrink: 0, padding: '12px 20px', display: 'flex', alignItems: 'center', gap: '12px' }}
                 >
-                  <Avatar name={selectedConversation.other_user_name} size={36} />
+                  <Avatar name={selectedConversation.other_user_name} photoUrl={selectedConversation.other_user_avatar} size={36} />
                   <div>
                     <div style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--text)' }}>
                       {selectedConversation.other_user_name}

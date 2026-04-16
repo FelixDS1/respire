@@ -40,10 +40,19 @@ export async function POST(req: NextRequest) {
     const { data: { publicUrl } } = supabaseAdmin.storage.from('avatars').getPublicUrl(path)
     const url = `${publicUrl}?t=${Date.now()}`
 
-    await Promise.all([
+    const [profileResult, therapistResult] = await Promise.all([
       supabaseAdmin.from('profiles').update({ avatar_url: url }).eq('id', user.id),
       supabaseAdmin.from('therapists').update({ photo_url: url }).eq('id', user.id),
     ])
+
+    if (profileResult.error) {
+      console.error('upload-avatar profiles update error:', JSON.stringify(profileResult.error))
+      return NextResponse.json({ error: 'Failed to save avatar URL: ' + profileResult.error.message }, { status: 500 })
+    }
+    if (therapistResult.error) {
+      // Non-fatal for patients who have no therapist row
+      console.warn('upload-avatar therapists update (non-fatal):', JSON.stringify(therapistResult.error))
+    }
 
     return NextResponse.json({ url })
   } catch (e: any) {

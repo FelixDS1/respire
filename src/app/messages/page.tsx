@@ -31,6 +31,7 @@ export default async function MessagesPage({
   let conversations: {
     other_user_id: string
     other_user_name: string
+    other_user_avatar: string | null
     last_message: string
     last_message_at: string
     unread_count: number
@@ -54,15 +55,19 @@ export default async function MessagesPage({
         byPatient.get(msg.patient_id)!.push(msg)
       }
 
-      // Fetch patient names
+      // Fetch patient names + avatars
       const patientIds = Array.from(byPatient.keys())
       const { data: patientProfiles } = await supabase
         .from('profiles')
-        .select('id, full_name')
+        .select('id, full_name, avatar_url')
         .in('id', patientIds)
 
       const nameMap = new Map<string, string>()
-      for (const p of patientProfiles ?? []) nameMap.set(p.id, p.full_name)
+      const avatarMap = new Map<string, string | null>()
+      for (const p of patientProfiles ?? []) {
+        nameMap.set(p.id, p.full_name)
+        avatarMap.set(p.id, p.avatar_url ?? null)
+      }
 
       for (const [patientId, msgs] of byPatient.entries()) {
         const sorted = msgs.sort(
@@ -72,6 +77,7 @@ export default async function MessagesPage({
         conversations.push({
           other_user_id: patientId,
           other_user_name: nameMap.get(patientId) ?? 'Patient',
+          other_user_avatar: avatarMap.get(patientId) ?? null,
           last_message: sorted[0].content,
           last_message_at: sorted[0].created_at,
           unread_count: unread,
@@ -95,15 +101,19 @@ export default async function MessagesPage({
         byTherapist.get(msg.therapist_id)!.push(msg)
       }
 
-      // Fetch therapist names
+      // Fetch therapist names + avatars
       const therapistIds = Array.from(byTherapist.keys())
       const { data: therapistProfiles } = await supabase
         .from('profiles')
-        .select('id, full_name')
+        .select('id, full_name, avatar_url')
         .in('id', therapistIds)
 
       const nameMap = new Map<string, string>()
-      for (const p of therapistProfiles ?? []) nameMap.set(p.id, p.full_name)
+      const avatarMap = new Map<string, string | null>()
+      for (const p of therapistProfiles ?? []) {
+        nameMap.set(p.id, p.full_name)
+        avatarMap.set(p.id, p.avatar_url ?? null)
+      }
 
       for (const [therapistId, msgs] of byTherapist.entries()) {
         const sorted = msgs.sort(
@@ -113,6 +123,7 @@ export default async function MessagesPage({
         conversations.push({
           other_user_id: therapistId,
           other_user_name: nameMap.get(therapistId) ?? 'Thérapeute',
+          other_user_avatar: avatarMap.get(therapistId) ?? null,
           last_message: sorted[0].content,
           last_message_at: sorted[0].created_at,
           unread_count: unread,
