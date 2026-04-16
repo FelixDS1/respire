@@ -234,10 +234,37 @@ export default function Home() {
         <h2 style={{ fontSize: '2.4rem', fontWeight: 300, color: 'var(--text)', marginBottom: '36px', fontFamily: 'Georgia, serif' }}>
           {t.home.howItWorks}
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', perspective: '1000px', alignItems: 'stretch' }}>
-          <StepBubble number="1" title={t.home.step1Title} body={t.home.step1Body} />
-          <StepBubble number="2" title={t.home.step2Title} body={t.home.step2Body} />
-          <StepBubble number="3" title={t.home.step3Title} body={t.home.step3Body} />
+        <div style={{ position: 'relative' }}>
+          {/* Swirling connector — sits on top at very low opacity, weaves through all three cards */}
+          <svg
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible', pointerEvents: 'none', zIndex: 2 }}
+            viewBox="0 0 300 100"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M 0,65 C 16,65 24,22 47,22 C 70,22 78,65 95,65 L 105,65 C 121,65 129,22 152,22 C 175,22 183,65 200,65 L 210,65 C 226,65 234,22 257,22 C 275,22 285,52 302,50"
+              stroke="var(--blue-primary)"
+              strokeWidth="0.8"
+              fill="none"
+              opacity="0.22"
+              strokeLinecap="round"
+            />
+            {/* Arrowhead */}
+            <path
+              d="M 297,45 L 304,50 L 297,55"
+              stroke="var(--blue-primary)"
+              strokeWidth="0.8"
+              fill="none"
+              opacity="0.22"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', perspective: '1000px', alignItems: 'stretch', position: 'relative', zIndex: 1 }}>
+            <StepBubble number="1" title={t.home.step1Title} body={t.home.step1Body} />
+            <StepBubble number="2" title={t.home.step2Title} body={t.home.step2Body} />
+            <StepBubble number="3" title={t.home.step3Title} body={t.home.step3Body} />
+          </div>
         </div>
       </section>
 
