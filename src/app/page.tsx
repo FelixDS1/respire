@@ -146,7 +146,7 @@ export default function Home() {
       </div>
 
       {/* Hero */}
-      <section style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '72px 56px 60px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'center' }}>
+      <section style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '52px 56px 36px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'center' }}>
         <div>
           <h1 style={{ fontSize: '3.4rem', fontWeight: 300, lineHeight: 1.2, marginBottom: '24px', fontFamily: 'Georgia, serif', whiteSpace: 'pre-line' }}>
             {t.home.heroTitle}
@@ -172,8 +172,8 @@ export default function Home() {
         </div>
 
         {/* Right: tree visual */}
-        <div style={{ position: 'relative', height: '380px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ position: 'relative', zIndex: 1, width: '180px', height: '210px' }}>
+        <div style={{ position: 'relative', height: '420px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ position: 'relative', zIndex: 1, width: '340px', height: '400px' }}>
             <TreeOfLife />
           </div>
           <div style={{ position: 'absolute', bottom: '24px', left: '50%', transform: 'translateX(-50%)', fontFamily: 'Georgia, serif', fontSize: '1.1rem', letterSpacing: '0.3em', color: 'var(--blue-primary)', opacity: 0.55, whiteSpace: 'nowrap' }}>
@@ -188,8 +188,8 @@ export default function Home() {
       </div>
 
       {/* How it works */}
-      <section style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '72px 56px 100px' }}>
-        <h2 style={{ fontSize: '3rem', fontWeight: 300, color: 'var(--text)', marginBottom: '72px', fontFamily: 'Georgia, serif' }}>
+      <section style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '36px 56px 72px' }}>
+        <h2 style={{ fontSize: '2.4rem', fontWeight: 300, color: 'var(--text)', marginBottom: '36px', fontFamily: 'Georgia, serif' }}>
           {t.home.howItWorks}
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', perspective: '1000px' }}>
