@@ -26,7 +26,7 @@ const content = {
       'Être honnêtes avec nos membres et nos thérapeutes.',
     ],
     founderEyebrow: 'Note du fondateur',
-    founder: "Je m'appelle Félix, j'habite à Paris. Bien que j'ai toujours voulu trouver un(e) psy, j'ai toujours eu peur de me lancer — et si je ne trouvais pas la/le psy qui me\u00a0correspondait\u00a0? J'ai créé Respire pour répondre à ma crainte.",
+    founder: "Je m'appelle Félix, j'habite à Paris. Bien que j'ai toujours voulu trouver un(e) psy, j'ai longtemps eu peur de me lancer — et si je ne trouvais pas la/le psy qui me\u00a0correspondait\u00a0? J'ai créé Respire pour répondre à ma crainte.",
     ctaHeading: 'Prêt à commencer ?',
     ctaMemberLabel: 'Créer mon compte',
     ctaTherapistLabel: 'Vous êtes thérapeute ?',
@@ -175,8 +175,8 @@ export default function About() {
         <p style={labelStyle}>{c.valuesEyebrow}</p>
         <div style={{ position: 'relative' }}>
           {/* Connector between the two value cards */}
-          <div style={{ position: 'absolute', top: '50%', left: 'calc(50% - 12px)', width: '24px', height: '1px', backgroundColor: LILY_PINK, opacity: 0.28, zIndex: 2, transform: 'translateY(-50%)', pointerEvents: 'none' }} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', perspective: '1000px' }}>
+          <div style={{ position: 'absolute', top: '50%', left: 'calc(50% - 12px)', width: '24px', height: '1px', backgroundColor: LILY_PINK, opacity: 0.28, zIndex: 0, transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', perspective: '1000px', position: 'relative', zIndex: 1 }}>
             <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(28,43,58,0.06)' }}>
               <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>01</span>
               <p style={{ fontSize: '1.25rem', fontWeight: 400, lineHeight: 1.5, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0 }}>{c.values[0]}</p>
