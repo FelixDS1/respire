@@ -4,13 +4,6 @@ import { useRef } from 'react'
 import Link from 'next/link'
 import { useLanguage } from '@/lib/language'
 
-// Warm brown gradients (dark → light)
-const STEP_GRADIENTS = [
-  'linear-gradient(135deg, #5C3B28 0%, #7A5540 100%)',
-  'linear-gradient(135deg, #7A5540 0%, #9C7B5E 100%)',
-  'linear-gradient(135deg, #9C7B5E 0%, #B8967A 100%)',
-]
-const DARK_BROWN = '#2C1A0E'
 const LILY_PINK = '#C4849A'
 
 const content = {
@@ -151,12 +144,10 @@ export default function About() {
           </h1>
         </div>
 
-        <InflateBox style={{ borderRadius: '16px', overflow: 'hidden' }}>
-          <div style={{ backgroundColor: DARK_BROWN, borderRadius: '16px', padding: '28px 56px' }}>
-            <p style={{ ...bodyStyle, color: 'rgba(255,255,255,0.85)', textAlign: 'center' }}>
-              {c.subtitle}
-            </p>
-          </div>
+        <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '28px 56px' }}>
+          <p style={{ ...bodyStyle, color: '#4A6070', textAlign: 'center' }}>
+            {c.subtitle}
+          </p>
         </InflateBox>
       </section>
 
@@ -189,9 +180,9 @@ export default function About() {
               <p style={{ ...bodyStyle, color: 'var(--text)', fontWeight: 400 }}>{c.values[0]}</p>
             </InflateBox>
 
-            <InflateBox style={{ backgroundColor: DARK_BROWN, borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(44,26,14,0.18)' }}>
-              <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'rgba(255,255,255,0.15)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>02</span>
-              <p style={{ ...bodyStyle, color: 'rgba(255,255,255,0.88)', fontWeight: 400 }}>{c.values[1]}</p>
+            <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)' }}>
+              <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>02</span>
+              <p style={{ ...bodyStyle, color: 'var(--text)', fontWeight: 400 }}>{c.values[1]}</p>
             </InflateBox>
           </div>
         </div>
@@ -201,24 +192,24 @@ export default function About() {
       <section style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '0 56px 72px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr', gap: '24px', alignItems: 'stretch' }}>
 
-          {/* Left: stacked brown gradient steps */}
-          <div style={{ position: 'relative' }}>
+          {/* Left: stacked steps */}
+          <div style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
             <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: '1px', backgroundColor: LILY_PINK, opacity: 0.28, zIndex: 0, pointerEvents: 'none' }} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', perspective: '1000px', position: 'relative', zIndex: 1 }}>
-              {steps.map((step, i) => (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', perspective: '1000px', position: 'relative', zIndex: 1, flex: 1 }}>
+              {steps.map((step) => (
                 <InflateBox
                   key={step.number}
-                  style={{ background: STEP_GRADIENTS[i], borderRadius: '16px', padding: '28px 32px', boxShadow: '0 2px 16px rgba(92,59,40,0.22)', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
+                  style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '28px 32px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
                 >
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', marginBottom: '10px' }}>
-                    <span style={{ fontSize: '1.5rem', fontWeight: 300, color: 'rgba(255,255,255,0.55)', fontFamily: 'Georgia, serif', lineHeight: 1, flexShrink: 0 }}>
+                    <span style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, flexShrink: 0 }}>
                       {step.number}
                     </span>
-                    <p style={{ fontSize: '1.15rem', fontWeight: 600, color: 'white', fontFamily: 'Georgia, serif', margin: 0, lineHeight: 1.3 }}>
+                    <p style={{ fontSize: '1.15rem', fontWeight: 600, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0, lineHeight: 1.3 }}>
                       {step.title}
                     </p>
                   </div>
-                  <p style={{ ...bodyStyle, fontSize: '0.95rem', color: 'rgba(255,255,255,0.82)' }}>
+                  <p style={{ ...bodyStyle, fontSize: '0.95rem', color: '#4A6070' }}>
                     {step.body}
                   </p>
                 </InflateBox>
