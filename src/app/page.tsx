@@ -158,21 +158,39 @@ export default function Home() {
           <p style={{ fontSize: '1.1rem', fontWeight: 300, lineHeight: 1.9, color: '#4A6070', marginBottom: '40px', fontFamily: 'Georgia, serif' }}>
             {t.home.heroSubtitle}
           </p>
-          <Link
-            href="/therapists"
-            style={{
-              display: 'inline-block',
-              padding: '15px 38px',
-              backgroundColor: 'var(--blue-primary)',
-              color: 'white',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              fontSize: '1rem',
-              fontFamily: 'Georgia, serif',
-            }}
-          >
-            {t.home.cta}
-          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <Link
+              href="/therapists"
+              style={{
+                display: 'inline-block',
+                padding: '15px 38px',
+                backgroundColor: 'var(--blue-primary)',
+                color: 'white',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                fontSize: '1rem',
+                fontFamily: 'Georgia, serif',
+              }}
+            >
+              {t.home.cta}
+            </Link>
+            <Link
+              href="/signup?role=therapist"
+              style={{
+                display: 'inline-block',
+                padding: '14px 28px',
+                backgroundColor: 'transparent',
+                color: 'var(--blue-primary)',
+                borderRadius: '8px',
+                border: '1px solid var(--blue-primary)',
+                textDecoration: 'none',
+                fontSize: '0.95rem',
+                fontFamily: 'Georgia, serif',
+              }}
+            >
+              {t.home.therapistCta}
+            </Link>
+          </div>
         </div>
 
         {/* Right: lily illustration */}
