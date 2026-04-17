@@ -424,6 +424,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
     backgroundColor: 'var(--surface)',
     color: 'var(--text)',
     outline: 'none',
+    borderRadius: '8px',
   }
 
   return (
@@ -486,13 +487,15 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
             <button
               onClick={handleStripeConnect}
               disabled={stripeConnecting}
-              className="px-5 py-2 text-sm"
               style={{
                 backgroundColor: 'var(--blue-primary)',
                 color: 'white',
                 border: 'none',
                 cursor: stripeConnecting ? 'not-allowed' : 'pointer',
                 opacity: stripeConnecting ? 0.6 : 1,
+                padding: '10px 20px',
+                fontSize: '0.9rem',
+                borderRadius: '8px',
               }}
             >
               {stripeConnecting ? 'Redirection…' : initialTherapist.stripe_account_id ? 'Reprendre la configuration Stripe' : 'Configurer les paiements'}
@@ -506,13 +509,18 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
             <button
               key={t}
               onClick={() => setTab(t)}
-              className="px-6 py-3 text-sm transition-colors"
               style={{
+                padding: '14px 28px',
+                fontSize: '0.95rem',
+                borderTop: 'none',
+                borderLeft: 'none',
+                borderRight: 'none',
                 borderBottom: tab === t ? '2px solid var(--blue-primary)' : '2px solid transparent',
                 color: tab === t ? 'var(--blue-primary)' : '#4A6070',
                 background: 'none',
                 cursor: 'pointer',
                 marginBottom: '-1px',
+                fontFamily: 'Georgia, serif',
               }}
             >
               {t === 'profile' ? (lang === 'fr' ? 'Mon profil' : 'My profile') : t === 'availability' ? (lang === 'fr' ? 'Mes disponibilités' : 'My availability') : t === 'appointments' ? (lang === 'fr' ? 'Mes rendez-vous' : 'My appointments') : t === 'calendar' ? (lang === 'fr' ? 'Mon calendrier' : 'My calendar') : lang === 'fr' ? 'Mes revenus' : 'My revenue'}
@@ -581,22 +589,24 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
                 {/* Profession selector */}
                 <div style={{ marginBottom: '14px' }}>
-                  <p style={{ fontSize: '0.6rem', color: '#8A9BAD', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '6px' }}>
+                  <p style={{ fontSize: '0.78rem', color: '#8A9BAD', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px', fontWeight: 500 }}>
                     {lang === 'fr' ? 'Profession' : 'Profession'}
                   </p>
-                  <div className="flex gap-1">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {(['Psychologue', 'Psychiatre'] as const).map(p => (
                       <button
                         key={p}
                         type="button"
                         onClick={() => setTherapist(prev => ({ ...prev, profession: prev.profession === p ? '' : p }))}
                         style={{
-                          fontSize: '0.7rem',
-                          padding: '3px 10px',
+                          fontSize: '0.9rem',
+                          padding: '10px 14px',
                           border: `1px solid ${therapist.profession === p ? 'var(--blue-primary)' : 'var(--border)'}`,
                           backgroundColor: therapist.profession === p ? 'var(--blue-accent)' : 'var(--surface)',
                           color: therapist.profession === p ? 'var(--blue-primary)' : '#4A6070',
                           cursor: 'pointer',
+                          borderRadius: '8px',
+                          textAlign: 'left' as const,
                         }}
                       >
                         {lang === 'en' ? (p === 'Psychologue' ? 'Psychologist' : 'Psychiatrist') : p}
@@ -607,15 +617,15 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
                 {/* Languages */}
                 <div style={{ borderTop: '1px solid var(--border)', paddingTop: '14px' }}>
-                  <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--blue-primary)' }}>
+                  <p style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px', color: 'var(--blue-primary)', fontWeight: 500 }}>
                     {lang === 'fr' ? 'Langues parlées' : 'Languages spoken'}
                   </p>
                   <div className="flex flex-wrap gap-1 mb-2">
                     {therapist.languages.map(l => (
                       <span key={l} style={{
-                        fontSize: '0.7rem', padding: '2px 8px',
+                        fontSize: '0.9rem', padding: '6px 14px',
                         backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)',
-                        display: 'flex', alignItems: 'center', gap: '4px',
+                        display: 'flex', alignItems: 'center', gap: '8px', borderRadius: '20px',
                       }}>
                         {lang === 'en' ? (languageTranslations[l] ?? l) : l}
                         <button onClick={() => removeLanguage(l)} style={{ color: 'var(--blue-primary)', cursor: 'pointer', lineHeight: 1 }}>×</button>
@@ -638,7 +648,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
               <div style={{ flex: 1, minWidth: 0 }}>
 
                 {/* Bio */}
-                <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--blue-primary)' }}>
+                <p style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px', color: 'var(--blue-primary)', fontWeight: 500 }}>
                   {lang === 'fr' ? 'Présentation · Français' : 'Presentation · English'}
                 </p>
                 <BioEditor
@@ -662,13 +672,12 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                 </div>
 
                 <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px', marginBottom: '20px' }}>
-                  <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--blue-primary)' }}>
+                  <p style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px', color: 'var(--blue-primary)', fontWeight: 500 }}>
                     {lang === 'fr' ? 'Spécialités' : 'Areas of expertise'}
                   </p>
                   <div className="flex flex-wrap gap-2 mb-2">
                     {therapist.specialties.map(s => (
-                      <span key={s} className="text-xs px-3 py-1 flex items-center gap-2"
-                        style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
+                      <span key={s} style={{ fontSize: '0.9rem', padding: '6px 14px', display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', borderRadius: '20px' }}>
                         {lang === 'en' ? (specialtyTranslations[s] ?? s) : s}
                         <button onClick={() => removeSpecialty(s)} style={{ color: 'var(--blue-primary)', cursor: 'pointer' }}>×</button>
                       </span>
@@ -693,7 +702,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                 <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
                   <div className="grid grid-cols-3 gap-4" style={{ maxWidth: '520px' }}>
                     <div>
-                      <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--blue-primary)' }}>
+                      <p style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px', color: 'var(--blue-primary)', fontWeight: 500 }}>
                         {lang === 'fr' ? 'Tarif (€)' : 'Price (€)'}
                       </p>
                       <input
@@ -705,7 +714,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                       />
                     </div>
                     <div>
-                      <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--blue-primary)' }}>
+                      <p style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px', color: 'var(--blue-primary)', fontWeight: 500 }}>
                         {lang === 'fr' ? 'Code postal' : 'Postcode'}
                       </p>
                       <input
@@ -719,7 +728,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                       />
                     </div>
                     <div>
-                      <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--blue-primary)' }}>
+                      <p style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px', color: 'var(--blue-primary)', fontWeight: 500 }}>
                         {lang === 'fr' ? 'Secteur' : 'Sector'}
                       </p>
                       <select
@@ -737,7 +746,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
                   {/* Consultation type */}
                   <div style={{ marginTop: '20px' }}>
-                    <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--blue-primary)' }}>
+                    <p style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px', color: 'var(--blue-primary)', fontWeight: 500 }}>
                       {lang === 'fr' ? 'Mode de consultation' : 'Consultation mode'}
                     </p>
                     <div style={{ display: 'flex', gap: '8px' }}>
@@ -752,13 +761,13 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                           onClick={() => setTherapist(prev => ({ ...prev, consultation_type: opt.value }))}
                           style={{
                             flex: 1,
-                            padding: '8px 6px',
-                            fontSize: '0.78rem',
+                            padding: '12px 10px',
+                            fontSize: '0.9rem',
                             border: `1px solid ${(therapist.consultation_type ?? 'both') === opt.value ? 'var(--blue-primary)' : 'var(--border)'}`,
                             backgroundColor: (therapist.consultation_type ?? 'both') === opt.value ? 'var(--blue-accent)' : 'var(--surface)',
                             color: (therapist.consultation_type ?? 'both') === opt.value ? 'var(--blue-primary)' : '#4A6070',
                             cursor: 'pointer',
-                            borderRadius: '4px',
+                            borderRadius: '8px',
                           }}
                         >
                           {lang === 'fr' ? opt.fr : opt.en}
@@ -776,8 +785,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
               <button
                 onClick={saveProfile}
                 disabled={saving}
-                className="px-8 py-2 text-white text-sm transition-opacity hover:opacity-80 disabled:opacity-50"
-                style={{ backgroundColor: 'var(--blue-primary)', cursor: 'pointer' }}
+                style={{ backgroundColor: 'var(--blue-primary)', color: 'white', cursor: 'pointer', padding: '12px 32px', fontSize: '0.95rem', borderRadius: '8px', border: 'none', opacity: saving ? 0.5 : 1 }}
               >
                 {saving ? (lang === 'fr' ? 'Enregistrement...' : 'Saving...') : (lang === 'fr' ? 'Enregistrer' : 'Save')}
               </button>
@@ -795,7 +803,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
             <div className="flex-1 min-w-0">
             {/* Schedule editor */}
             <div className="bg-[var(--surface)] p-6 mb-6" style={{ border: '1px solid var(--border)', borderRadius: '8px' }}>
-              <h2 className="text-xs uppercase tracking-widest mb-5" style={{ color: 'var(--blue-primary)' }}>
+              <h2 style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '20px', color: 'var(--blue-primary)', fontWeight: 500 }}>
                 Mes horaires de travail
               </h2>
 
@@ -810,12 +818,14 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                       onClick={() => setScheduleDays(prev =>
                         prev.includes(d.value) ? prev.filter(x => x !== d.value) : [...prev, d.value]
                       )}
-                      className="w-9 h-9 text-xs transition-all"
                       style={{
+                        width: '48px', height: '48px',
+                        fontSize: '0.85rem',
                         border: `1px solid ${scheduleDays.includes(d.value) ? 'var(--blue-primary)' : 'var(--border)'}`,
                         backgroundColor: scheduleDays.includes(d.value) ? 'var(--blue-accent)' : 'var(--surface)',
                         color: scheduleDays.includes(d.value) ? 'var(--blue-primary)' : '#4A6070',
                         cursor: 'pointer',
+                        borderRadius: '8px',
                       }}
                       title={d.full}
                     >
@@ -884,8 +894,8 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                   <span className="text-xs" style={{ color: '#4A6070' }}>à</span>
                   <input type="time" value={newBreakEnd} onChange={e => setNewBreakEnd(e.target.value)}
                     className="px-3 py-1 text-sm" style={{ ...inputStyle, width: '110px' }} />
-                  <button onClick={addBreak} className="px-3 py-1 text-xs text-white hover:opacity-80"
-                    style={{ backgroundColor: 'var(--blue-primary)', cursor: 'pointer' }}>
+                  <button onClick={addBreak}
+                    style={{ backgroundColor: 'var(--blue-primary)', color: 'white', cursor: 'pointer', padding: '8px 16px', fontSize: '0.85rem', borderRadius: '8px', border: 'none' }}>
                     Ajouter
                   </button>
                 </div>
@@ -907,8 +917,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                 <button
                   onClick={saveSchedule}
                   disabled={scheduleGenerating}
-                  className="px-6 py-2 text-white text-sm hover:opacity-80 disabled:opacity-50 transition-opacity"
-                  style={{ backgroundColor: 'var(--blue-primary)', cursor: 'pointer' }}
+                  style={{ backgroundColor: 'var(--blue-primary)', color: 'white', cursor: 'pointer', padding: '12px 24px', fontSize: '0.95rem', borderRadius: '8px', border: 'none', opacity: scheduleGenerating ? 0.5 : 1 }}
                 >
                   {scheduleGenerating ? 'Génération...' : 'Enregistrer et générer les créneaux'}
                 </button>
