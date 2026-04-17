@@ -64,7 +64,7 @@ export default function About() {
       </div>
 
       {/* Mission */}
-      <section style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '80px 56px 56px' }}>
+      <section style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '80px 56px 56px' }}>
         <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--blue-primary)', marginBottom: '20px', fontFamily: 'Georgia, serif' }}>
           {c.eyebrow}
         </p>
@@ -74,12 +74,12 @@ export default function About() {
       </section>
 
       {/* Divider */}
-      <div style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '0 56px' }}>
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '0 56px' }}>
         <hr style={{ borderColor: 'var(--border)' }} />
       </div>
 
       {/* Why we exist */}
-      <section style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '52px 56px' }}>
+      <section style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '52px 56px' }}>
         <h2 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--blue-primary)', marginBottom: '28px', fontFamily: 'Georgia, serif' }}>
           {c.whyTitle}
         </h2>
@@ -100,12 +100,12 @@ export default function About() {
       </section>
 
       {/* Divider */}
-      <div style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '0 56px' }}>
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '0 56px' }}>
         <hr style={{ borderColor: 'var(--border)' }} />
       </div>
 
       {/* Values */}
-      <section style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '52px 56px' }}>
+      <section style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '52px 56px' }}>
         <h2 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--blue-primary)', marginBottom: '28px', fontFamily: 'Georgia, serif' }}>
           {c.valuesTitle}
         </h2>
@@ -122,12 +122,12 @@ export default function About() {
       </section>
 
       {/* Divider */}
-      <div style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '0 56px' }}>
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '0 56px' }}>
         <hr style={{ borderColor: 'var(--border)' }} />
       </div>
 
       {/* Founder's note */}
-      <section style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '52px 56px' }}>
+      <section style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '52px 56px' }}>
         <h2 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--blue-primary)', marginBottom: '28px', fontFamily: 'Georgia, serif' }}>
           {c.founderTitle}
         </h2>
@@ -142,12 +142,12 @@ export default function About() {
       </section>
 
       {/* Divider */}
-      <div style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '0 56px' }}>
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '0 56px' }}>
         <hr style={{ borderColor: 'var(--border)' }} />
       </div>
 
       {/* CTAs */}
-      <section style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '52px 56px 80px' }}>
+      <section style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '52px 56px 80px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <Link
             href="/signup"
@@ -184,10 +184,10 @@ export default function About() {
       </section>
 
       {/* Contact */}
-      <div style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '0 56px' }}>
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '0 56px' }}>
         <hr style={{ borderColor: 'var(--border)' }} />
       </div>
-      <section style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '48px 56px 80px' }}>
+      <section style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '48px 56px 80px' }}>
         <h2 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--blue-primary)', marginBottom: '20px', fontFamily: 'Georgia, serif' }}>
           {c.contact}
         </h2>
