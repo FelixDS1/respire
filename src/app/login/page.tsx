@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -11,9 +11,24 @@ function LoginForm() {
   const redirectTo = searchParams.get('redirectTo') ?? '/'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [remember, setRemember] = useState(true)
+  const [remember, setRemember] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  // Pre-fill fields from saved credentials on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('respire_remember')
+    if (saved) {
+      try {
+        const { email: e, password: p } = JSON.parse(saved)
+        if (e) setEmail(e)
+        if (p) setPassword(p)
+        setRemember(true)
+      } catch {
+        localStorage.removeItem('respire_remember')
+      }
+    }
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -27,6 +42,12 @@ function LoginForm() {
       setError('Email ou mot de passe incorrect.')
       setLoading(false)
       return
+    }
+
+    if (remember) {
+      localStorage.setItem('respire_remember', JSON.stringify({ email, password }))
+    } else {
+      localStorage.removeItem('respire_remember')
     }
 
     router.push(redirectTo)
