@@ -20,13 +20,20 @@ interface Therapist {
   languages: string[] | null
   location: string | null
   sector: string | null
+  consultation_type: string | null
   is_verified: boolean
   profiles: {
     full_name: string | null
   }
 }
 
-export default function TherapistsClient({ therapists }: { therapists: Therapist[] }) {
+interface Props {
+  therapists: Therapist[]
+  thisWeekIds: string[]
+  nextWeekIds: string[]
+}
+
+export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds }: Props) {
   const { t, lang } = useLanguage()
   const [filters, setFilters] = useState<string[]>([])
   const [filterInput, setFilterInput] = useState('')
@@ -54,11 +61,18 @@ export default function TherapistsClient({ therapists }: { therapists: Therapist
     setFilters(prev => prev.filter(f => f !== frTerm))
   }
 
-  const filtered = filters.length === 0
-    ? therapists
-    : therapists.filter(t =>
-        t.specialties?.some(s => filters.includes(s))
-      )
+  const thisWeekSet = new Set(thisWeekIds)
+  const nextWeekSet = new Set(nextWeekIds)
+
+  const filtered = therapists.filter(th => {
+    if (filters.length > 0 && !th.specialties?.some(s => filters.includes(s))) return false
+    if (availFilter === 'this_week' && !thisWeekSet.has(th.id)) return false
+    if (availFilter === 'next_week' && !nextWeekSet.has(th.id)) return false
+    if (consultFilter === 'presentiel' && th.consultation_type !== 'presentiel' && th.consultation_type !== 'both') return false
+    if (consultFilter === 'video' && th.consultation_type !== 'video' && th.consultation_type !== 'both') return false
+    if (consultFilter === 'both' && th.consultation_type !== 'both') return false
+    return true
+  })
 
   return (
     <main className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>

@@ -27,6 +27,7 @@ interface TherapistData {
   location: string
   profession: string
   sector: string | null
+  consultation_type: string | null
   is_verified: boolean
   photo_url: string | null
   stripe_account_id: string | null
@@ -217,6 +218,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
           location: therapist.location,
           profession: therapist.profession || null,
           sector: therapist.sector || null,
+          consultation_type: therapist.consultation_type || 'both',
         }),
       })
       const json = await res.json()
@@ -730,6 +732,38 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                         <option value="1">Secteur 1</option>
                         <option value="2">Secteur 2</option>
                       </select>
+                    </div>
+                  </div>
+
+                  {/* Consultation type */}
+                  <div style={{ marginTop: '20px' }}>
+                    <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--blue-primary)' }}>
+                      {lang === 'fr' ? 'Mode de consultation' : 'Consultation mode'}
+                    </p>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {([
+                        { value: 'presentiel', fr: 'Présentiel', en: 'In-person' },
+                        { value: 'video', fr: 'Vidéo', en: 'Video' },
+                        { value: 'both', fr: 'Les deux', en: 'Both' },
+                      ] as const).map(opt => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => setTherapist(prev => ({ ...prev, consultation_type: opt.value }))}
+                          style={{
+                            flex: 1,
+                            padding: '8px 6px',
+                            fontSize: '0.78rem',
+                            border: `1px solid ${(therapist.consultation_type ?? 'both') === opt.value ? 'var(--blue-primary)' : 'var(--border)'}`,
+                            backgroundColor: (therapist.consultation_type ?? 'both') === opt.value ? 'var(--blue-accent)' : 'white',
+                            color: (therapist.consultation_type ?? 'both') === opt.value ? 'var(--blue-primary)' : '#4A6070',
+                            cursor: 'pointer',
+                            borderRadius: '4px',
+                          }}
+                        >
+                          {lang === 'fr' ? opt.fr : opt.en}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </div>

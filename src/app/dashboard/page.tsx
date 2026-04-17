@@ -69,6 +69,7 @@ export default async function DashboardPage() {
         location: therapistData?.location ?? '',
         profession: therapistData?.profession ?? '',
         sector: therapistData?.sector ?? null,
+        consultation_type: therapistData?.consultation_type ?? 'both',
         is_verified: therapistData?.is_verified ?? false,
         photo_url: therapistData?.photo_url ?? null,
         stripe_account_id: therapistData?.stripe_account_id ?? null,

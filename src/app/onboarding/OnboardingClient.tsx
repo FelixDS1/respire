@@ -40,6 +40,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
   const [fee, setFee] = useState('')
   const [location, setLocation] = useState('')
   const [sector, setSector] = useState<'1' | '2'>('1')
+  const [consultationType, setConsultationType] = useState<'presentiel' | 'video' | 'both'>('both')
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -150,6 +151,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
       consultation_fee: Number(fee),
       location,
       sector,
+      consultation_type: consultationType,
     }).eq('id', userId)
 
     router.push('/dashboard')
@@ -321,6 +323,35 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
                 placeholder="75006"
                 maxLength={10}
               />
+            </div>
+
+            <div>
+              <label className="block text-sm mb-2" style={{ color: 'var(--text)' }}>Mode de consultation</label>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                {([
+                  { value: 'presentiel', label: 'Présentiel uniquement' },
+                  { value: 'video', label: 'Vidéo uniquement' },
+                  { value: 'both', label: 'Présentiel & vidéo' },
+                ] as const).map(opt => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setConsultationType(opt.value)}
+                    style={{
+                      flex: 1,
+                      padding: '10px 8px',
+                      fontSize: '0.8rem',
+                      border: `1px solid ${consultationType === opt.value ? 'var(--blue-primary)' : 'var(--border)'}`,
+                      backgroundColor: consultationType === opt.value ? 'var(--blue-accent)' : 'white',
+                      color: consultationType === opt.value ? 'var(--blue-primary)' : 'var(--text)',
+                      cursor: 'pointer',
+                      borderRadius: '4px',
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {error && <p className="text-sm" style={{ color: '#C0392B' }}>{error}</p>}
