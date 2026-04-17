@@ -1,26 +1,66 @@
 'use client'
 
 import Link from 'next/link'
+import { useLanguage } from '@/lib/language'
 
 // TODO: replace this with your Calendly (or equivalent) link once created
 const CALENDLY_LINK = '#'
 
-const features = [
-  {
-    title: 'Agenda en ligne',
-    body: 'Publiez vos disponibilités en quelques clics. Vos patients réservent directement — fini les allers-retours par e-mail ou téléphone.',
-  },
-  {
-    title: 'Messagerie sécurisée',
-    body: 'Échangez avec vos patients avant et après chaque séance via une messagerie chiffrée, intégrée à votre espace.',
-  },
-  {
-    title: 'Honoraires préservés',
-    body: 'Vous fixez vos tarifs, vous les percevez intégralement. Sans abonnement, sans commission cachée.',
-  },
-]
-
 export default function PourLesTherapeutesPage() {
+  const { lang } = useLanguage()
+
+  const content = {
+    fr: {
+      eyebrow: 'Pour les thérapeutes',
+      headline: 'Publiez votre agenda.',
+      headlineAccent: 'Sans commission cachée.',
+      body: 'Avec Respire, vos patients réservent directement en ligne, échangent avec vous via messagerie sécurisée, et règlent la séance au moment de la réservation. Vous fixez vos honoraires — et vous les percevez intégralement. Sans abonnement, sans commission cachée.',
+      cta: 'Créer mon profil',
+      callCta: 'Réserver un appel de 15 min',
+      callSoon: 'La prise de rendez-vous téléphonique sera disponible prochainement.',
+      login: 'Déjà inscrit ? Se connecter →',
+      features: [
+        {
+          title: 'Agenda en ligne',
+          body: 'Publiez vos disponibilités en quelques clics. Vos patients réservent directement — fini les allers-retours par e-mail ou téléphone.',
+        },
+        {
+          title: 'Messagerie sécurisée',
+          body: 'Échangez avec vos patients avant et après chaque séance via une messagerie chiffrée, intégrée à votre espace.',
+        },
+        {
+          title: 'Honoraires préservés',
+          body: 'Vous fixez vos tarifs, vous les percevez intégralement. Sans abonnement, sans commission cachée.',
+        },
+      ],
+    },
+    en: {
+      eyebrow: 'For therapists',
+      headline: 'Publish your availability.',
+      headlineAccent: 'No hidden fees.',
+      body: 'With Respire, your patients book directly online, message you through a secure inbox, and pay at the time of booking. You set your rate — and you keep it in full. No subscription, no hidden commission.',
+      cta: 'Create my profile',
+      callCta: 'Book a 15-minute call',
+      callSoon: 'Phone booking will be available soon.',
+      login: 'Already registered? Log in →',
+      features: [
+        {
+          title: 'Online scheduling',
+          body: 'Publish your availability in a few clicks. Patients book directly — no more back-and-forth by email or phone.',
+        },
+        {
+          title: 'Secure messaging',
+          body: 'Exchange with your patients before and after each session through an encrypted inbox built into your dashboard.',
+        },
+        {
+          title: 'Full fee retention',
+          body: 'You set your rates, you receive them in full. No subscription, no hidden commission.',
+        },
+      ],
+    },
+  }
+
+  const c = content[lang as 'fr' | 'en'] ?? content.fr
   return (
     <main style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}>
 
@@ -33,14 +73,14 @@ export default function PourLesTherapeutesPage() {
       {/* Hero */}
       <section style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '80px 56px 56px', textAlign: 'center' }}>
         <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--blue-primary)', marginBottom: '20px', fontFamily: 'Georgia, serif' }}>
-          Pour les thérapeutes
+          {c.eyebrow}
         </p>
         <h1 style={{ fontSize: '3rem', fontWeight: 300, lineHeight: 1.2, marginBottom: '24px', fontFamily: 'Georgia, serif' }}>
-          Publiez votre agenda.<br />
-          <span style={{ color: 'var(--blue-primary)' }}>Sans commission cachée.</span>
+          {c.headline}<br />
+          <span style={{ color: 'var(--blue-primary)' }}>{c.headlineAccent}</span>
         </h1>
         <p style={{ fontSize: '1.1rem', fontWeight: 300, lineHeight: 1.9, color: '#4A6070', marginBottom: '44px', fontFamily: 'Georgia, serif', maxWidth: '600px', margin: '0 auto 44px' }}>
-          Avec Respire, vos patients réservent directement en ligne, échangent avec vous via messagerie sécurisée, et règlent la séance au moment de la réservation. Vous fixez vos honoraires — et vous les percevez intégralement. Sans abonnement, sans commission cachée.
+          {c.body}
         </p>
 
         {/* CTAs */}
@@ -58,7 +98,7 @@ export default function PourLesTherapeutesPage() {
               fontFamily: 'Georgia, serif',
             }}
           >
-            Créer mon profil
+            {c.cta}
           </Link>
           <a
             href={CALENDLY_LINK}
@@ -76,18 +116,18 @@ export default function PourLesTherapeutesPage() {
               pointerEvents: CALENDLY_LINK === '#' ? 'none' : 'auto',
             }}
           >
-            Réserver un appel de 15 min
+            {c.callCta}
           </a>
         </div>
         {CALENDLY_LINK === '#' && (
           <p style={{ fontSize: '0.75rem', color: '#9EB3C2', fontFamily: 'Georgia, serif' }}>
-            La prise de rendez-vous téléphonique sera disponible prochainement.
+            {c.callSoon}
           </p>
         )}
 
         <div style={{ marginTop: '12px' }}>
           <Link href="/login" style={{ fontSize: '0.85rem', color: '#8A9BAD', textDecoration: 'none', fontFamily: 'Georgia, serif' }}>
-            Déjà inscrit ? Se connecter →
+            {c.login}
           </Link>
         </div>
       </section>
@@ -100,7 +140,7 @@ export default function PourLesTherapeutesPage() {
       {/* Features */}
       <section style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '56px 56px 80px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '28px' }}>
-          {features.map(f => (
+          {c.features.map(f => (
             <div
               key={f.title}
               style={{
