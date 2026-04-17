@@ -111,12 +111,22 @@ export default function About() {
 
       {/* ── Background shapes (absolute, z:0) ── */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
-        <div style={{ position: 'absolute', width: '600px', height: '600px', borderRadius: '50%', backgroundColor: 'var(--blue-accent)', opacity: 0.4, top: '-200px', right: '-120px' }} />
-        <div style={{ position: 'absolute', width: '440px', height: '440px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.25, bottom: '10%', left: '-100px' }} />
-        <div style={{ position: 'absolute', width: '300px', height: '300px', borderRadius: '60px', backgroundColor: 'var(--blue-accent)', opacity: 0.18, top: '35%', left: '22%', transform: 'rotate(25deg)' }} />
-        <div style={{ position: 'absolute', width: '180px', height: '180px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.18, top: '12%', right: '28%' }} />
-        <div style={{ position: 'absolute', width: '120px', height: '120px', borderRadius: '50%', border: '2px solid var(--blue-primary)', opacity: 0.07, top: '55%', left: '10%' }} />
-        <div style={{ position: 'absolute', width: '90px', height: '90px', borderRadius: '16px', backgroundColor: 'var(--green-soft)', opacity: 0.15, bottom: '25%', right: '12%', transform: 'rotate(15deg)' }} />
+        {/* Large anchors */}
+        <div style={{ position: 'absolute', width: '640px', height: '640px', borderRadius: '50%', backgroundColor: 'var(--blue-accent)', opacity: 0.52, top: '-220px', right: '-130px' }} />
+        <div style={{ position: 'absolute', width: '480px', height: '480px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.32, bottom: '8%', left: '-110px' }} />
+        {/* Mid-size fills */}
+        <div style={{ position: 'absolute', width: '340px', height: '340px', borderRadius: '70px', backgroundColor: 'var(--blue-accent)', opacity: 0.24, top: '33%', left: '20%', transform: 'rotate(25deg)' }} />
+        <div style={{ position: 'absolute', width: '260px', height: '260px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.26, top: '10%', right: '26%' }} />
+        <div style={{ position: 'absolute', width: '220px', height: '220px', borderRadius: '50%', backgroundColor: 'var(--blue-accent)', opacity: 0.22, top: '58%', right: '18%' }} />
+        <div style={{ position: 'absolute', width: '200px', height: '200px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.2, top: '20%', left: '5%' }} />
+        <div style={{ position: 'absolute', width: '180px', height: '260px', borderRadius: '50%', backgroundColor: 'var(--blue-accent)', opacity: 0.18, bottom: '30%', right: '36%', transform: 'rotate(-18deg)' }} />
+        {/* Small accents */}
+        <div style={{ position: 'absolute', width: '130px', height: '130px', borderRadius: '50%', border: '2px solid var(--blue-primary)', opacity: 0.12, top: '52%', left: '9%' }} />
+        <div style={{ position: 'absolute', width: '100px', height: '100px', borderRadius: '20px', backgroundColor: 'var(--green-soft)', opacity: 0.22, bottom: '22%', right: '11%', transform: 'rotate(15deg)' }} />
+        <div style={{ position: 'absolute', width: '80px', height: '80px', borderRadius: '50%', border: '2px solid var(--blue-primary)', opacity: 0.11, top: '78%', right: '42%' }} />
+        <div style={{ position: 'absolute', width: '70px', height: '70px', borderRadius: '12px', backgroundColor: 'var(--blue-accent)', opacity: 0.2, top: '5%', left: '42%', transform: 'rotate(35deg)' }} />
+        <div style={{ position: 'absolute', width: '55px', height: '55px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.24, bottom: '15%', left: '30%' }} />
+        <div style={{ position: 'absolute', width: '110px', height: '110px', borderRadius: '50%', border: '2px solid var(--blue-primary)', opacity: 0.09, top: '42%', right: '6%' }} />
       </div>
 
       {/* ── Hero ── */}
@@ -162,16 +172,23 @@ export default function About() {
       {/* ── Values ── */}
       <section style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '0 56px 40px' }}>
         <p style={labelStyle}>{c.valuesEyebrow}</p>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', perspective: '1000px' }}>
-          <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(28,43,58,0.06)' }}>
-            <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>01</span>
-            <p style={{ fontSize: '1.25rem', fontWeight: 400, lineHeight: 1.5, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0 }}>{c.values[0]}</p>
-          </InflateBox>
+        <div style={{ position: 'relative' }}>
+          {/* Connector between the two value cards */}
+          <div style={{ position: 'absolute', top: '50%', left: 'calc(50% - 12px)', width: '24px', height: '2px', backgroundColor: 'var(--blue-primary)', opacity: 0.4, zIndex: 2, transform: 'translateY(-50%)' }}>
+            <div style={{ position: 'absolute', left: '-4px', top: '-3px', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--blue-primary)', opacity: 0.6 }} />
+            <div style={{ position: 'absolute', right: '-4px', top: '-3px', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--blue-primary)', opacity: 0.6 }} />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', perspective: '1000px' }}>
+            <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(28,43,58,0.06)' }}>
+              <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>01</span>
+              <p style={{ fontSize: '1.25rem', fontWeight: 400, lineHeight: 1.5, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0 }}>{c.values[0]}</p>
+            </InflateBox>
 
-          <InflateBox style={{ backgroundColor: DARK_NAVY, borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(28,43,58,0.12)' }}>
-            <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'rgba(255,255,255,0.15)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>02</span>
-            <p style={{ fontSize: '1.25rem', fontWeight: 400, lineHeight: 1.5, color: 'rgba(255,255,255,0.9)', fontFamily: 'Georgia, serif', margin: 0 }}>{c.values[1]}</p>
-          </InflateBox>
+            <InflateBox style={{ backgroundColor: DARK_NAVY, borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(28,43,58,0.12)' }}>
+              <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'rgba(255,255,255,0.15)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>02</span>
+              <p style={{ fontSize: '1.25rem', fontWeight: 400, lineHeight: 1.5, color: 'rgba(255,255,255,0.9)', fontFamily: 'Georgia, serif', margin: 0 }}>{c.values[1]}</p>
+            </InflateBox>
+          </div>
         </div>
       </section>
 
