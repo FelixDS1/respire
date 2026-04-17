@@ -73,6 +73,7 @@ function SignupForm() {
                 className="py-2 text-sm transition-all"
                 style={{
                   border: `1px solid ${role === 'patient' ? 'var(--blue-primary)' : 'var(--border)'}`,
+                  borderRadius: '8px',
                   backgroundColor: role === 'patient' ? 'var(--blue-accent)' : 'var(--surface)',
                   color: role === 'patient' ? 'var(--blue-primary)' : '#4A6070'
                 }}
@@ -85,6 +86,7 @@ function SignupForm() {
                 className="py-2 text-sm transition-all"
                 style={{
                   border: `1px solid ${role === 'therapist' ? 'var(--blue-primary)' : 'var(--border)'}`,
+                  borderRadius: '8px',
                   backgroundColor: role === 'therapist' ? 'var(--blue-accent)' : 'var(--surface)',
                   color: role === 'therapist' ? 'var(--blue-primary)' : '#4A6070'
                 }}
@@ -101,7 +103,7 @@ function SignupForm() {
                 onChange={e => setFullName(e.target.value)}
                 required
                 className="w-full px-4 py-2 text-sm outline-none"
-                style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface)', color: 'var(--text)' }}
+                style={{ border: '1px solid var(--border)', borderRadius: '8px', backgroundColor: 'var(--surface)', color: 'var(--text)' }}
               />
             </div>
 
@@ -113,7 +115,7 @@ function SignupForm() {
                 onChange={e => setEmail(e.target.value)}
                 required
                 className="w-full px-4 py-2 text-sm outline-none"
-                style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface)', color: 'var(--text)' }}
+                style={{ border: '1px solid var(--border)', borderRadius: '8px', backgroundColor: 'var(--surface)', color: 'var(--text)' }}
               />
             </div>
 
@@ -126,7 +128,7 @@ function SignupForm() {
                 required
                 minLength={8}
                 className="w-full px-4 py-2 text-sm outline-none"
-                style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface)', color: 'var(--text)' }}
+                style={{ border: '1px solid var(--border)', borderRadius: '8px', backgroundColor: 'var(--surface)', color: 'var(--text)' }}
               />
               <p className="text-xs mt-1" style={{ color: '#4A6070' }}>8 caractères minimum</p>
             </div>
@@ -139,7 +141,7 @@ function SignupForm() {
               type="submit"
               disabled={loading}
               className="w-full py-3 text-white text-sm transition-opacity hover:opacity-80 disabled:opacity-50"
-              style={{ backgroundColor: 'var(--blue-primary)' }}
+              style={{ backgroundColor: 'var(--blue-primary)', borderRadius: '8px', border: 'none' }}
             >
               {loading ? 'Création...' : 'Créer mon compte'}
             </button>
