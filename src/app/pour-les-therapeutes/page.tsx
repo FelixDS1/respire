@@ -7,16 +7,16 @@ const CALENDLY_LINK = '#'
 
 const features = [
   {
-    title: 'Gérez vos rendez-vous',
-    body: 'Publiez vos disponibilités en quelques clics. Vos patients réservent directement en ligne — fini les allers-retours par e-mail.',
-  },
-  {
-    title: 'Paiements intégrés',
-    body: 'Les règlements sont gérés automatiquement via Stripe. Vous recevez votre paiement sans aucune démarche administrative.',
+    title: 'Agenda en ligne',
+    body: 'Publiez vos disponibilités en quelques clics. Vos patients réservent directement — fini les allers-retours par e-mail ou téléphone.',
   },
   {
     title: 'Messagerie sécurisée',
-    body: 'Échangez avec vos patients via notre messagerie chiffrée, avant et après chaque séance.',
+    body: 'Échangez avec vos patients avant et après chaque séance via une messagerie chiffrée, intégrée à votre espace.',
+  },
+  {
+    title: 'Paiements sans surprise',
+    body: '4€ de frais fixes par séance, prélevés au moment de la réservation. Pas d\'abonnement, pas de commission variable.',
   },
 ]
 
@@ -36,11 +36,11 @@ export default function PourLesTherapeutesPage() {
           Pour les thérapeutes
         </p>
         <h1 style={{ fontSize: '3rem', fontWeight: 300, lineHeight: 1.2, marginBottom: '24px', fontFamily: 'Georgia, serif' }}>
-          Concentrez-vous sur vos patients.<br />
-          <span style={{ color: 'var(--blue-primary)' }}>Nous gérons le reste.</span>
+          Publiez votre agenda.<br />
+          <span style={{ color: 'var(--blue-primary)' }}>Sans commission cachée.</span>
         </h1>
         <p style={{ fontSize: '1.1rem', fontWeight: 300, lineHeight: 1.9, color: '#4A6070', marginBottom: '44px', fontFamily: 'Georgia, serif', maxWidth: '600px', margin: '0 auto 44px' }}>
-          Rejoignez Respire et accédez à une plateforme pensée pour les professionnels de santé mentale — agenda en ligne, paiements automatisés, et messagerie sécurisée avec vos patients.
+          Avec Respire, vos patients réservent directement en ligne, échangent avec vous via messagerie sécurisée, et règlent la séance au moment de la réservation. Frais fixes de 4€ par séance — rien d'autre.
         </p>
 
         {/* CTAs */}
