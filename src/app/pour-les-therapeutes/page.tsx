@@ -36,7 +36,7 @@ export default function PourLesTherapeutesPage() {
     },
     en: {
       eyebrow: 'For therapists',
-      headline: 'Publish your availability.',
+      headline: 'Appointments booked.',
       headlineAccent: 'No hidden fees.',
       body: 'With Respire, your patients book directly online, message you through a secure inbox, and pay at the time of booking. You set your rate — and you keep it in full. No subscription, no hidden commission.',
       cta: 'Create my profile',
