@@ -4,21 +4,18 @@ import { useRef } from 'react'
 import Link from 'next/link'
 import { useLanguage } from '@/lib/language'
 
-// Blue gradient tones — light Respire blues
 const STEP_GRADIENTS = [
   'linear-gradient(135deg, #2D6A9F 0%, #3D87C4 100%)',
   'linear-gradient(135deg, #3D87C4 0%, #56A3D9 100%)',
   'linear-gradient(135deg, #56A3D9 0%, #74BFED 100%)',
 ]
-// Dark navy used for second value card (same as hero panel)
 const DARK_NAVY = '#1C2B3A'
 
 const content = {
   fr: {
     eyebrow: 'À propos',
     mission: 'Vous méritez\nde respirer.',
-    subtitleLarge: 'La vie est parfois compliquée, stressante, on se force à vivre en courant.',
-    subtitleSmall: "Quand on ralentit, on culpabilise de ne pas s'essouffler. Essayez de sortir de ce cercle vicieux. Prenez du temps pour vous, pour réfléchir à vous, pour respirer.",
+    subtitle: "La vie est parfois compliquée, stressante, on se force à vivre en courant. Quand on ralentit, on culpabilise de ne pas s'essouffler. Essayez de sortir de ce cercle vicieux. Prenez du temps pour vous, pour réfléchir à vous, pour respirer.",
     whyEyebrow: 'Pourquoi Respire existe',
     whyHeading: 'Simplifier le suivi psychologique.',
     whyBody: "Votre santé commence d'abord dans votre tête. Trouver une bonne relation patient(e)/psy est un travail incertain. Les plateformes qui existent pour faciliter cette tâche posent trop de questions fastidieuses, et manquent de transparence.",
@@ -29,7 +26,6 @@ const content = {
     ],
     founderEyebrow: 'Note du fondateur',
     founder: "Je m'appelle Félix, j'habite à Paris. Bien que j'ai toujours voulu trouver un(e) psy, j'ai toujours eu peur de me lancer — et si je ne trouvais pas la/le psy qui me\u00a0correspondait\u00a0? J'ai créé Respire pour répondre à ma crainte.",
-    founderName: '— Félix, fondateur',
     ctaHeading: 'Prêt à commencer ?',
     ctaMemberLabel: 'Créer mon compte',
     ctaTherapistLabel: 'Vous êtes thérapeute ?',
@@ -39,8 +35,7 @@ const content = {
   en: {
     eyebrow: 'About',
     mission: 'You deserve\nto breathe.',
-    subtitleLarge: 'Life is sometimes complicated, stressful — we force ourselves to keep running.',
-    subtitleSmall: "When we slow down, we feel guilty for not being out of breath. Try to break out of this vicious cycle. Take time for yourself, to reflect, to breathe.",
+    subtitle: "Life is sometimes complicated, stressful — we force ourselves to keep running. When we slow down, we feel guilty for not being out of breath. Try to break out of this vicious cycle. Take time for yourself, to reflect, to breathe.",
     whyEyebrow: 'Why Respire exists',
     whyHeading: 'Simplifying mental health care.',
     whyBody: "Your health starts in your head. Finding the right patient/therapist relationship is uncertain work. The platforms built to help with this ask too many tedious questions and lack transparency.",
@@ -51,7 +46,6 @@ const content = {
     ],
     founderEyebrow: 'A note from the founder',
     founder: "My name is Félix, I live in Paris. Although I always wanted to find a therapist, I was always afraid to take the leap — what if I couldn't find the therapist who was\u00a0right\u00a0for\u00a0me? I created Respire to answer that fear.",
-    founderName: '— Félix, founder',
     ctaHeading: 'Ready to start?',
     ctaMemberLabel: 'Create my account',
     ctaTherapistLabel: 'Are you a therapist?',
@@ -93,6 +87,15 @@ function InflateBox({ children, style }: { children: React.ReactNode; style?: Re
   )
 }
 
+const labelStyle: React.CSSProperties = {
+  fontSize: '0.85rem',
+  textTransform: 'uppercase',
+  letterSpacing: '0.12em',
+  color: 'var(--blue-primary)',
+  fontFamily: 'Georgia, serif',
+  marginBottom: '20px',
+}
+
 export default function About() {
   const { lang, t } = useLanguage()
   const c = content[lang as 'fr' | 'en'] ?? content.fr
@@ -104,13 +107,23 @@ export default function About() {
   ]
 
   return (
-    <main style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100vh' }}>
+    <main style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
+
+      {/* ── Background shapes (absolute, z:0) ── */}
+      <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', width: '600px', height: '600px', borderRadius: '50%', backgroundColor: 'var(--blue-accent)', opacity: 0.4, top: '-200px', right: '-120px' }} />
+        <div style={{ position: 'absolute', width: '440px', height: '440px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.25, bottom: '10%', left: '-100px' }} />
+        <div style={{ position: 'absolute', width: '300px', height: '300px', borderRadius: '60px', backgroundColor: 'var(--blue-accent)', opacity: 0.18, top: '35%', left: '22%', transform: 'rotate(25deg)' }} />
+        <div style={{ position: 'absolute', width: '180px', height: '180px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.18, top: '12%', right: '28%' }} />
+        <div style={{ position: 'absolute', width: '120px', height: '120px', borderRadius: '50%', border: '2px solid var(--blue-primary)', opacity: 0.07, top: '55%', left: '10%' }} />
+        <div style={{ position: 'absolute', width: '90px', height: '90px', borderRadius: '16px', backgroundColor: 'var(--green-soft)', opacity: 0.15, bottom: '25%', right: '12%', transform: 'rotate(15deg)' }} />
+      </div>
 
       {/* ── Hero ── */}
-      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '72px 56px 40px' }}>
+      <section style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '72px 56px 40px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', alignItems: 'stretch' }}>
           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '52px 0' }}>
-            <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--blue-primary)', marginBottom: '28px', fontFamily: 'Georgia, serif' }}>
+            <p style={{ fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--blue-primary)', marginBottom: '28px', fontFamily: 'Georgia, serif' }}>
               {c.eyebrow}
             </p>
             <h1 style={{ fontSize: '4rem', fontWeight: 300, lineHeight: 1.15, fontFamily: 'Georgia, serif', whiteSpace: 'pre-line', margin: 0 }}>
@@ -119,12 +132,9 @@ export default function About() {
           </div>
 
           <InflateBox style={{ borderRadius: '16px', overflow: 'hidden' }}>
-            <div style={{ backgroundColor: DARK_NAVY, borderRadius: '16px', padding: '52px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '24px', height: '100%', boxSizing: 'border-box' }}>
-              <p style={{ fontSize: '1.4rem', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.65, color: 'rgba(255,255,255,0.92)', fontFamily: 'Georgia, serif', margin: 0 }}>
-                {c.subtitleLarge}
-              </p>
-              <p style={{ fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.85, color: 'rgba(255,255,255,0.6)', fontFamily: 'Georgia, serif', margin: 0 }}>
-                {c.subtitleSmall}
+            <div style={{ backgroundColor: DARK_NAVY, borderRadius: '16px', padding: '52px 48px', display: 'flex', alignItems: 'center', height: '100%', boxSizing: 'border-box' }}>
+              <p style={{ fontSize: '1.35rem', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.75, color: 'rgba(255,255,255,0.88)', fontFamily: 'Georgia, serif', margin: 0 }}>
+                {c.subtitle}
               </p>
             </div>
           </InflateBox>
@@ -132,12 +142,10 @@ export default function About() {
       </section>
 
       {/* ── Why we exist ── */}
-      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 56px 40px' }}>
+      <section style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '0 56px 40px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr', gap: '24px' }}>
           <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '48px 40px' }}>
-            <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--blue-primary)', marginBottom: '20px', fontFamily: 'Georgia, serif' }}>
-              {c.whyEyebrow}
-            </p>
+            <p style={labelStyle}>{c.whyEyebrow}</p>
             <h2 style={{ fontSize: '1.9rem', fontWeight: 300, lineHeight: 1.3, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0 }}>
               {c.whyHeading}
             </h2>
@@ -152,38 +160,26 @@ export default function About() {
       </section>
 
       {/* ── Values ── */}
-      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 56px 40px' }}>
-        <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--blue-primary)', marginBottom: '20px', fontFamily: 'Georgia, serif' }}>
-          {c.valuesEyebrow}
-        </p>
+      <section style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '0 56px 40px' }}>
+        <p style={labelStyle}>{c.valuesEyebrow}</p>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', perspective: '1000px' }}>
-          {/* Value 1 — light surface */}
           <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(28,43,58,0.06)' }}>
-            <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>
-              01
-            </span>
-            <p style={{ fontSize: '1.25rem', fontWeight: 400, lineHeight: 1.5, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0 }}>
-              {c.values[0]}
-            </p>
+            <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>01</span>
+            <p style={{ fontSize: '1.25rem', fontWeight: 400, lineHeight: 1.5, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0 }}>{c.values[0]}</p>
           </InflateBox>
 
-          {/* Value 2 — dark navy */}
           <InflateBox style={{ backgroundColor: DARK_NAVY, borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(28,43,58,0.12)' }}>
-            <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'rgba(255,255,255,0.15)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>
-              02
-            </span>
-            <p style={{ fontSize: '1.25rem', fontWeight: 400, lineHeight: 1.5, color: 'rgba(255,255,255,0.9)', fontFamily: 'Georgia, serif', margin: 0 }}>
-              {c.values[1]}
-            </p>
+            <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'rgba(255,255,255,0.15)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>02</span>
+            <p style={{ fontSize: '1.25rem', fontWeight: 400, lineHeight: 1.5, color: 'rgba(255,255,255,0.9)', fontFamily: 'Georgia, serif', margin: 0 }}>{c.values[1]}</p>
           </InflateBox>
         </div>
       </section>
 
-      {/* ── Steps (left) + Founder & CTA (right) ── */}
-      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 56px 72px' }}>
+      {/* ── Steps (left) + Founder, CTA & Contact (right) ── */}
+      <section style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '0 56px 72px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr', gap: '24px', alignItems: 'stretch' }}>
 
-          {/* Left: stacked blue gradient steps — stretch to match right column */}
+          {/* Left: stacked blue gradient steps */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', perspective: '1000px' }}>
             {steps.map((step, i) => (
               <InflateBox
@@ -205,23 +201,21 @@ export default function About() {
             ))}
           </div>
 
-          {/* Right: founder note + CTA integrated */}
+          {/* Right: founder note + CTA + contact all in one box */}
           <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '52px 48px', boxShadow: '0 2px 16px rgba(28,43,58,0.06)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
-              <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--blue-primary)', fontFamily: 'Georgia, serif', marginBottom: '24px' }}>
-                {c.founderEyebrow}
-              </p>
-              <p style={{ fontSize: '1.15rem', fontWeight: 300, lineHeight: 1.9, color: '#4A6070', fontFamily: 'Georgia, serif', fontStyle: 'italic', marginBottom: '0' }}>
+              <p style={{ ...labelStyle, fontSize: '0.9rem' }}>{c.founderEyebrow}</p>
+              <p style={{ fontSize: '1.15rem', fontWeight: 300, lineHeight: 1.9, color: '#4A6070', fontFamily: 'Georgia, serif', fontStyle: 'italic', marginBottom: '16px' }}>
                 {c.founder}
               </p>
             </div>
 
-            {/* CTA at bottom of founder box */}
-            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '28px', marginTop: '36px' }}>
-              <p style={{ fontSize: '1.4rem', fontWeight: 300, fontStyle: 'italic', color: 'var(--text)', fontFamily: 'Georgia, serif', marginBottom: '20px' }}>
+            {/* CTA */}
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '24px', marginTop: '16px' }}>
+              <p style={{ fontSize: '1.4rem', fontWeight: 300, fontStyle: 'italic', color: 'var(--text)', fontFamily: 'Georgia, serif', marginBottom: '16px' }}>
                 {c.ctaHeading}
               </p>
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '24px' }}>
                 <Link href="/signup" style={{ display: 'inline-block', padding: '12px 28px', backgroundColor: 'var(--blue-primary)', color: 'white', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem', fontFamily: 'Georgia, serif', letterSpacing: '0.04em' }}>
                   {c.ctaMemberLabel.toUpperCase()}
                 </Link>
@@ -229,29 +223,21 @@ export default function About() {
                   {c.ctaTherapistLabel.toUpperCase()}
                 </Link>
               </div>
+
+              {/* Contact inline */}
+              <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#8A9BAD', marginBottom: '4px', fontFamily: 'Georgia, serif' }}>
+                {c.email}
+              </p>
+              <p style={{ fontSize: '0.95rem', fontFamily: 'Georgia, serif', color: '#4A6070', fontWeight: 300, margin: 0 }}>
+                contact@respire.fr
+              </p>
             </div>
           </InflateBox>
         </div>
       </section>
 
-      {/* Contact */}
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 56px' }}>
-        <hr style={{ borderColor: 'var(--border)' }} />
-      </div>
-      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '48px 56px 80px' }}>
-        <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--blue-primary)', marginBottom: '20px', fontFamily: 'Georgia, serif' }}>
-          {c.contact}
-        </p>
-        <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#8A9BAD', marginBottom: '8px', fontFamily: 'Georgia, serif' }}>
-          {c.email}
-        </p>
-        <p style={{ fontSize: '1.1rem', fontFamily: 'Georgia, serif', color: 'var(--text)', fontWeight: 300 }}>
-          contact@respire.fr
-        </p>
-      </section>
-
       {/* Footer */}
-      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
+      <footer style={{ position: 'relative', borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '28px 56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', color: '#4A6070', fontFamily: 'Georgia, serif' }}>
           <span>© 2026 Respire</span>
           <div style={{ display: 'flex', gap: '24px' }}>
