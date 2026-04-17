@@ -114,7 +114,7 @@ function StepBubble({ number, title, body }: {
       <span style={{
         fontSize: '3.2rem',
         fontWeight: 300,
-        color: 'var(--blue-primary)',
+        color: '#9C7B5E',
         fontFamily: 'Georgia, serif',
         display: 'block',
         marginBottom: '16px',
@@ -163,7 +163,7 @@ export default function Home() {
             style={{
               display: 'inline-block',
               padding: '15px 38px',
-              backgroundColor: 'var(--blue-primary)',
+              backgroundColor: '#9C7B5E',
               color: 'white',
               borderRadius: '8px',
               textDecoration: 'none',
