@@ -4,11 +4,11 @@ import { useRef } from 'react'
 import Link from 'next/link'
 import { useLanguage } from '@/lib/language'
 
-// Blue gradient tones — each step slightly lighter
+// Blue gradient tones — light Respire blues
 const STEP_GRADIENTS = [
-  'linear-gradient(135deg, #0F1F35 0%, #1B3D5F 100%)',
-  'linear-gradient(135deg, #1B3D5F 0%, #235F8A 100%)',
-  'linear-gradient(135deg, #235F8A 0%, #2E7DB5 100%)',
+  'linear-gradient(135deg, #2D6A9F 0%, #3D87C4 100%)',
+  'linear-gradient(135deg, #3D87C4 0%, #56A3D9 100%)',
+  'linear-gradient(135deg, #56A3D9 0%, #74BFED 100%)',
 ]
 // Dark navy used for second value card (same as hero panel)
 const DARK_NAVY = '#1C2B3A'
@@ -181,22 +181,24 @@ export default function About() {
 
       {/* ── Steps (left) + Founder & CTA (right) ── */}
       <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 56px 72px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr', gap: '24px', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr', gap: '24px', alignItems: 'stretch' }}>
 
-          {/* Left: stacked blue gradient steps */}
+          {/* Left: stacked blue gradient steps — stretch to match right column */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', perspective: '1000px' }}>
             {steps.map((step, i) => (
               <InflateBox
                 key={step.number}
-                style={{ background: STEP_GRADIENTS[i], borderRadius: '16px', padding: '28px 32px', boxShadow: '0 2px 16px rgba(15,31,53,0.18)' }}
+                style={{ background: STEP_GRADIENTS[i], borderRadius: '16px', padding: '28px 32px', boxShadow: '0 2px 16px rgba(45,106,159,0.22)', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
               >
-                <span style={{ display: 'block', fontSize: '2rem', fontWeight: 300, color: 'rgba(255,255,255,0.55)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '10px' }}>
-                  {step.number}
-                </span>
-                <p style={{ fontSize: '1rem', fontWeight: 500, color: 'white', fontFamily: 'Georgia, serif', marginBottom: '6px' }}>
-                  {step.title}
-                </p>
-                <p style={{ fontSize: '0.88rem', fontWeight: 300, lineHeight: 1.7, color: 'rgba(255,255,255,0.7)', fontFamily: 'Georgia, serif', margin: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '1.5rem', fontWeight: 300, color: 'rgba(255,255,255,0.55)', fontFamily: 'Georgia, serif', lineHeight: 1, flexShrink: 0 }}>
+                    {step.number}
+                  </span>
+                  <p style={{ fontSize: '1.2rem', fontWeight: 600, color: 'white', fontFamily: 'Georgia, serif', margin: 0, lineHeight: 1.3 }}>
+                    {step.title}
+                  </p>
+                </div>
+                <p style={{ fontSize: '0.9rem', fontWeight: 300, lineHeight: 1.75, color: 'rgba(255,255,255,0.75)', fontFamily: 'Georgia, serif', margin: 0 }}>
                   {step.body}
                 </p>
               </InflateBox>
@@ -204,19 +206,18 @@ export default function About() {
           </div>
 
           {/* Right: founder note + CTA integrated */}
-          <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '52px 48px', boxShadow: '0 2px 16px rgba(28,43,58,0.06)' }}>
-            <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--blue-primary)', fontFamily: 'Georgia, serif', marginBottom: '24px' }}>
-              {c.founderEyebrow}
-            </p>
-            <p style={{ fontSize: '1.15rem', fontWeight: 300, lineHeight: 1.9, color: '#4A6070', fontFamily: 'Georgia, serif', fontStyle: 'italic', marginBottom: '20px' }}>
-              {c.founder}
-            </p>
-            <p style={{ fontSize: '0.9rem', fontWeight: 400, color: 'var(--blue-primary)', fontFamily: 'Georgia, serif', marginBottom: '36px' }}>
-              {c.founderName}
-            </p>
+          <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '52px 48px', boxShadow: '0 2px 16px rgba(28,43,58,0.06)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <div>
+              <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--blue-primary)', fontFamily: 'Georgia, serif', marginBottom: '24px' }}>
+                {c.founderEyebrow}
+              </p>
+              <p style={{ fontSize: '1.15rem', fontWeight: 300, lineHeight: 1.9, color: '#4A6070', fontFamily: 'Georgia, serif', fontStyle: 'italic', marginBottom: '0' }}>
+                {c.founder}
+              </p>
+            </div>
 
-            {/* CTA integrated below founder note */}
-            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '28px' }}>
+            {/* CTA at bottom of founder box */}
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '28px', marginTop: '36px' }}>
               <p style={{ fontSize: '1.4rem', fontWeight: 300, fontStyle: 'italic', color: 'var(--text)', fontFamily: 'Georgia, serif', marginBottom: '20px' }}>
                 {c.ctaHeading}
               </p>
