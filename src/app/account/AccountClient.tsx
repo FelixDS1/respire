@@ -347,6 +347,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
 
   const inputStyle = {
     border: '1px solid var(--border)',
+    borderRadius: '8px',
     backgroundColor: 'var(--surface)',
     color: 'var(--text)',
     outline: 'none',
@@ -386,11 +387,12 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
         <div style={{ display: 'flex', marginBottom: '24px', borderBottom: '1px solid var(--border)' }}>
           {tabs.map(t => (
             <button key={t.key} onClick={() => setTab(t.key)}
-              className="px-6 py-3 text-sm transition-colors"
               style={{
+                padding: '14px 28px', fontSize: '0.95rem',
+                borderTop: 'none', borderLeft: 'none', borderRight: 'none',
                 borderBottom: tab === t.key ? '2px solid var(--blue-primary)' : '2px solid transparent',
                 color: tab === t.key ? 'var(--blue-primary)' : '#4A6070',
-                background: 'none', cursor: 'pointer', marginBottom: '-1px',
+                background: 'none', cursor: 'pointer', marginBottom: '-1px', transition: 'color 0.15s',
               }}>
               {t.label}
             </button>
@@ -519,7 +521,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                     value={dob}
                     onChange={e => setDob(e.target.value)}
                     className="text-sm px-3 py-2"
-                    style={{ border: '1px solid var(--border)', color: 'var(--text)', backgroundColor: 'var(--surface)', outline: 'none' }}
+                    style={{ border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)', backgroundColor: 'var(--surface)', outline: 'none' }}
                   />
                 </div>
 
@@ -533,7 +535,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                     onChange={e => setNir(e.target.value)}
                     placeholder="1 85 12 75 108 001 28"
                     className="text-sm px-3 py-2"
-                    style={{ border: '1px solid var(--border)', color: 'var(--text)', backgroundColor: 'var(--surface)', outline: 'none', width: '100%', maxWidth: '260px' }}
+                    style={{ border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)', backgroundColor: 'var(--surface)', outline: 'none', width: '100%', maxWidth: '260px' }}
                   />
                   <p className="text-xs mt-1" style={{ color: '#8A9BAD' }}>
                     {lang === 'fr'
@@ -550,8 +552,8 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
               <button
                 onClick={saveProfile}
                 disabled={saving}
-                className="px-8 py-2 text-white text-sm transition-opacity hover:opacity-80 disabled:opacity-50"
-                style={{ backgroundColor: 'var(--blue-primary)', cursor: 'pointer' }}
+                className="text-white text-sm transition-opacity hover:opacity-80 disabled:opacity-50"
+                style={{ backgroundColor: 'var(--blue-primary)', cursor: 'pointer', padding: '10px 28px', borderRadius: '8px', border: 'none' }}
               >
                 {saving ? (lang === 'en' ? 'Saving...' : 'Enregistrement...') : (lang === 'en' ? 'Save' : 'Enregistrer')}
               </button>
@@ -641,8 +643,8 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                               : ''}
                           </p>
                         </div>
-                        <span className="text-xs px-2 py-1"
-                          style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
+                        <span className="text-xs px-3 py-1"
+                          style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', borderRadius: '20px' }}>
                           {lang === 'en' ? 'Confirmed' : 'Confirmé'}
                         </span>
                       </div>
@@ -734,7 +736,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                                                   key={s.id}
                                                   href={`/book/${s.id}`}
                                                   className="text-xs px-2 py-1 hover:opacity-80 transition-opacity"
-                                                  style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', border: '1px solid var(--border)' }}
+                                                  style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', border: '1px solid var(--border)', borderRadius: '6px' }}
                                                 >
                                                   {s.start_time.slice(0, 5)}
                                                 </Link>
@@ -830,7 +832,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                                   onClick={() => saveCheckin(appt.id)}
                                   disabled={!checkinMood[appt.id] || checkinSaving[appt.id]}
                                   className="text-xs px-4 py-1.5 text-white transition-opacity hover:opacity-80 disabled:opacity-40"
-                                  style={{ backgroundColor: 'var(--blue-primary)', cursor: 'pointer' }}
+                                  style={{ backgroundColor: 'var(--blue-primary)', cursor: 'pointer', borderRadius: '8px', border: 'none' }}
                                 >
                                   {checkinSaving[appt.id]
                                     ? (lang === 'fr' ? 'Enregistrement...' : 'Saving...')
@@ -903,7 +905,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
             <div className="flex flex-col gap-2">
               {localWaitlist.map(entry => (
                 <div key={entry.therapist_id} className="flex items-center justify-between bg-[var(--surface)] px-5 py-4"
-                  style={{ border: '1px solid var(--border)' }}>
+                  style={{ border: '1px solid var(--border)', borderRadius: '8px' }}>
                   <div>
                     <p className="text-sm" style={{ color: 'var(--text)' }}>
                       {entry.therapists?.profiles?.full_name}
@@ -1003,7 +1005,7 @@ function StreakSetupModal({ current, onSave, onSkip, saving, errorMsg, lang }: {
     }}>
       <div style={{
         backgroundColor: 'var(--surface)', width: '100%', maxWidth: '400px',
-        padding: '36px 32px', border: '1px solid var(--border)',
+        padding: '36px 32px', border: '1px solid var(--border)', borderRadius: '16px',
       }}>
         <p style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--blue-primary)', marginBottom: '12px' }}>
           {lang === 'fr' ? 'Suivi thérapeutique' : 'Therapy streak'}
@@ -1026,6 +1028,7 @@ function StreakSetupModal({ current, onSave, onSkip, saving, errorMsg, lang }: {
               style={{
                 textAlign: 'left', padding: '14px 16px', cursor: 'pointer',
                 border: `1px solid ${selected === opt.key ? 'var(--blue-primary)' : 'var(--border)'}`,
+                borderRadius: '8px',
                 backgroundColor: selected === opt.key ? 'var(--blue-accent)' : 'var(--surface)',
                 transition: 'all 0.15s',
               }}
@@ -1048,7 +1051,7 @@ function StreakSetupModal({ current, onSave, onSkip, saving, errorMsg, lang }: {
           onClick={() => selected && onSave(selected)}
           disabled={!selected || saving}
           className="w-full py-3 text-white text-sm transition-opacity hover:opacity-80 disabled:opacity-40"
-          style={{ backgroundColor: 'var(--blue-primary)', cursor: selected ? 'pointer' : 'default' }}
+          style={{ backgroundColor: 'var(--blue-primary)', cursor: selected ? 'pointer' : 'default', borderRadius: '8px', border: 'none' }}
         >
           {saving
             ? (lang === 'fr' ? 'Enregistrement...' : 'Saving...')
@@ -1132,7 +1135,7 @@ function MembreCalendarTab({ appointments, lang }: { appointments: Appointment[]
       {/* Navigation */}
       <div className="flex items-center gap-4 mb-4">
         <button onClick={() => setWeekOffset(o => o - 1)}
-          style={{ border: `1px solid ${border}`, background: 'white', cursor: 'pointer', color: 'var(--text)', padding: '4px 12px', fontSize: '0.875rem' }}>
+          style={{ border: `1px solid ${border}`, borderRadius: '8px', background: 'var(--surface)', cursor: 'pointer', color: 'var(--text)', padding: '6px 14px', fontSize: '0.875rem' }}>
           ←
         </button>
         <span className="text-sm" style={{ color: 'var(--text)' }}>
@@ -1140,13 +1143,13 @@ function MembreCalendarTab({ appointments, lang }: { appointments: Appointment[]
           {monday.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}
         </span>
         <button onClick={() => setWeekOffset(o => o + 1)}
-          style={{ border: `1px solid ${border}`, background: 'white', cursor: 'pointer', color: 'var(--text)', padding: '4px 12px', fontSize: '0.875rem' }}>
+          style={{ border: `1px solid ${border}`, borderRadius: '8px', background: 'var(--surface)', cursor: 'pointer', color: 'var(--text)', padding: '6px 14px', fontSize: '0.875rem' }}>
           →
         </button>
       </div>
 
-      <div style={{ overflowX: 'auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '48px repeat(7, 1fr)', minWidth: '560px', border: `1px solid ${border}`, backgroundColor: border, gap: '1px' }}>
+      <div style={{ overflowX: 'auto', borderRadius: '12px', border: `1px solid ${border}` }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '48px repeat(7, 1fr)', minWidth: '560px', backgroundColor: border, gap: '1px' }}>
           <DayHeader />
 
           {timeRows.length === 0 ? (

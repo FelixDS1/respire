@@ -333,9 +333,11 @@ export default function MessagesClient({
           className="flex flex-1 overflow-hidden"
           style={{
             border: '1px solid var(--border)',
+            borderRadius: '16px',
             backgroundColor: 'var(--surface)',
             minHeight: '520px',
             maxHeight: '680px',
+            overflow: 'hidden',
           }}
         >
           {/* Left sidebar — conversation list */}
@@ -363,11 +365,11 @@ export default function MessagesClient({
                 {noConversations}
               </div>
             ) : (
-              conversations.map(conv => {
+              conversations.map((conv, i) => {
                 const isActive = conv.other_user_id === selectedId
                 return (
+                  <div key={conv.other_user_id}>
                   <button
-                    key={conv.other_user_id}
                     onClick={() => selectConversation(conv.other_user_id)}
                     className="w-full text-left transition-colors"
                     style={{
@@ -378,7 +380,7 @@ export default function MessagesClient({
                       gap: '12px',
                       padding: '12px 16px',
                       border: 'none',
-                      borderBottom: '1px solid var(--border)',
+                      width: '100%',
                     }}
                   >
                     <Avatar name={conv.other_user_name} photoUrl={conv.other_user_avatar} size={38} />
@@ -417,6 +419,10 @@ export default function MessagesClient({
                       </div>
                     </div>
                   </button>
+                  {i < conversations.length - 1 && (
+                    <div style={{ height: '1px', backgroundColor: 'var(--border)', margin: '0 16px' }} />
+                  )}
+                  </div>
                 )
               })
             )}
@@ -513,10 +519,11 @@ export default function MessagesClient({
                       flex: 1,
                       resize: 'none',
                       border: '1px solid var(--border)',
+                      borderRadius: '12px',
                       padding: '8px 12px',
                       fontSize: '14px',
                       color: 'var(--text)',
-                      backgroundColor: 'var(--surface)',
+                      backgroundColor: 'var(--bg)',
                       outline: 'none',
                       fontFamily: 'Georgia, serif',
                       lineHeight: '1.5',
