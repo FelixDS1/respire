@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     .eq('id', slot_id)
 
   // Create appointment
-  await supabase.from('appointments').insert({
+  const { error: insertError } = await supabase.from('appointments').insert({
     patient_id,
     therapist_id,
     availability_id: slot_id,
@@ -67,6 +67,12 @@ export async function POST(req: NextRequest) {
     therapist_stripe_account_id: stripe_account_id,
     transfer_released: false,
   })
+
+  if (insertError) {
+    console.error('webhook: appointment insert failed', insertError)
+    // Return 500 so Stripe retries the webhook
+    return NextResponse.json({ error: 'Appointment insert failed' }, { status: 500 })
+  }
 
   // Fetch details for emails + message
   const [{ data: slot }, { data: therapist }, { data: patient }] = await Promise.all([

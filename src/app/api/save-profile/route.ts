@@ -7,11 +7,17 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const { bio, dob, nir } = await req.json()
+    const { bio, dob, nir, removeAvatar } = await req.json()
+
+    const profileUpdate: Record<string, unknown> = {
+      bio: bio?.trim() || null,
+      date_of_birth: dob || null,
+    }
+    if (removeAvatar) profileUpdate.avatar_url = null
 
     const { error: profileError } = await supabase
       .from('profiles')
-      .update({ bio: bio?.trim() || null, date_of_birth: dob || null })
+      .update(profileUpdate)
       .eq('id', user.id)
 
     if (profileError) {

@@ -206,7 +206,16 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
     setPhotoRemoved(true)
     if (photoInputRef.current) photoInputRef.current.value = ''
     setError('')
-    await createClient().from('profiles').update({ avatar_url: null }).eq('id', userId)
+    const res = await fetch('/api/save-profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bio, dob, nir, removeAvatar: true }),
+    })
+    if (!res.ok) {
+      setError(lang === 'en' ? 'Failed to remove photo.' : 'Erreur lors de la suppression de la photo.')
+      setPhotoPreview(profile.avatar_url)
+      setPhotoRemoved(false)
+    }
   }
 
   async function saveProfile() {

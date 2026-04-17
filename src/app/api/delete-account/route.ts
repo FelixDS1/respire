@@ -14,7 +14,7 @@ export async function DELETE() {
   )
 
   // Delete avatar from storage
-  await admin.storage.from('avatars').remove([`${user.id}/avatar.jpg`, `${user.id}/avatar.png`, `${user.id}/avatar.webp`])
+  await admin.storage.from('avatars').remove([`${user.id}/avatar.jpg`, `${user.id}/avatar.jpeg`, `${user.id}/avatar.png`, `${user.id}/avatar.webp`])
 
   // Delete auth user — profile row should cascade
   const { error } = await admin.auth.admin.deleteUser(user.id)
