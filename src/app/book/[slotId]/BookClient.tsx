@@ -85,7 +85,7 @@ export default function BookClient({ slot, therapist, isBooked, userId }: Props)
             Confirmer la réservation
           </h1>
 
-          <div className="bg-white p-6 mb-6" style={{ border: '1px solid var(--border)' }}>
+          <div className="bg-[var(--surface)] p-6 mb-6" style={{ border: '1px solid var(--border)' }}>
             <h2 className="text-xs uppercase tracking-widest mb-4" style={{ color: 'var(--blue-primary)' }}>
               Récapitulatif
             </h2>

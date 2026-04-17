@@ -33,7 +33,7 @@ function StepBubble({ number, title, body }: { number: string; title: string; bo
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
-        backgroundColor: 'white',
+        backgroundColor: 'var(--surface)',
         border: '1px solid var(--border)',
         borderRadius: '16px',
         padding: '44px 36px 36px',
@@ -114,7 +114,7 @@ export default function About() {
       </section>
 
       {/* Footer */}
-      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'white' }}>
+      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '28px 56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', color: '#4A6070', fontFamily: 'Georgia, serif' }}>
           <span>© 2026 Respire</span>
           <div style={{ display: 'flex', gap: '24px' }}>

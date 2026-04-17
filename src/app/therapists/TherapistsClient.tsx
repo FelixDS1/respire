@@ -97,7 +97,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
           <select
             value={availFilter}
             onChange={e => setAvailFilter(e.target.value as typeof availFilter)}
-            style={{ border: '1px solid var(--border)', padding: '8px 14px', fontSize: '0.9rem', backgroundColor: 'white', color: 'var(--text)', cursor: 'pointer', borderRadius: '6px' }}
+            style={{ border: '1px solid var(--border)', padding: '8px 14px', fontSize: '0.9rem', backgroundColor: 'var(--surface)', color: 'var(--text)', cursor: 'pointer', borderRadius: '6px' }}
           >
             <option value="all">{lang === 'fr' ? 'Toutes disponibilités' : 'All availability'}</option>
             <option value="this_week">{lang === 'fr' ? 'Cette semaine' : 'This week'}</option>
@@ -106,7 +106,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
           <select
             value={consultFilter}
             onChange={e => setConsultFilter(e.target.value as typeof consultFilter)}
-            style={{ border: '1px solid var(--border)', padding: '8px 14px', fontSize: '0.9rem', backgroundColor: 'white', color: 'var(--text)', cursor: 'pointer', borderRadius: '6px' }}
+            style={{ border: '1px solid var(--border)', padding: '8px 14px', fontSize: '0.9rem', backgroundColor: 'var(--surface)', color: 'var(--text)', cursor: 'pointer', borderRadius: '6px' }}
           >
             <option value="all">{lang === 'fr' ? 'Présentiel & vidéo' : 'In-person & video'}</option>
             <option value="presentiel">{lang === 'fr' ? 'Présentiel uniquement' : 'In-person only'}</option>
@@ -146,14 +146,14 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
                 placeholder={lang === 'fr' ? 'Ajouter une spécialité...' : 'Add an area of expertise...'}
                 className="text-sm outline-none"
                 style={{
-                  border: '1px solid var(--border)', backgroundColor: 'white',
+                  border: '1px solid var(--border)', backgroundColor: 'var(--surface)',
                   color: 'var(--text)', padding: '5px 12px', minWidth: '220px',
                 }}
               />
               {showSuggestions && suggestions.length > 0 && (
                 <div style={{
                   position: 'absolute', top: '100%', left: 0, zIndex: 10,
-                  backgroundColor: 'white', border: '1px solid var(--border)',
+                  backgroundColor: 'var(--surface)', border: '1px solid var(--border)',
                   minWidth: '220px', marginTop: '2px',
                 }}>
                   {suggestions.map(frTerm => (
@@ -194,7 +194,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
                 <Link
                   key={therapist.id}
                   href={`/therapists/${therapist.id}`}
-                  className="block bg-white p-6 transition-shadow hover:shadow-sm"
+                  className="block bg-[var(--surface)] p-6 transition-shadow hover:shadow-sm"
                   style={{ border: '1px solid var(--border)', textDecoration: 'none', borderRadius: '8px' }}
                 >
                   <div className="flex gap-6 items-start">
@@ -271,7 +271,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
         )}
       </div>
 
-      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'white', marginTop: '4rem' }}>
+      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)', marginTop: '4rem' }}>
         <div className="max-w-[1400px] mx-auto px-14 py-8 flex justify-between items-center text-sm" style={{ color: '#4A6070' }}>
           <span>© 2026 Respire</span>
           <div className="flex gap-6">

@@ -347,7 +347,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
 
   const inputStyle = {
     border: '1px solid var(--border)',
-    backgroundColor: 'white',
+    backgroundColor: 'var(--surface)',
     color: 'var(--text)',
     outline: 'none',
   }
@@ -373,7 +373,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
             href="/therapists"
             className="transition-opacity hover:opacity-80"
             style={{
-              backgroundColor: 'var(--blue-primary)', color: 'white',
+              backgroundColor: 'var(--blue-primary)', color: 'var(--surface)',
               padding: '10px 22px', fontSize: '0.9rem', whiteSpace: 'nowrap',
               borderRadius: '6px', textDecoration: 'none', display: 'inline-block',
             }}
@@ -519,7 +519,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                     value={dob}
                     onChange={e => setDob(e.target.value)}
                     className="text-sm px-3 py-2"
-                    style={{ border: '1px solid var(--border)', color: 'var(--text)', backgroundColor: 'white', outline: 'none' }}
+                    style={{ border: '1px solid var(--border)', color: 'var(--text)', backgroundColor: 'var(--surface)', outline: 'none' }}
                   />
                 </div>
 
@@ -533,7 +533,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                     onChange={e => setNir(e.target.value)}
                     placeholder="1 85 12 75 108 001 28"
                     className="text-sm px-3 py-2"
-                    style={{ border: '1px solid var(--border)', color: 'var(--text)', backgroundColor: 'white', outline: 'none', width: '100%', maxWidth: '260px' }}
+                    style={{ border: '1px solid var(--border)', color: 'var(--text)', backgroundColor: 'var(--surface)', outline: 'none', width: '100%', maxWidth: '260px' }}
                   />
                   <p className="text-xs mt-1" style={{ color: '#8A9BAD' }}>
                     {lang === 'fr'
@@ -622,7 +622,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                   const future = isFuture(appt)
                   const confirming = cancelConfirmId === appt.id
                   return (
-                    <div key={appt.id} className="bg-white px-6 py-5"
+                    <div key={appt.id} className="bg-[var(--surface)] px-6 py-5"
                       style={{ border: '1px solid var(--border)', borderRadius: '8px' }}>
                       <div className="flex justify-between items-start">
                         <div>
@@ -902,7 +902,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
             </p>
             <div className="flex flex-col gap-2">
               {localWaitlist.map(entry => (
-                <div key={entry.therapist_id} className="flex items-center justify-between bg-white px-5 py-4"
+                <div key={entry.therapist_id} className="flex items-center justify-between bg-[var(--surface)] px-5 py-4"
                   style={{ border: '1px solid var(--border)' }}>
                   <div>
                     <p className="text-sm" style={{ color: 'var(--text)' }}>
@@ -947,7 +947,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
         />
       )}
 
-      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'white' }}>
+      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '28px 56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', color: '#4A6070', fontFamily: 'Georgia, serif' }}>
           <span>© 2026 Respire</span>
           <div className="flex gap-6">
@@ -1002,7 +1002,7 @@ function StreakSetupModal({ current, onSave, onSkip, saving, errorMsg, lang }: {
       zIndex: 50, padding: '24px',
     }}>
       <div style={{
-        backgroundColor: 'white', width: '100%', maxWidth: '400px',
+        backgroundColor: 'var(--surface)', width: '100%', maxWidth: '400px',
         padding: '36px 32px', border: '1px solid var(--border)',
       }}>
         <p style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--blue-primary)', marginBottom: '12px' }}>
@@ -1026,7 +1026,7 @@ function StreakSetupModal({ current, onSave, onSkip, saving, errorMsg, lang }: {
               style={{
                 textAlign: 'left', padding: '14px 16px', cursor: 'pointer',
                 border: `1px solid ${selected === opt.key ? 'var(--blue-primary)' : 'var(--border)'}`,
-                backgroundColor: selected === opt.key ? 'var(--blue-accent)' : 'white',
+                backgroundColor: selected === opt.key ? 'var(--blue-accent)' : 'var(--surface)',
                 transition: 'all 0.15s',
               }}
             >
@@ -1109,11 +1109,11 @@ function MembreCalendarTab({ appointments, lang }: { appointments: Appointment[]
   function DayHeader() {
     return (
       <>
-        <div style={{ backgroundColor: 'white' }} />
+        <div style={{ backgroundColor: 'var(--surface)' }} />
         {days.map((d, i) => {
           const isToday = d.toDateString() === today.toDateString()
           return (
-            <div key={i} style={{ backgroundColor: isToday ? '#EEF5FF' : 'white', textAlign: 'center', padding: '10px 4px' }}>
+            <div key={i} style={{ backgroundColor: isToday ? '#EEF5FF' : 'var(--surface)', textAlign: 'center', padding: '10px 4px' }}>
               <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#4A6070' }}>
                 {d.toLocaleDateString(locale, { weekday: 'short' })}
               </div>
@@ -1151,7 +1151,7 @@ function MembreCalendarTab({ appointments, lang }: { appointments: Appointment[]
 
           {timeRows.length === 0 ? (
             <>
-              <div style={{ gridColumn: '1 / -1', backgroundColor: 'white', textAlign: 'center', padding: '40px 0' }}>
+              <div style={{ gridColumn: '1 / -1', backgroundColor: 'var(--surface)', textAlign: 'center', padding: '40px 0' }}>
                 <p style={{ color: '#4A6070', fontSize: '0.875rem' }}>
                   {lang === 'fr' ? 'Aucun rendez-vous cette semaine.' : 'No appointments this week.'}
                 </p>
@@ -1160,14 +1160,14 @@ function MembreCalendarTab({ appointments, lang }: { appointments: Appointment[]
           ) : (
             timeRows.map(time => (
               <Fragment key={time}>
-                <div style={{ backgroundColor: 'white', textAlign: 'right', paddingRight: '6px', paddingTop: '13px', fontSize: '0.6rem', color: '#4A6070' }}>
+                <div style={{ backgroundColor: 'var(--surface)', textAlign: 'right', paddingRight: '6px', paddingTop: '13px', fontSize: '0.6rem', color: '#4A6070' }}>
                   {time}
                 </div>
                 {days.map((d, colIdx) => {
                   const dateStr = d.toISOString().split('T')[0]
                   const appt = apptMap[dateStr]?.[time]
                   return (
-                    <div key={colIdx} style={{ backgroundColor: 'white', height: '56px', padding: '4px' }}>
+                    <div key={colIdx} style={{ backgroundColor: 'var(--surface)', height: '56px', padding: '4px' }}>
                       {appt && (
                         <div style={{
                           height: '100%', backgroundColor: blue, borderRadius: '2px',

@@ -319,7 +319,7 @@ export default function MessagesClient({
       style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}
     >
       {/* Page heading */}
-      <div style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'white' }}>
+      <div style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
         <div className="max-w-[1400px] mx-auto px-14 py-5">
           <h1 style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--text)', fontFamily: 'Georgia, serif' }}>
             {lang === 'en' ? 'Messages' : 'Messages'}
@@ -333,7 +333,7 @@ export default function MessagesClient({
           className="flex flex-1 overflow-hidden"
           style={{
             border: '1px solid var(--border)',
-            backgroundColor: 'white',
+            backgroundColor: 'var(--surface)',
             minHeight: '520px',
             maxHeight: '680px',
           }}
@@ -371,7 +371,7 @@ export default function MessagesClient({
                     onClick={() => selectConversation(conv.other_user_id)}
                     className="w-full text-left transition-colors"
                     style={{
-                      backgroundColor: isActive ? 'var(--blue-accent)' : 'white',
+                      backgroundColor: isActive ? 'var(--blue-accent)' : 'var(--surface)',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -407,7 +407,7 @@ export default function MessagesClient({
                         </span>
                         {conv.unread_count > 0 && (
                           <span style={{
-                            backgroundColor: 'var(--blue-primary)', color: 'white',
+                            backgroundColor: 'var(--blue-primary)', color: 'var(--surface)',
                             borderRadius: '10px', fontSize: '0.65rem', lineHeight: 1,
                             padding: '2px 6px', minWidth: '18px', textAlign: 'center', flexShrink: 0,
                           }}>
@@ -516,7 +516,7 @@ export default function MessagesClient({
                       padding: '8px 12px',
                       fontSize: '14px',
                       color: 'var(--text)',
-                      backgroundColor: 'white',
+                      backgroundColor: 'var(--surface)',
                       outline: 'none',
                       fontFamily: 'Georgia, serif',
                       lineHeight: '1.5',
@@ -563,7 +563,7 @@ export default function MessagesClient({
       </div>
 
       {/* Footer */}
-      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'white' }}>
+      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
         <div
           className="max-w-[1400px] mx-auto px-14 py-8 flex justify-between items-center text-sm"
           style={{ color: '#4A6070' }}

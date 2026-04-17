@@ -63,7 +63,7 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
   return (
     <nav style={{
       borderBottom: '1px solid var(--border)',
-      backgroundColor: 'rgba(255,255,255,0.96)',
+      backgroundColor: 'rgba(250,248,245,0.97)',
       backdropFilter: 'blur(10px)',
       position: 'sticky',
       top: 0,

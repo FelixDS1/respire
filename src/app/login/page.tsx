@@ -55,7 +55,7 @@ function LoginForm() {
                 className="w-full px-4 py-2 text-sm outline-none"
                 style={{
                   border: '1px solid var(--border)',
-                  backgroundColor: 'white',
+                  backgroundColor: 'var(--surface)',
                   color: 'var(--text)'
                 }}
               />
@@ -77,7 +77,7 @@ function LoginForm() {
                 className="w-full px-4 py-2 text-sm outline-none"
                 style={{
                   border: '1px solid var(--border)',
-                  backgroundColor: 'white',
+                  backgroundColor: 'var(--surface)',
                   color: 'var(--text)'
                 }}
               />

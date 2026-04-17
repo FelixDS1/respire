@@ -173,7 +173,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
 
   const inputStyle = {
     border: '1px solid var(--border)',
-    backgroundColor: 'white',
+    backgroundColor: 'var(--surface)',
     color: 'var(--text)',
     outline: 'none',
   }
@@ -224,7 +224,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
                   placeholder="Ex. anxiété, dépression, trauma..."
                 />
                 {specialtySuggestions.length > 0 && (
-                  <div className="absolute z-10 w-full bg-white border border-t-0 shadow-sm" style={{ borderColor: 'var(--border)' }}>
+                  <div className="absolute z-10 w-full bg-[var(--surface)] border border-t-0 shadow-sm" style={{ borderColor: 'var(--border)' }}>
                     {specialtySuggestions.map(s => (
                       <button key={s} type="button" onClick={() => addSpecialty(s)}
                         className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50" style={{ color: 'var(--text)' }}>
@@ -261,7 +261,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
                   placeholder="Ex. français, anglais, espagnol..."
                 />
                 {languageSuggestions.length > 0 && (
-                  <div className="absolute z-10 w-full bg-white border border-t-0 shadow-sm" style={{ borderColor: 'var(--border)' }}>
+                  <div className="absolute z-10 w-full bg-[var(--surface)] border border-t-0 shadow-sm" style={{ borderColor: 'var(--border)' }}>
                     {languageSuggestions.map(l => (
                       <button key={l} type="button" onClick={() => addLanguage(l)}
                         className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50" style={{ color: 'var(--text)' }}>
@@ -342,7 +342,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
                       padding: '10px 8px',
                       fontSize: '0.8rem',
                       border: `1px solid ${consultationType === opt.value ? 'var(--blue-primary)' : 'var(--border)'}`,
-                      backgroundColor: consultationType === opt.value ? 'var(--blue-accent)' : 'white',
+                      backgroundColor: consultationType === opt.value ? 'var(--blue-accent)' : 'var(--surface)',
                       color: consultationType === opt.value ? 'var(--blue-primary)' : 'var(--text)',
                       cursor: 'pointer',
                       borderRadius: '4px',
@@ -469,7 +469,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
                 {credentials.length > 0 && (
                   <div className="flex flex-col gap-2 mb-3">
                     {credentials.map((file, i) => (
-                      <div key={i} className="flex items-center justify-between px-3 py-2 text-sm bg-white"
+                      <div key={i} className="flex items-center justify-between px-3 py-2 text-sm bg-[var(--surface)]"
                         style={{ border: '1px solid var(--border)' }}>
                         <span className="text-sm truncate mr-4" style={{ color: 'var(--text)' }}>{file.name}</span>
                         <button type="button" onClick={() => removeCredential(i)}
@@ -484,7 +484,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
 
                 <button type="button" onClick={() => credInputRef.current?.click()}
                   className="px-4 py-2 text-sm hover:opacity-70 transition-opacity"
-                  style={{ border: '1px solid var(--border)', backgroundColor: 'white', color: 'var(--text)', cursor: 'pointer' }}>
+                  style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface)', color: 'var(--text)', cursor: 'pointer' }}>
                   + Ajouter un document
                 </button>
                 <input ref={credInputRef} type="file"

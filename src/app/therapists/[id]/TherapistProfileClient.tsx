@@ -149,7 +149,7 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
         </div>
 
         {/* Bottom section: price + calendar as a row */}
-        <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '40px', backgroundColor: 'white', border: '1px solid var(--border)', borderRadius: '8px', padding: '32px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '40px', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '32px' }}>
 
           {/* Price info */}
           <div>
@@ -320,7 +320,7 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
                             style={{
                               border: '1px solid var(--blue-primary)',
                               color: 'var(--blue-primary)',
-                              backgroundColor: 'white',
+                              backgroundColor: 'var(--surface)',
                             }}
                           >
                             {formatTime(slot.start_time)}
@@ -360,7 +360,7 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
 
       </div>
 
-      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'white', marginTop: '4rem' }}>
+      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)', marginTop: '4rem' }}>
         <div className="max-w-[1400px] mx-auto px-14 py-8 flex justify-between items-center text-sm" style={{ color: '#4A6070' }}>
           <span>© 2026 Respire</span>
           <div className="flex gap-6">

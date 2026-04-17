@@ -82,7 +82,7 @@ function TherapistCard({ t, onVerify, verifying }: {
   verifying: string | null
 }) {
   return (
-    <div className="bg-white px-6 py-5" style={{ border: '1px solid var(--border)' }}>
+    <div className="bg-[var(--surface)] px-6 py-5" style={{ border: '1px solid var(--border)' }}>
       <div className="flex justify-between items-start">
         <div>
           <p className="text-sm font-medium mb-1" style={{ color: 'var(--text)' }}>
@@ -108,7 +108,7 @@ function TherapistCard({ t, onVerify, verifying }: {
           {t.signedUrls.map((url, i) => (
             <a key={i} href={url} target="_blank" rel="noopener noreferrer"
               className="text-xs hover:opacity-70 transition-opacity"
-              style={{ color: 'var(--blue-primary)', border: '1px solid var(--border)', padding: '4px 10px', backgroundColor: 'white' }}>
+              style={{ color: 'var(--blue-primary)', border: '1px solid var(--border)', padding: '4px 10px', backgroundColor: 'var(--surface)' }}>
               Justificatif {i + 1} →
             </a>
           ))}

@@ -421,7 +421,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
   const inputStyle = {
     border: '1px solid var(--border)',
-    backgroundColor: 'white',
+    backgroundColor: 'var(--surface)',
     color: 'var(--text)',
     outline: 'none',
   }
@@ -451,7 +451,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
           const allDone = checks.every(c => c.done)
           if (allDone) return null
           return (
-            <div className="mb-8 p-5" style={{ border: '1px solid var(--border)', backgroundColor: 'white', borderRadius: '8px' }}>
+            <div className="mb-8 p-5" style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface)', borderRadius: '8px' }}>
               <p className="text-sm font-medium mb-1" style={{ color: 'var(--text)' }}>
                 Avant d'apparaître dans l'annuaire
               </p>
@@ -476,7 +476,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
         {/* Stripe Connect card */}
         {!stripeComplete && (
-          <div className="mb-8 p-5" style={{ border: '1px solid var(--border)', backgroundColor: 'white', borderRadius: '8px' }}>
+          <div className="mb-8 p-5" style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface)', borderRadius: '8px' }}>
             <p className="text-sm font-medium mb-1" style={{ color: 'var(--text)' }}>
               Recevoir des paiements
             </p>
@@ -594,7 +594,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                           fontSize: '0.7rem',
                           padding: '3px 10px',
                           border: `1px solid ${therapist.profession === p ? 'var(--blue-primary)' : 'var(--border)'}`,
-                          backgroundColor: therapist.profession === p ? 'var(--blue-accent)' : 'white',
+                          backgroundColor: therapist.profession === p ? 'var(--blue-accent)' : 'var(--surface)',
                           color: therapist.profession === p ? 'var(--blue-primary)' : '#4A6070',
                           cursor: 'pointer',
                         }}
@@ -755,7 +755,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                             padding: '8px 6px',
                             fontSize: '0.78rem',
                             border: `1px solid ${(therapist.consultation_type ?? 'both') === opt.value ? 'var(--blue-primary)' : 'var(--border)'}`,
-                            backgroundColor: (therapist.consultation_type ?? 'both') === opt.value ? 'var(--blue-accent)' : 'white',
+                            backgroundColor: (therapist.consultation_type ?? 'both') === opt.value ? 'var(--blue-accent)' : 'var(--surface)',
                             color: (therapist.consultation_type ?? 'both') === opt.value ? 'var(--blue-primary)' : '#4A6070',
                             cursor: 'pointer',
                             borderRadius: '4px',
@@ -794,7 +794,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
             {/* Schedule editor + blocks + slots */}
             <div className="flex-1 min-w-0">
             {/* Schedule editor */}
-            <div className="bg-white p-6 mb-6" style={{ border: '1px solid var(--border)', borderRadius: '8px' }}>
+            <div className="bg-[var(--surface)] p-6 mb-6" style={{ border: '1px solid var(--border)', borderRadius: '8px' }}>
               <h2 className="text-xs uppercase tracking-widest mb-5" style={{ color: 'var(--blue-primary)' }}>
                 Mes horaires de travail
               </h2>
@@ -813,7 +813,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                       className="w-9 h-9 text-xs transition-all"
                       style={{
                         border: `1px solid ${scheduleDays.includes(d.value) ? 'var(--blue-primary)' : 'var(--border)'}`,
-                        backgroundColor: scheduleDays.includes(d.value) ? 'var(--blue-accent)' : 'white',
+                        backgroundColor: scheduleDays.includes(d.value) ? 'var(--blue-accent)' : 'var(--surface)',
                         color: scheduleDays.includes(d.value) ? 'var(--blue-primary)' : '#4A6070',
                         cursor: 'pointer',
                       }}
@@ -919,7 +919,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
             </div>
 
             {/* One-off time blocks */}
-            <div className="bg-white p-6 mb-6" style={{ border: '1px solid var(--border)', borderRadius: '8px' }}>
+            <div className="bg-[var(--surface)] p-6 mb-6" style={{ border: '1px solid var(--border)', borderRadius: '8px' }}>
               <h2 className="text-xs uppercase tracking-widest mb-1" style={{ color: 'var(--blue-primary)' }}>
                 Bloquer une plage horaire
               </h2>
@@ -1000,7 +1000,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
             ) : appointments.map(appt => {
               const past = isPastAppointment(appt)
               return (
-                <div key={appt.id} className="bg-white px-5 py-4"
+                <div key={appt.id} className="bg-[var(--surface)] px-5 py-4"
                   style={{ border: '1px solid var(--border)', borderRadius: '8px' }}>
                   <div className="flex justify-between items-start mb-0">
                     <div>
@@ -1059,7 +1059,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                         onChange={e => setNotesDraft(prev => ({ ...prev, [appt.id]: e.target.value }))}
                         rows={3}
                         className="w-full px-3 py-2 text-sm"
-                        style={{ border: '1px solid var(--border)', backgroundColor: 'white', color: 'var(--text)', outline: 'none', resize: 'vertical' }}
+                        style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface)', color: 'var(--text)', outline: 'none', resize: 'vertical' }}
                         placeholder="Observations, points à suivre..."
                       />
                       <div className="flex items-center gap-4 mt-2">
@@ -1136,7 +1136,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
           const cardStyle: React.CSSProperties = {
             border: '1px solid var(--border)',
-            backgroundColor: 'white',
+            backgroundColor: 'var(--surface)',
             padding: '20px 24px',
             borderRadius: '8px',
           }
@@ -1290,7 +1290,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
       </div>
 
-      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'white' }}>
+      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
         <div style={{ maxWidth: '1400px', width: '100%', margin: '0 auto', padding: '28px 56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', color: '#4A6070', fontFamily: 'Georgia, serif', boxSizing: 'border-box' }}>
           <span>© 2026 Respire</span>
           <div className="flex gap-6">
@@ -1396,12 +1396,12 @@ function CalendarTab({ slots, appointments, scheduleStart, scheduleEnd, sessionD
             gap: '1px',
           }}>
             {/* Header: empty corner + 7 day labels */}
-            <div style={{ backgroundColor: 'white' }} />
+            <div style={{ backgroundColor: 'var(--surface)' }} />
             {days.map((d, i) => {
               const isToday = d.toDateString() === now.toDateString()
               return (
                 <div key={i} style={{
-                  backgroundColor: isToday ? '#EEF5FF' : 'white',
+                  backgroundColor: isToday ? '#EEF5FF' : 'var(--surface)',
                   textAlign: 'center',
                   padding: '8px 4px',
                 }}>
@@ -1426,7 +1426,7 @@ function CalendarTab({ slots, appointments, scheduleStart, scheduleEnd, sessionD
               <Fragment key={time}>
                 {/* Time label */}
                 <div style={{
-                  backgroundColor: 'white',
+                  backgroundColor: 'var(--surface)',
                   textAlign: 'right',
                   paddingRight: '6px',
                   paddingTop: '11px',
@@ -1442,7 +1442,7 @@ function CalendarTab({ slots, appointments, scheduleStart, scheduleEnd, sessionD
                   const isBooked = slot && (slot.is_booked || (slot.appointments?.length ?? 0) > 0)
                   return (
                     <div key={colIdx} style={{
-                      backgroundColor: 'white',
+                      backgroundColor: 'var(--surface)',
                       height: '42px',
                       padding: '3px',
                     }}>
@@ -1523,7 +1523,7 @@ function LanguageInput({ value, onChange, onAdd, existing, inputStyle, lang }: {
           style={{ ...inputStyle, fontSize: '0.75rem', padding: '4px 8px', width: '100%' }}
         />
         {open && suggestions.length > 0 && (
-          <div className="absolute z-10 w-full bg-white mt-1 shadow-sm"
+          <div className="absolute z-10 w-full bg-[var(--surface)] mt-1 shadow-sm"
             style={{ border: '1px solid var(--border)', maxHeight: '180px', overflowY: 'auto' }}>
             {suggestions.map(frTerm => (
               <button
@@ -1540,7 +1540,7 @@ function LanguageInput({ value, onChange, onAdd, existing, inputStyle, lang }: {
       </div>
       <button
         onMouseDown={() => { if (suggestions.length > 0) { onAdd(suggestions[0]); onChange('') } else if (ALL_LANGUAGES.includes(value.trim())) { onAdd(value.trim()); onChange('') } }}
-        style={{ backgroundColor: 'var(--blue-primary)', color: 'white', fontSize: '0.75rem', padding: '4px 10px', cursor: 'pointer', border: 'none', flexShrink: 0 }}
+        style={{ backgroundColor: 'var(--blue-primary)', color: 'var(--surface)', fontSize: '0.75rem', padding: '4px 10px', cursor: 'pointer', border: 'none', flexShrink: 0 }}
       >
         +
       </button>
@@ -1650,7 +1650,7 @@ function SpecialtyInput({ value, onChange, onAdd, existing, inputStyle, lang }: 
           style={inputStyle}
         />
         {open && suggestions.length > 0 && (
-          <div className="absolute z-10 w-full bg-white mt-1 shadow-sm"
+          <div className="absolute z-10 w-full bg-[var(--surface)] mt-1 shadow-sm"
             style={{ border: '1px solid var(--border)', maxHeight: '200px', overflowY: 'auto' }}>
             {suggestions.map(frTerm => (
               <button

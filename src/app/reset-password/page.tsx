@@ -44,7 +44,7 @@ export default function ResetPassword() {
 
   const inputStyle = {
     border: '1px solid var(--border)',
-    backgroundColor: 'white',
+    backgroundColor: 'var(--surface)',
     color: 'var(--text)',
   }
 
