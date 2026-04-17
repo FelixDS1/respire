@@ -969,8 +969,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                 </div>
               </div>
               <button onClick={addTimeBlock}
-                className="px-4 py-2 text-sm text-white hover:opacity-80 transition-opacity"
-                style={{ backgroundColor: 'var(--blue-primary)', cursor: 'pointer' }}>
+                style={{ backgroundColor: 'var(--blue-primary)', color: 'white', cursor: 'pointer', padding: '12px 24px', fontSize: '0.95rem', borderRadius: '8px', border: 'none' }}>
                 Ajouter le blocage
               </button>
 
@@ -1028,12 +1027,11 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                       </a>
                     </div>
                     {appt.no_show ? (
-                      <span className="text-xs px-2 py-1" style={{ backgroundColor: '#FFF3F3', color: '#C0392B' }}>
+                      <span style={{ fontSize: '0.8rem', padding: '4px 12px', backgroundColor: '#FFF3F3', color: '#C0392B', borderRadius: '20px' }}>
                         Absence
                       </span>
                     ) : (
-                      <span className="text-xs px-2 py-1"
-                        style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
+                      <span style={{ fontSize: '0.8rem', padding: '4px 12px', backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', borderRadius: '20px' }}>
                         Confirmé
                       </span>
                     )}
@@ -1068,7 +1066,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                         onChange={e => setNotesDraft(prev => ({ ...prev, [appt.id]: e.target.value }))}
                         rows={3}
                         className="w-full px-3 py-2 text-sm"
-                        style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface)', color: 'var(--text)', outline: 'none', resize: 'vertical' }}
+                        style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface)', color: 'var(--text)', outline: 'none', resize: 'vertical', borderRadius: '8px' }}
                         placeholder="Observations, points à suivre..."
                       />
                       <div className="flex items-center gap-4 mt-2">
