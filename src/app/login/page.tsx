@@ -56,7 +56,8 @@ function LoginForm() {
                 style={{
                   border: '1px solid var(--border)',
                   backgroundColor: 'var(--surface)',
-                  color: 'var(--text)'
+                  color: 'var(--text)',
+                  borderRadius: '8px',
                 }}
               />
             </div>
@@ -78,7 +79,8 @@ function LoginForm() {
                 style={{
                   border: '1px solid var(--border)',
                   backgroundColor: 'var(--surface)',
-                  color: 'var(--text)'
+                  color: 'var(--text)',
+                  borderRadius: '8px',
                 }}
               />
             </div>
@@ -101,7 +103,7 @@ function LoginForm() {
               type="submit"
               disabled={loading}
               className="w-full py-3 text-white text-sm transition-opacity hover:opacity-80 disabled:opacity-50"
-              style={{ backgroundColor: 'var(--blue-primary)' }}
+              style={{ backgroundColor: 'var(--blue-primary)', borderRadius: '8px', border: 'none' }}
             >
               {loading ? 'Connexion...' : 'Se connecter'}
             </button>
