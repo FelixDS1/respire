@@ -12,7 +12,7 @@ export default function PourLesTherapeutesPage() {
   const content = {
     fr: {
       eyebrow: 'Pour les thérapeutes',
-      headline: 'Publiez votre agenda.',
+      headline: 'Gérez vos rendez-vous.',
       headlineAccent: 'Sans commission cachée.',
       body: 'Avec Respire, vos patients réservent directement en ligne, échangent avec vous via messagerie sécurisée, et règlent la séance au moment de la réservation. Vous fixez vos honoraires — et vous les percevez intégralement. Sans abonnement, sans commission cachée.',
       cta: 'Créer mon profil',
