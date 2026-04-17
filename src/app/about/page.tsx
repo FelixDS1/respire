@@ -4,11 +4,20 @@ import { useRef } from 'react'
 import Link from 'next/link'
 import { useLanguage } from '@/lib/language'
 
+// Blue gradient tones — each step slightly lighter
+const STEP_GRADIENTS = [
+  'linear-gradient(135deg, #0F1F35 0%, #1B3D5F 100%)',
+  'linear-gradient(135deg, #1B3D5F 0%, #235F8A 100%)',
+  'linear-gradient(135deg, #235F8A 0%, #2E7DB5 100%)',
+]
+// Dark navy used for second value card (same as hero panel)
+const DARK_NAVY = '#1C2B3A'
+
 const content = {
   fr: {
     eyebrow: 'À propos',
     mission: 'Vous méritez\nde respirer.',
-    subtitleLarge: 'La vie est compliquée, stressante, on se force à vivre en courant.',
+    subtitleLarge: 'La vie est parfois compliquée, stressante, on se force à vivre en courant.',
     subtitleSmall: "Quand on ralentit, on culpabilise de ne pas s'essouffler. Essayez de sortir de ce cercle vicieux. Prenez du temps pour vous, pour réfléchir à vous, pour respirer.",
     whyEyebrow: 'Pourquoi Respire existe',
     whyHeading: 'Simplifier le suivi psychologique.',
@@ -30,7 +39,7 @@ const content = {
   en: {
     eyebrow: 'About',
     mission: 'You deserve\nto breathe.',
-    subtitleLarge: 'Life is complicated, stressful — we force ourselves to keep running.',
+    subtitleLarge: 'Life is sometimes complicated, stressful — we force ourselves to keep running.',
     subtitleSmall: "When we slow down, we feel guilty for not being out of breath. Try to break out of this vicious cycle. Take time for yourself, to reflect, to breathe.",
     whyEyebrow: 'Why Respire exists',
     whyHeading: 'Simplifying mental health care.',
@@ -98,10 +107,8 @@ export default function About() {
     <main style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100vh' }}>
 
       {/* ── Hero ── */}
-      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '72px 56px 56px' }}>
+      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '72px 56px 40px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', alignItems: 'stretch' }}>
-
-          {/* Left: label + big heading */}
           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '52px 0' }}>
             <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--blue-primary)', marginBottom: '28px', fontFamily: 'Georgia, serif' }}>
               {c.eyebrow}
@@ -111,9 +118,8 @@ export default function About() {
             </h1>
           </div>
 
-          {/* Right: dark inflate panel */}
           <InflateBox style={{ borderRadius: '16px', overflow: 'hidden' }}>
-            <div style={{ backgroundColor: 'var(--text)', borderRadius: '16px', padding: '52px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '24px', height: '100%', boxSizing: 'border-box' }}>
+            <div style={{ backgroundColor: DARK_NAVY, borderRadius: '16px', padding: '52px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '24px', height: '100%', boxSizing: 'border-box' }}>
               <p style={{ fontSize: '1.4rem', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.65, color: 'rgba(255,255,255,0.92)', fontFamily: 'Georgia, serif', margin: 0 }}>
                 {c.subtitleLarge}
               </p>
@@ -126,9 +132,8 @@ export default function About() {
       </section>
 
       {/* ── Why we exist ── */}
-      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 56px 56px' }}>
+      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 56px 40px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr', gap: '24px' }}>
-
           <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '48px 40px' }}>
             <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--blue-primary)', marginBottom: '20px', fontFamily: 'Georgia, serif' }}>
               {c.whyEyebrow}
@@ -138,7 +143,7 @@ export default function About() {
             </h2>
           </InflateBox>
 
-          <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '48px 44px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '20px' }}>
+          <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '48px 44px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <p style={{ fontSize: '1.05rem', fontWeight: 300, lineHeight: 1.9, color: '#4A6070', fontFamily: 'Georgia, serif', margin: 0 }}>
               {c.whyBody}
             </p>
@@ -147,52 +152,58 @@ export default function About() {
       </section>
 
       {/* ── Values ── */}
-      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 56px 56px' }}>
+      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 56px 40px' }}>
         <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--blue-primary)', marginBottom: '20px', fontFamily: 'Georgia, serif' }}>
           {c.valuesEyebrow}
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', perspective: '1000px' }}>
-          {c.values.map((v, i) => (
-            <InflateBox
-              key={i}
-              style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(28,43,58,0.06)' }}
-            >
-              <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <p style={{ fontSize: '1.25rem', fontWeight: 400, lineHeight: 1.5, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0 }}>
-                {v}
-              </p>
-            </InflateBox>
-          ))}
+          {/* Value 1 — light surface */}
+          <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(28,43,58,0.06)' }}>
+            <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>
+              01
+            </span>
+            <p style={{ fontSize: '1.25rem', fontWeight: 400, lineHeight: 1.5, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0 }}>
+              {c.values[0]}
+            </p>
+          </InflateBox>
+
+          {/* Value 2 — dark navy */}
+          <InflateBox style={{ backgroundColor: DARK_NAVY, borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(28,43,58,0.12)' }}>
+            <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'rgba(255,255,255,0.15)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>
+              02
+            </span>
+            <p style={{ fontSize: '1.25rem', fontWeight: 400, lineHeight: 1.5, color: 'rgba(255,255,255,0.9)', fontFamily: 'Georgia, serif', margin: 0 }}>
+              {c.values[1]}
+            </p>
+          </InflateBox>
         </div>
       </section>
 
-      {/* ── Founder + steps ── */}
+      {/* ── Steps (left) + Founder & CTA (right) ── */}
       <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 56px 72px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr', gap: '24px', alignItems: 'start' }}>
 
-          {/* Left: stacked steps */}
+          {/* Left: stacked blue gradient steps */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', perspective: '1000px' }}>
-            {steps.map(step => (
+            {steps.map((step, i) => (
               <InflateBox
                 key={step.number}
-                style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '28px 32px', boxShadow: '0 2px 12px rgba(28,43,58,0.05)' }}
+                style={{ background: STEP_GRADIENTS[i], borderRadius: '16px', padding: '28px 32px', boxShadow: '0 2px 16px rgba(15,31,53,0.18)' }}
               >
-                <span style={{ display: 'block', fontSize: '2rem', fontWeight: 300, color: 'var(--blue-primary)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '10px' }}>
+                <span style={{ display: 'block', fontSize: '2rem', fontWeight: 300, color: 'rgba(255,255,255,0.55)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '10px' }}>
                   {step.number}
                 </span>
-                <p style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text)', fontFamily: 'Georgia, serif', marginBottom: '6px' }}>
+                <p style={{ fontSize: '1rem', fontWeight: 500, color: 'white', fontFamily: 'Georgia, serif', marginBottom: '6px' }}>
                   {step.title}
                 </p>
-                <p style={{ fontSize: '0.88rem', fontWeight: 300, lineHeight: 1.7, color: '#4A6070', fontFamily: 'Georgia, serif', margin: 0 }}>
+                <p style={{ fontSize: '0.88rem', fontWeight: 300, lineHeight: 1.7, color: 'rgba(255,255,255,0.7)', fontFamily: 'Georgia, serif', margin: 0 }}>
                   {step.body}
                 </p>
               </InflateBox>
             ))}
           </div>
 
-          {/* Right: founder text */}
+          {/* Right: founder note + CTA integrated */}
           <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '52px 48px', boxShadow: '0 2px 16px rgba(28,43,58,0.06)' }}>
             <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--blue-primary)', fontFamily: 'Georgia, serif', marginBottom: '24px' }}>
               {c.founderEyebrow}
@@ -200,27 +211,25 @@ export default function About() {
             <p style={{ fontSize: '1.15rem', fontWeight: 300, lineHeight: 1.9, color: '#4A6070', fontFamily: 'Georgia, serif', fontStyle: 'italic', marginBottom: '20px' }}>
               {c.founder}
             </p>
-            <p style={{ fontSize: '0.9rem', fontWeight: 400, color: 'var(--blue-primary)', fontFamily: 'Georgia, serif', margin: 0 }}>
+            <p style={{ fontSize: '0.9rem', fontWeight: 400, color: 'var(--blue-primary)', fontFamily: 'Georgia, serif', marginBottom: '36px' }}>
               {c.founderName}
             </p>
-          </InflateBox>
-        </div>
-      </section>
 
-      {/* ── CTA ── */}
-      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 56px 80px' }}>
-        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '52px', display: 'flex', alignItems: 'center', gap: '40px', flexWrap: 'wrap' }}>
-          <h2 style={{ fontSize: '2rem', fontWeight: 300, fontStyle: 'italic', color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0 }}>
-            {c.ctaHeading}
-          </h2>
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <Link href="/signup" style={{ display: 'inline-block', padding: '12px 28px', backgroundColor: 'var(--blue-primary)', color: 'white', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem', fontFamily: 'Georgia, serif', letterSpacing: '0.04em' }}>
-              {c.ctaMemberLabel.toUpperCase()}
-            </Link>
-            <Link href="/pour-les-therapeutes" style={{ display: 'inline-block', padding: '11px 28px', backgroundColor: 'transparent', color: 'var(--blue-primary)', borderRadius: '8px', border: '1px solid var(--blue-primary)', textDecoration: 'none', fontSize: '0.9rem', fontFamily: 'Georgia, serif', letterSpacing: '0.04em' }}>
-              {c.ctaTherapistLabel.toUpperCase()}
-            </Link>
-          </div>
+            {/* CTA integrated below founder note */}
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '28px' }}>
+              <p style={{ fontSize: '1.4rem', fontWeight: 300, fontStyle: 'italic', color: 'var(--text)', fontFamily: 'Georgia, serif', marginBottom: '20px' }}>
+                {c.ctaHeading}
+              </p>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <Link href="/signup" style={{ display: 'inline-block', padding: '12px 28px', backgroundColor: 'var(--blue-primary)', color: 'white', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem', fontFamily: 'Georgia, serif', letterSpacing: '0.04em' }}>
+                  {c.ctaMemberLabel.toUpperCase()}
+                </Link>
+                <Link href="/pour-les-therapeutes" style={{ display: 'inline-block', padding: '11px 28px', backgroundColor: 'transparent', color: 'var(--blue-primary)', borderRadius: '8px', border: '1px solid var(--blue-primary)', textDecoration: 'none', fontSize: '0.9rem', fontFamily: 'Georgia, serif', letterSpacing: '0.04em' }}>
+                  {c.ctaTherapistLabel.toUpperCase()}
+                </Link>
+              </div>
+            </div>
+          </InflateBox>
         </div>
       </section>
 
