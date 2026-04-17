@@ -108,11 +108,23 @@ export default async function MessagesPage({
         .select('id, full_name, avatar_url')
         .in('id', therapistIds)
 
+      // Therapist profile photos live in therapists.photo_url, not profiles.avatar_url
+      const { data: therapistRows } = await supabase
+        .from('therapists')
+        .select('user_id, photo_url')
+        .in('user_id', therapistIds)
+
+      const photoMap = new Map<string, string | null>()
+      for (const t of therapistRows ?? []) {
+        photoMap.set(t.user_id, t.photo_url ?? null)
+      }
+
       const nameMap = new Map<string, string>()
       const avatarMap = new Map<string, string | null>()
       for (const p of therapistProfiles ?? []) {
         nameMap.set(p.id, p.full_name)
-        avatarMap.set(p.id, p.avatar_url ?? null)
+        // prefer therapists.photo_url; fall back to profiles.avatar_url
+        avatarMap.set(p.id, photoMap.get(p.id) ?? p.avatar_url ?? null)
       }
 
       for (const [therapistId, msgs] of byTherapist.entries()) {
