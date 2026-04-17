@@ -425,8 +425,8 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
   }
 
   return (
-    <main className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
-      <div className="max-w-[1400px] mx-auto px-14 py-12" style={{ flex: 1 }}>
+    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg)', width: '100%' }}>
+      <div style={{ maxWidth: '1400px', width: '100%', margin: '0 auto', padding: '48px 56px', flex: 1, boxSizing: 'border-box' }}>
 
         <h1 className="text-2xl font-light mb-1" style={{ color: 'var(--text)' }}>
           Tableau de bord
@@ -1257,7 +1257,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
       </div>
 
       <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'white' }}>
-        <div className="max-w-[1400px] mx-auto px-14 py-7 flex justify-between items-center text-sm" style={{ color: '#4A6070', fontFamily: 'Georgia, serif' }}>
+        <div style={{ maxWidth: '1400px', width: '100%', margin: '0 auto', padding: '28px 56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', color: '#4A6070', fontFamily: 'Georgia, serif', boxSizing: 'border-box' }}>
           <span>© 2026 Respire</span>
           <div className="flex gap-6">
             <a href="/about" style={{ color: '#4A6070', textDecoration: 'none' }}>{lang === 'fr' ? 'Nous contacter' : 'Contact us'}</a>
