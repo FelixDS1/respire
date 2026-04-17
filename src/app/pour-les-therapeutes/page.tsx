@@ -15,8 +15,8 @@ const features = [
     body: 'Échangez avec vos patients avant et après chaque séance via une messagerie chiffrée, intégrée à votre espace.',
   },
   {
-    title: 'Paiements sans surprise',
-    body: '4€ de frais fixes par séance, prélevés au moment de la réservation. Pas d\'abonnement, pas de commission variable.',
+    title: 'Honoraires préservés',
+    body: 'Vous fixez vos tarifs, vous les percevez intégralement. Sans abonnement, sans commission cachée.',
   },
 ]
 
@@ -40,7 +40,7 @@ export default function PourLesTherapeutesPage() {
           <span style={{ color: 'var(--blue-primary)' }}>Sans commission cachée.</span>
         </h1>
         <p style={{ fontSize: '1.1rem', fontWeight: 300, lineHeight: 1.9, color: '#4A6070', marginBottom: '44px', fontFamily: 'Georgia, serif', maxWidth: '600px', margin: '0 auto 44px' }}>
-          Avec Respire, vos patients réservent directement en ligne, échangent avec vous via messagerie sécurisée, et règlent la séance au moment de la réservation. Frais fixes de 4€ par séance — rien d'autre.
+          Avec Respire, vos patients réservent directement en ligne, échangent avec vous via messagerie sécurisée, et règlent la séance au moment de la réservation. Vous fixez vos honoraires — et vous les percevez intégralement. Sans abonnement, sans commission cachée.
         </p>
 
         {/* CTAs */}
