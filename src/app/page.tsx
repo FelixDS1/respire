@@ -175,7 +175,7 @@ export default function Home() {
               {t.home.cta}
             </Link>
             <Link
-              href="/signup?role=therapist"
+              href="/pour-les-therapeutes"
               style={{
                 display: 'inline-block',
                 padding: '14px 28px',
