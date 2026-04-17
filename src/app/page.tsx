@@ -5,6 +5,11 @@ import Link from 'next/link'
 import { useLanguage } from '@/lib/language'
 
 const LILY_PINK = '#C4849A'
+const STEP_GRADIENTS = [
+  'linear-gradient(135deg, #2D6A9F 0%, #3D87C4 100%)',
+  'linear-gradient(135deg, #3D87C4 0%, #56A3D9 100%)',
+  'linear-gradient(135deg, #56A3D9 0%, #74BFED 100%)',
+]
 
 function Lily() {
   const blue = 'var(--blue-primary)'
@@ -66,10 +71,11 @@ function Lily() {
   )
 }
 
-function StepBubble({ number, title, body }: {
+function StepBubble({ number, title, body, gradient }: {
   number: string
   title: string
   body: string
+  gradient?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
 
@@ -99,8 +105,14 @@ function StepBubble({ number, title, body }: {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
-        backgroundColor: 'var(--surface)',
-        border: '1px solid var(--border)',
+        ...(gradient
+          ? {
+              border: '2px solid transparent',
+              backgroundImage: `linear-gradient(var(--surface), var(--surface)), ${gradient}`,
+              backgroundOrigin: 'border-box',
+              backgroundClip: 'padding-box, border-box',
+            }
+          : { backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }),
         borderRadius: '16px',
         padding: '44px 36px 36px',
         cursor: 'default',
@@ -220,9 +232,9 @@ export default function Home() {
           {/* Simple connector line — sits behind the white card backgrounds */}
           <div style={{ position: 'absolute', left: 0, right: 0, top: '44%', height: '1px', backgroundColor: LILY_PINK, opacity: 0.28, zIndex: 0, pointerEvents: 'none' }}/>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', perspective: '1000px', alignItems: 'stretch', position: 'relative', zIndex: 1 }}>
-            <StepBubble number="1" title={t.home.step1Title} body={t.home.step1Body} />
-            <StepBubble number="2" title={t.home.step2Title} body={t.home.step2Body} />
-            <StepBubble number="3" title={t.home.step3Title} body={t.home.step3Body} />
+            <StepBubble number="1" gradient={STEP_GRADIENTS[0]} title={t.home.step1Title} body={t.home.step1Body} />
+            <StepBubble number="2" gradient={STEP_GRADIENTS[1]} title={t.home.step2Title} body={t.home.step2Body} />
+            <StepBubble number="3" gradient={STEP_GRADIENTS[2]} title={t.home.step3Title} body={t.home.step3Body} />
           </div>
         </div>
       </section>

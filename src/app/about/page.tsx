@@ -10,6 +10,7 @@ const STEP_GRADIENTS = [
   'linear-gradient(135deg, #56A3D9 0%, #74BFED 100%)',
 ]
 const DARK_NAVY = '#1C2B3A'
+const LILY_PINK = '#C4849A'
 
 const content = {
   fr: {
@@ -174,10 +175,7 @@ export default function About() {
         <p style={labelStyle}>{c.valuesEyebrow}</p>
         <div style={{ position: 'relative' }}>
           {/* Connector between the two value cards */}
-          <div style={{ position: 'absolute', top: '50%', left: 'calc(50% - 12px)', width: '24px', height: '2px', backgroundColor: 'var(--blue-primary)', opacity: 0.4, zIndex: 2, transform: 'translateY(-50%)' }}>
-            <div style={{ position: 'absolute', left: '-4px', top: '-3px', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--blue-primary)', opacity: 0.6 }} />
-            <div style={{ position: 'absolute', right: '-4px', top: '-3px', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--blue-primary)', opacity: 0.6 }} />
-          </div>
+          <div style={{ position: 'absolute', top: '50%', left: 'calc(50% - 12px)', width: '24px', height: '1px', backgroundColor: LILY_PINK, opacity: 0.28, zIndex: 2, transform: 'translateY(-50%)', pointerEvents: 'none' }} />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', perspective: '1000px' }}>
             <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(28,43,58,0.06)' }}>
               <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>01</span>
@@ -197,7 +195,10 @@ export default function About() {
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr', gap: '24px', alignItems: 'stretch' }}>
 
           {/* Left: stacked blue gradient steps */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', perspective: '1000px' }}>
+          <div style={{ position: 'relative' }}>
+            {/* Vertical connector line behind steps */}
+            <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: '1px', backgroundColor: LILY_PINK, opacity: 0.28, zIndex: 0, pointerEvents: 'none' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', perspective: '1000px', position: 'relative', zIndex: 1 }}>
             {steps.map((step, i) => (
               <InflateBox
                 key={step.number}
@@ -216,6 +217,7 @@ export default function About() {
                 </p>
               </InflateBox>
             ))}
+          </div>
           </div>
 
           {/* Right: founder note + CTA + contact all in one box */}
