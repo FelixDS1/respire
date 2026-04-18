@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, Fragment } from 'react'
 import Link from 'next/link'
 import { useLanguage } from '@/lib/language'
 import { createClient } from '@/lib/supabase'
+import { generateIcs, downloadIcs } from '@/lib/ics'
 
 interface Appointment {
   id: string
@@ -88,6 +89,12 @@ function getTargetWeek(sessionDate: string, frequency: string | null): { monday:
   return { monday, sunday }
 }
 
+const GARAMOND = "'Cormorant Garamond', Georgia, serif"
+const MUTED = 'rgba(44,40,32,0.4)'
+const ACCENT = '#9C7B5A'
+const INPUT_BG = '#E8E4DC'
+const INPUT_BORDER = '0.5px solid rgba(44,40,32,0.2)'
+
 export default function AccountClient({ userId, profile, appointments, waitlistEntries, initialNir }: Props) {
   const { lang } = useLanguage()
   const [tab, setTab] = useState<Tab>('profile')
@@ -99,6 +106,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
   const [photoPreview, setPhotoPreview] = useState<string | null>(profile.avatar_url)
   const [photoUploading, setPhotoUploading] = useState(false)
   const [photoRemoved, setPhotoRemoved] = useState(false)
+  const [photoHovered, setPhotoHovered] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
@@ -128,7 +136,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
 
   async function openRebookPicker(apptId: string, therapistId: string, sessionDate: string) {
     setRebookOpen(prev => ({ ...prev, [apptId]: true }))
-    if (rebookSlots[apptId]) return // already loaded
+    if (rebookSlots[apptId]) return
     setRebookLoading(prev => ({ ...prev, [apptId]: true }))
 
     const { monday, sunday } = getTargetWeek(sessionDate, streakFrequency)
@@ -345,12 +353,23 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
 
   function formatTime(timeStr: string) { return timeStr.slice(0, 5) }
 
-  const inputStyle = {
-    border: '1px solid var(--border)',
-    borderRadius: '8px',
-    backgroundColor: 'var(--surface)',
-    color: 'var(--text)',
-    outline: 'none',
+  function handleAddToCalendar(appt: Appointment) {
+    if (!appt.availability) return
+    const name = appt.therapists?.profiles?.full_name ?? 'Thérapeute'
+    const title = lang === 'fr'
+      ? `Séance avec ${name} — Respire`
+      : `Session with ${name} — Respire`
+    const description = lang === 'fr'
+      ? `Séance de thérapie avec ${name}, réservée via Respire.`
+      : `Therapy session with ${name}, booked via Respire.`
+    const ics = generateIcs({
+      title,
+      date: appt.availability.date,
+      startTime: appt.availability.start_time,
+      endTime: appt.availability.end_time,
+      description,
+    })
+    downloadIcs(`respire-${appt.availability.date}.ics`, ics)
   }
 
   const tabs: { key: Tab; label: string }[] = [
@@ -360,147 +379,170 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
   ]
 
   return (
-    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg)', width: '100%' }}>
-      <div style={{ maxWidth: '1400px', width: '100%', margin: '0 auto', padding: '32px 56px', flex: 1, boxSizing: 'border-box' }}>
+    <>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap');`}</style>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-          <div>
-            <h1 className="text-2xl font-light mb-1" style={{ color: 'var(--text)' }}>
-              {lang === 'en' ? 'My profile' : 'Mon profil'}
-            </h1>
-            <p className="text-sm" style={{ color: '#4A6070' }}>{profile.full_name}</p>
-          </div>
-          <Link
-            href="/therapists"
-            className="transition-opacity hover:opacity-80"
-            style={{
-              backgroundColor: 'var(--blue-primary)', color: 'var(--surface)',
-              padding: '10px 22px', fontSize: '0.9rem', whiteSpace: 'nowrap',
-              borderRadius: '6px', textDecoration: 'none', display: 'inline-block',
-            }}
-          >
-            {lang === 'fr' ? 'Prendre un rendez-vous' : 'Book a session'}
-          </Link>
+      <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#F2EFE8', width: '100%' }}>
+
+        {/* Page header */}
+        <div style={{ padding: '2rem 2.5rem 0' }}>
+          <h1 style={{ fontFamily: GARAMOND, fontSize: '2rem', fontWeight: 400, color: 'rgba(44,40,32,0.9)', margin: 0, lineHeight: 1.1 }}>
+            {lang === 'en' ? 'My profile' : 'Mon profil'}
+          </h1>
+          <p style={{ fontSize: '0.85rem', color: 'rgba(44,40,32,0.45)', marginTop: '0.25rem', marginBottom: 0 }}>
+            {profile.full_name}
+          </p>
         </div>
 
-        {/* Tabs */}
-        <div style={{ display: 'flex', marginBottom: '24px', borderBottom: '1px solid var(--border)' }}>
+        {/* Tab bar */}
+        <div style={{ borderBottom: '0.5px solid rgba(44,40,32,0.15)', display: 'flex', marginTop: '1.5rem' }}>
           {tabs.map(t => (
-            <button key={t.key} onClick={() => setTab(t.key)}
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
               style={{
-                padding: '14px 28px', fontSize: '0.95rem',
-                borderTop: 'none', borderLeft: 'none', borderRight: 'none',
-                borderBottom: tab === t.key ? '2px solid var(--blue-primary)' : '2px solid transparent',
-                color: tab === t.key ? 'var(--blue-primary)' : '#4A6070',
-                background: 'none', cursor: 'pointer', marginBottom: '-1px', transition: 'color 0.15s',
-              }}>
+                padding: '0.85rem 1.5rem',
+                fontSize: '0.8rem',
+                background: 'none',
+                border: 'none',
+                borderBottom: `2px solid ${tab === t.key ? ACCENT : 'transparent'}`,
+                color: tab === t.key ? ACCENT : MUTED,
+                cursor: 'pointer',
+                marginBottom: '-0.5px',
+                letterSpacing: '0.02em',
+                transition: 'color 0.15s',
+              }}
+            >
               {t.label}
             </button>
           ))}
         </div>
 
-        {/* Profile tab */}
+        {/* ── Profile tab ── */}
         {tab === 'profile' && (
-          <div>
-            <div style={{ display: 'flex', gap: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', flex: 1 }}>
 
-              {/* Left: portrait photo + name + streak */}
-              <div style={{ width: '190px', flexShrink: 0 }}>
-                <div
-                  onClick={() => photoInputRef.current?.click()}
-                  style={{
-                    width: '190px', height: '250px',
-                    backgroundColor: '#EEF2F5',
-                    backgroundImage: photoPreview ? `url(${photoPreview})` : 'none',
-                    backgroundSize: 'cover', backgroundPosition: 'center top',
-                    cursor: 'pointer', position: 'relative',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    border: '1px solid var(--border)',
-                    borderRadius: '8px', overflow: 'hidden',
-                  }}
-                >
-                  {!photoPreview && (
-                    <span style={{ color: '#8A9BAD', fontSize: '0.7rem', textAlign: 'center', padding: '0 20px', lineHeight: 1.6 }}>
+            {/* Left sidebar */}
+            <div style={{ borderRight: '0.5px solid rgba(0,0,0,0.12)', padding: '2rem' }}>
+
+              {/* Photo — click anywhere to change */}
+              <div
+                onClick={() => photoInputRef.current?.click()}
+                onMouseEnter={() => setPhotoHovered(true)}
+                onMouseLeave={() => setPhotoHovered(false)}
+                style={{
+                  width: '180px',
+                  height: '200px',
+                  border: '0.5px solid rgba(0,0,0,0.12)',
+                  position: 'relative',
+                  cursor: 'pointer',
+                  overflow: 'hidden',
+                  backgroundColor: '#E8E4DC',
+                  flexShrink: 0,
+                }}
+              >
+                {photoPreview && (
+                  <img
+                    src={photoPreview}
+                    alt=""
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                )}
+                {!photoPreview && !photoUploading && (
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ color: MUTED, fontSize: '0.72rem', textAlign: 'center', lineHeight: 1.6 }}>
                       {lang === 'fr' ? 'Cliquer pour\najouter une photo' : 'Click to\nadd a photo'}
                     </span>
-                  )}
-                  {photoUploading && (
-                    <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ color: 'white', fontSize: '0.65rem', letterSpacing: '0.06em' }}>{lang === 'fr' ? 'Chargement...' : 'Uploading...'}</span>
-                    </div>
-                  )}
-                  {photoPreview && !photoUploading && (
-                    <div
-                      style={{ position: 'absolute', inset: 0, opacity: 0, backgroundColor: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: '10px', transition: 'opacity 0.2s' }}
-                      onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-                      onMouseLeave={e => (e.currentTarget.style.opacity = '0')}
-                    >
-                      <span style={{ color: 'white', fontSize: '0.65rem', letterSpacing: '0.06em' }}>MODIFIER</span>
-                    </div>
-                  )}
-                </div>
-                <input ref={photoInputRef} type="file" accept="image/jpeg,image/png,image/webp"
-                  onChange={handlePhotoChange} className="hidden" />
-                {photoPreview && (
-                  <button
-                    type="button"
-                    onClick={handleRemovePhoto}
-                    style={{ fontSize: '0.62rem', color: '#8A9BAD', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0 0', letterSpacing: '0.03em' }}
-                  >
-                    {lang === 'fr' ? 'Supprimer la photo' : 'Remove photo'}
-                  </button>
-                )}
-                <div style={{ padding: '12px 0 14px' }}>
-                  <p style={{ color: 'var(--text)', fontWeight: 500, fontSize: '0.9rem' }}>{profile.full_name}</p>
-                  <p style={{ color: '#8A9BAD', fontSize: '0.72rem', marginTop: '2px', letterSpacing: '0.02em' }}>Membre</p>
-                </div>
-
-                {/* Streak indicator */}
-                {streakFrequency && (
-                  <div style={{ paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
-                    <p style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#8A9BAD', marginBottom: '10px' }}>
-                      {lang === 'fr' ? 'Suivi' : 'Streak'}
-                    </p>
-                    {/* Visual circles */}
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '8px' }}>
-                      {Array.from({ length: Math.min(streakCount, 16) }, (_, i) => (
-                        <span key={i} style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: 'var(--blue-primary)', display: 'inline-block', flexShrink: 0 }} />
-                      ))}
-                      {Array.from({ length: Math.max(0, Math.min(16, 16) - Math.min(streakCount, 16)) }, (_, i) => (
-                        <span key={`e${i}`} style={{ width: '9px', height: '9px', borderRadius: '50%', border: '1px solid var(--border)', display: 'inline-block', flexShrink: 0 }} />
-                      ))}
-                    </div>
-                    <p style={{ fontSize: '1.6rem', fontWeight: 300, color: 'var(--blue-primary)', lineHeight: 1 }}>
-                      {streakCount}
-                    </p>
-                    <p style={{ fontSize: '0.65rem', color: '#4A6070', marginTop: '4px', lineHeight: 1.4 }}>
-                      {streakPeriodLabel}
-                    </p>
-                    <button
-                      onClick={() => setShowStreakModal(true)}
-                      style={{ fontSize: '0.65rem', color: 'var(--blue-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: '8px' }}
-                    >
-                      {lang === 'fr' ? 'Modifier' : 'Edit'}
-                    </button>
                   </div>
                 )}
-
-                {/* Prompt to set up streak if past session but no frequency yet */}
-                {!streakFrequency && hasPastSession && (
-                  <div style={{ paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
-                    <button
-                      onClick={() => setShowStreakModal(true)}
-                      style={{ fontSize: '0.72rem', color: 'var(--blue-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, lineHeight: 1.5, textAlign: 'left' }}
-                    >
-                      {lang === 'fr' ? 'Configurer un suivi →' : 'Set up a streak →'}
-                    </button>
+                {/* Hover overlay */}
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  backgroundColor: 'rgba(0,0,0,0.38)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  opacity: photoHovered && !!photoPreview && !photoUploading ? 1 : 0,
+                  transition: 'opacity 0.2s',
+                  pointerEvents: 'none',
+                }}>
+                  <span style={{ color: 'white', fontSize: '0.72rem', letterSpacing: '0.04em' }}>
+                    {lang === 'fr' ? 'Changer la photo' : 'Change photo'}
+                  </span>
+                </div>
+                {photoUploading && (
+                  <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ color: 'white', fontSize: '0.65rem', letterSpacing: '0.06em' }}>
+                      {lang === 'fr' ? 'Chargement...' : 'Uploading...'}
+                    </span>
                   </div>
                 )}
               </div>
 
-              {/* Right: bio */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--blue-primary)' }}>
+              <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handlePhotoChange}
+                className="hidden"
+              />
+
+              {photoPreview && (
+                <button
+                  type="button"
+                  onClick={handleRemovePhoto}
+                  style={{ fontSize: '0.72rem', color: MUTED, background: 'none', border: 'none', cursor: 'pointer', padding: '0.4rem 0 0', display: 'block' }}
+                >
+                  {lang === 'fr' ? 'Supprimer' : 'Remove'}
+                </button>
+              )}
+
+              {/* Name */}
+              <p style={{ fontFamily: GARAMOND, fontSize: '1.3rem', fontWeight: 400, color: 'rgba(44,40,32,0.9)', marginTop: '1rem', marginBottom: '0.2rem' }}>
+                {profile.full_name}
+              </p>
+              <p style={{ fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: MUTED, marginBottom: 0 }}>
+                {lang === 'fr' ? 'Membre' : 'Member'}
+              </p>
+
+              <hr style={{ border: 'none', borderTop: '0.5px solid rgba(0,0,0,0.12)', margin: '1.5rem 0' }} />
+
+              {/* Suivi */}
+              {streakFrequency ? (
+                <div>
+                  <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: MUTED, marginBottom: '0.75rem' }}>
+                    {lang === 'fr' ? 'Suivi' : 'Streak'}
+                  </p>
+                  <div style={{ height: '3px', backgroundColor: 'rgba(0,0,0,0.1)', borderRadius: '2px', marginBottom: '1rem', overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${Math.min(streakCount / 16, 1) * 100}%`, backgroundColor: ACCENT, borderRadius: '2px', transition: 'width 0.4s ease' }} />
+                  </div>
+                  <p style={{ fontFamily: GARAMOND, fontSize: '2.5rem', fontWeight: 400, color: 'rgba(44,40,32,0.9)', lineHeight: 1, marginBottom: '0.25rem' }}>
+                    {streakCount}
+                  </p>
+                  <p style={{ fontSize: '0.75rem', color: 'rgba(44,40,32,0.45)', marginBottom: '0.6rem' }}>
+                    {streakPeriodLabel}
+                  </p>
+                  <button
+                    onClick={() => setShowStreakModal(true)}
+                    style={{ fontSize: '0.72rem', color: ACCENT, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  >
+                    {lang === 'fr' ? 'Modifier →' : 'Edit →'}
+                  </button>
+                </div>
+              ) : hasPastSession ? (
+                <button
+                  onClick={() => setShowStreakModal(true)}
+                  style={{ fontSize: '0.72rem', color: ACCENT, background: 'none', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left', lineHeight: 1.5 }}
+                >
+                  {lang === 'fr' ? 'Configurer un suivi →' : 'Set up a streak →'}
+                </button>
+              ) : null}
+            </div>
+
+            {/* Right main area */}
+            <div style={{ padding: '2rem 2.5rem' }}>
+
+              {/* À propos de vous */}
+              <div style={{ backgroundColor: '#EDE9E0', padding: '1.25rem', borderRadius: '4px' }}>
+                <p style={{ fontSize: '0.65rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: MUTED, marginBottom: '1rem' }}>
                   {lang === 'fr' ? 'À propos de vous' : 'About you'}
                 </p>
                 <MemberBioEditor
@@ -509,177 +551,208 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                   placeholder={lang === 'fr'
                     ? 'Quelques mots sur vous, vos attentes, ce qui vous amène...'
                     : 'A few words about yourself, your expectations, what brings you here...'}
-                  inputStyle={{ ...inputStyle, resize: 'vertical' }}
+                  inputStyle={{
+                    width: '100%',
+                    minHeight: '130px',
+                    backgroundColor: '#E4DFD5',
+                    border: '0.5px solid rgba(44,40,32,0.2)',
+                    padding: '0.85rem 1rem',
+                    fontSize: '0.88rem',
+                    lineHeight: '1.75',
+                    resize: 'vertical',
+                    borderRadius: '4px',
+                    color: 'rgba(44,40,32,0.85)',
+                    outline: 'none',
+                  }}
                 />
+              </div>
 
-                <div style={{ marginTop: '20px' }}>
-                  <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--blue-primary)' }}>
-                    {lang === 'fr' ? 'Date de naissance' : 'Date of birth'}
-                  </p>
-                  <input
-                    type="date"
-                    value={dob}
-                    onChange={e => setDob(e.target.value)}
-                    className="text-sm px-3 py-2"
-                    style={{ border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)', backgroundColor: 'var(--surface)', outline: 'none' }}
-                  />
-                </div>
+              <hr style={{ border: 'none', borderTop: '0.5px solid rgba(0,0,0,0.1)', margin: '1.5rem 0' }} />
 
-                <div style={{ marginTop: '20px' }}>
-                  <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--blue-primary)' }}>
-                    {lang === 'fr' ? 'Numéro de sécurité sociale (NIR)' : 'Social security number (NIR)'}
-                  </p>
-                  <input
-                    type="text"
-                    value={nir}
-                    onChange={e => setNir(e.target.value)}
-                    placeholder="1 85 12 75 108 001 28"
-                    className="text-sm px-3 py-2"
-                    style={{ border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)', backgroundColor: 'var(--surface)', outline: 'none', width: '100%', maxWidth: '260px' }}
-                  />
-                  <p className="text-xs mt-1" style={{ color: '#8A9BAD' }}>
-                    {lang === 'fr'
-                      ? 'Utilisé uniquement pour générer vos feuilles de soins.'
-                      : 'Used only to generate your reimbursement receipts.'}
-                  </p>
+              {/* Informations personnelles */}
+              <div>
+                <p style={{ fontSize: '0.65rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: MUTED, marginBottom: '1rem' }}>
+                  {lang === 'fr' ? 'Informations personnelles' : 'Personal information'}
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                  <div>
+                    <label style={{ fontSize: '0.72rem', color: 'rgba(44,40,32,0.5)', display: 'block', marginBottom: '0.4rem' }}>
+                      {lang === 'fr' ? 'Date de naissance' : 'Date of birth'}
+                    </label>
+                    <input
+                      type="date"
+                      value={dob}
+                      onChange={e => setDob(e.target.value)}
+                      style={{ background: INPUT_BG, border: INPUT_BORDER, padding: '0.65rem 1rem', borderRadius: '4px', fontSize: '0.88rem', width: '100%', boxSizing: 'border-box', color: 'rgba(44,40,32,0.85)', outline: 'none' }}
+                    />
+                  </div>
+                  <div />
                 </div>
               </div>
-            </div>
 
-            {error && <p className="text-sm mt-4" style={{ color: '#C0392B' }}>{error}</p>}
+              <hr style={{ border: 'none', borderTop: '0.5px solid rgba(0,0,0,0.1)', margin: '1.5rem 0' }} />
 
-            <div className="flex items-center gap-4" style={{ borderTop: '1px solid var(--border)', marginTop: '28px', paddingTop: '20px' }}>
-              <button
-                onClick={saveProfile}
-                disabled={saving}
-                className="text-white text-sm transition-opacity hover:opacity-80 disabled:opacity-50"
-                style={{ backgroundColor: 'var(--blue-primary)', cursor: 'pointer', padding: '10px 28px', borderRadius: '8px', border: 'none' }}
-              >
-                {saving ? (lang === 'en' ? 'Saving...' : 'Enregistrement...') : (lang === 'en' ? 'Save' : 'Enregistrer')}
-              </button>
-              {saved && (
-                <span className="text-sm" style={{ color: 'var(--blue-primary)' }}>
-                  {lang === 'en' ? 'Profile updated' : 'Profil mis à jour'}
-                </span>
+              {/* Sécurité sociale */}
+              <div>
+                <p style={{ fontSize: '0.65rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: MUTED, marginBottom: '1rem' }}>
+                  {lang === 'fr' ? 'Sécurité sociale' : 'Social security'}
+                </p>
+                <label style={{ fontSize: '0.72rem', color: 'rgba(44,40,32,0.5)', display: 'block', marginBottom: '0.4rem' }}>
+                  {lang === 'fr' ? 'Numéro de sécurité sociale (NIR)' : 'Social security number (NIR)'}
+                </label>
+                <input
+                  type="text"
+                  value={nir}
+                  onChange={e => setNir(e.target.value)}
+                  placeholder="1 85 12 75 108 001 28"
+                  style={{ background: INPUT_BG, border: INPUT_BORDER, padding: '0.65rem 1rem', borderRadius: '4px', fontSize: '0.88rem', width: '100%', maxWidth: '320px', boxSizing: 'border-box', color: 'rgba(44,40,32,0.85)', outline: 'none' }}
+                />
+                <p style={{ fontSize: '0.75rem', color: 'rgba(44,40,32,0.38)', marginTop: '0.4rem' }}>
+                  {lang === 'fr'
+                    ? 'Utilisé uniquement pour générer vos feuilles de soins.'
+                    : 'Used only to generate your reimbursement receipts.'}
+                </p>
+              </div>
+
+              {error && (
+                <p style={{ fontSize: '0.875rem', color: '#C0392B', marginTop: '1rem' }}>{error}</p>
               )}
-            </div>
 
-            {/* Account deletion */}
-            <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid var(--border)' }}>
-              {!showDeleteConfirm ? (
+              {/* Actions */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginTop: '1rem' }}>
                 <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="text-sm hover:opacity-70 transition-opacity"
-                  style={{ color: '#8A9BAD', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  onClick={saveProfile}
+                  disabled={saving}
+                  style={{
+                    background: ACCENT, color: '#fff', border: 'none',
+                    padding: '0.75rem 2rem', fontSize: '0.78rem',
+                    letterSpacing: '0.1em', textTransform: 'uppercase',
+                    borderRadius: '4px', cursor: saving ? 'default' : 'pointer',
+                    opacity: saving ? 0.6 : 1, transition: 'opacity 0.15s',
+                  }}
                 >
-                  {lang === 'fr' ? 'Supprimer mon compte' : 'Delete my account'}
+                  {saving
+                    ? (lang === 'en' ? 'Saving...' : 'Enregistrement...')
+                    : (lang === 'en' ? 'Save' : 'Enregistrer')}
                 </button>
-              ) : (
-                <div>
-                  <p className="text-sm mb-4" style={{ color: '#4A6070', lineHeight: 1.7 }}>
-                    {lang === 'fr'
-                      ? 'Cette action est irréversible. Toutes vos données seront supprimées. Annulez vos rendez-vous à venir avant de continuer.'
-                      : 'This action is irreversible. All your data will be deleted. Please cancel any upcoming appointments before continuing.'}
-                  </p>
-                  <div className="flex items-center gap-4">
-                    <button
-                      onClick={deleteAccount}
-                      disabled={deleting}
-                      className="px-6 py-2 text-white text-sm transition-opacity hover:opacity-80 disabled:opacity-50"
-                      style={{ backgroundColor: '#8A9BAD', cursor: 'pointer', borderRadius: '6px' }}
-                    >
-                      {deleting
-                        ? (lang === 'fr' ? 'Suppression...' : 'Deleting...')
-                        : (lang === 'fr' ? 'Confirmer la suppression' : 'Confirm deletion')}
-                    </button>
-                    <button
-                      onClick={() => setShowDeleteConfirm(false)}
-                      className="text-sm hover:opacity-70"
-                      style={{ color: '#4A6070', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                    >
-                      {lang === 'fr' ? 'Annuler' : 'Cancel'}
-                    </button>
+                <button
+                  onClick={() => { setBio(profile.bio ?? ''); setDob(profile.date_of_birth ?? ''); setNir(initialNir ?? '') }}
+                  disabled={saving}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.78rem', color: MUTED, padding: 0, letterSpacing: '0.03em' }}
+                >
+                  {lang === 'fr' ? 'Annuler' : 'Cancel'}
+                </button>
+                {saved && (
+                  <span style={{ fontSize: '0.8rem', color: ACCENT }}>
+                    {lang === 'en' ? 'Profile updated' : 'Profil mis à jour'}
+                  </span>
+                )}
+              </div>
+
+              {/* Account deletion */}
+              <div style={{ marginTop: '3rem', paddingTop: '1.5rem', borderTop: '0.5px solid rgba(0,0,0,0.08)' }}>
+                {!showDeleteConfirm ? (
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    style={{ fontSize: '0.75rem', color: 'rgba(44,40,32,0.3)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  >
+                    {lang === 'fr' ? 'Supprimer mon compte' : 'Delete my account'}
+                  </button>
+                ) : (
+                  <div>
+                    <p style={{ fontSize: '0.875rem', color: 'rgba(44,40,32,0.6)', lineHeight: 1.7, marginBottom: '1rem' }}>
+                      {lang === 'fr'
+                        ? 'Cette action est irréversible. Toutes vos données seront supprimées. Annulez vos rendez-vous à venir avant de continuer.'
+                        : 'This action is irreversible. All your data will be deleted. Please cancel any upcoming appointments before continuing.'}
+                    </p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                      <button
+                        onClick={deleteAccount}
+                        disabled={deleting}
+                        style={{ background: '#8A9BAD', color: 'white', border: 'none', padding: '0.6rem 1.5rem', fontSize: '0.78rem', letterSpacing: '0.06em', borderRadius: '4px', cursor: deleting ? 'default' : 'pointer', opacity: deleting ? 0.5 : 1 }}
+                      >
+                        {deleting
+                          ? (lang === 'fr' ? 'Suppression...' : 'Deleting...')
+                          : (lang === 'fr' ? 'Confirmer la suppression' : 'Confirm deletion')}
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteConfirm(false)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.78rem', color: MUTED, padding: 0 }}
+                      >
+                        {lang === 'fr' ? 'Annuler' : 'Cancel'}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+
             </div>
           </div>
         )}
 
-        {/* Appointments tab */}
+        {/* ── Appointments tab ── */}
         {tab === 'appointments' && (
-          <div>
+          <div style={{ padding: '2rem 2.5rem', flex: 1 }}>
             {cancelMessage && (
-              <p className="text-sm mb-4" style={{ color: cancelMessage.includes('erreur') || cancelMessage.includes('error') ? '#C0392B' : 'var(--blue-primary)' }}>
+              <p style={{ fontSize: '0.875rem', marginBottom: '1rem', color: cancelMessage.includes('erreur') || cancelMessage.includes('error') ? '#C0392B' : 'var(--blue-primary)' }}>
                 {cancelMessage}
               </p>
             )}
             {localAppointments.length === 0 ? (
-              <p className="text-sm" style={{ color: '#4A6070' }}>
+              <p style={{ fontSize: '0.875rem', color: MUTED }}>
                 {lang === 'en' ? 'No appointments.' : 'Aucun rendez-vous.'}
               </p>
             ) : (
-              <div className="flex flex-col gap-3">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {localAppointments.map(appt => {
                   const future = isFuture(appt)
                   const confirming = cancelConfirmId === appt.id
                   return (
-                    <div key={appt.id} className="bg-[var(--surface)] px-6 py-5"
-                      style={{ border: '1px solid var(--border)', borderRadius: '8px' }}>
-                      <div className="flex justify-between items-start">
+                    <div key={appt.id} style={{ backgroundColor: 'var(--surface)', padding: '20px 24px', border: '1px solid var(--border)', borderRadius: '8px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div>
                           {appt.availability && (
-                            <p className="text-sm font-medium capitalize mb-1" style={{ color: 'var(--text)' }}>
+                            <p style={{ fontSize: '0.9rem', fontWeight: 500, color: 'rgba(44,40,32,0.85)', marginBottom: '4px', textTransform: 'capitalize' }}>
                               {formatDate(appt.availability.date)}
-                              <span style={{ fontWeight: 400, color: '#4A6070' }}>
-                                {' '}{'·'}{' '}{formatTime(appt.availability.start_time)} – {formatTime(appt.availability.end_time)}
+                              <span style={{ fontWeight: 400, color: MUTED }}>
+                                {' · '}{formatTime(appt.availability.start_time)} – {formatTime(appt.availability.end_time)}
                               </span>
                             </p>
                           )}
-                          <p className="text-xs" style={{ color: '#4A6070' }}>
+                          <p style={{ fontSize: '0.78rem', color: MUTED }}>
                             {appt.therapists?.profiles?.full_name}
-                            {appt.therapists?.consultation_fee
-                              ? ` · ${appt.therapists.consultation_fee + 4}€`
-                              : ''}
+                            {appt.therapists?.consultation_fee ? ` · ${appt.therapists.consultation_fee + 4}€` : ''}
                           </p>
                         </div>
-                        <span className="text-xs px-3 py-1"
-                          style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', borderRadius: '20px' }}>
+                        <span style={{ fontSize: '0.68rem', padding: '4px 12px', backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', borderRadius: '20px', letterSpacing: '0.06em' }}>
                           {lang === 'en' ? 'Confirmed' : 'Confirmé'}
                         </span>
                       </div>
 
-                      {/* Message therapist */}
-                      <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border)' }}>
-                        <Link
-                          href={`/messages?with=${appt.therapist_id}&name=${encodeURIComponent(appt.therapists?.profiles?.full_name ?? 'Thérapeute')}`}
-                          className="text-xs hover:opacity-70 transition-opacity"
-                          style={{ color: 'var(--blue-primary)' }}
-                        >
+                      <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <Link href={`/messages?with=${appt.therapist_id}&name=${encodeURIComponent(appt.therapists?.profiles?.full_name ?? 'Thérapeute')}`}
+                          style={{ fontSize: '0.75rem', color: 'var(--blue-primary)' }}>
                           {lang === 'fr' ? 'Message →' : 'Message →'}
                         </Link>
+                        <button
+                          onClick={() => handleAddToCalendar(appt)}
+                          style={{ fontSize: '0.75rem', color: MUTED, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                        >
+                          {lang === 'fr' ? '+ Ajouter au calendrier' : '+ Add to calendar'}
+                        </button>
                       </div>
 
-                      {/* Past: rebook CTA */}
                       {!future && (
                         <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border)' }}>
                           {streakFrequency ? (
-                            // Smart slot picker for members with a streak
                             !rebookOpen[appt.id] ? (
-                              <div className="flex items-center gap-4">
-                                <button
-                                  onClick={() => openRebookPicker(appt.id, appt.therapist_id, appt.availability.date)}
-                                  className="text-xs hover:opacity-70 transition-opacity"
-                                  style={{ color: 'var(--blue-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                                >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                <button onClick={() => openRebookPicker(appt.id, appt.therapist_id, appt.availability.date)}
+                                  style={{ fontSize: '0.75rem', color: 'var(--blue-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                                   {lang === 'fr' ? 'Reprendre ma séance →' : 'Rebook a session →'}
                                 </button>
-                                <Link
-                                  href="/therapists"
-                                  className="text-xs hover:opacity-70 transition-opacity"
-                                  style={{ color: '#8A9BAD' }}
-                                >
-                                  {lang === 'fr' ? 'Voir d\'autres thérapeutes' : 'See other therapists'}
+                                <Link href="/therapists" style={{ fontSize: '0.75rem', color: MUTED }}>
+                                  {lang === 'fr' ? "Voir d'autres thérapeutes" : 'See other therapists'}
                                 </Link>
                               </div>
                             ) : (
@@ -690,54 +763,37 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                                     + ' – ' + sunday.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
                                   const slots = rebookSlots[appt.id] ?? []
                                   const loading = rebookLoading[appt.id]
-
-                                  // Group slots by date
                                   const byDate: Record<string, typeof slots> = {}
                                   for (const s of slots) {
                                     if (!byDate[s.date]) byDate[s.date] = []
                                     byDate[s.date].push(s)
                                   }
-
                                   return (
                                     <div>
-                                      <p className="text-xs mb-3" style={{ color: '#4A6070' }}>
-                                        {lang === 'fr'
-                                          ? `Créneaux disponibles · semaine du ${weekLabel}`
-                                          : `Available slots · week of ${weekLabel}`}
+                                      <p style={{ fontSize: '0.75rem', marginBottom: '12px', color: MUTED }}>
+                                        {lang === 'fr' ? `Créneaux disponibles · semaine du ${weekLabel}` : `Available slots · week of ${weekLabel}`}
                                       </p>
                                       {loading ? (
-                                        <p className="text-xs" style={{ color: '#8A9BAD' }}>
-                                          {lang === 'fr' ? 'Chargement...' : 'Loading...'}
-                                        </p>
+                                        <p style={{ fontSize: '0.75rem', color: MUTED }}>{lang === 'fr' ? 'Chargement...' : 'Loading...'}</p>
                                       ) : slots.length === 0 ? (
                                         <div>
-                                          <p className="text-xs mb-2" style={{ color: '#8A9BAD' }}>
-                                            {lang === 'fr'
-                                              ? 'Aucun créneau disponible cette semaine.'
-                                              : 'No slots available this week.'}
+                                          <p style={{ fontSize: '0.75rem', color: MUTED, marginBottom: '8px' }}>
+                                            {lang === 'fr' ? 'Aucun créneau disponible cette semaine.' : 'No slots available this week.'}
                                           </p>
-                                          <Link
-                                            href={`/therapists/${appt.therapist_id}`}
-                                            className="text-xs hover:opacity-70"
-                                            style={{ color: 'var(--blue-primary)' }}
-                                          >
+                                          <Link href={`/therapists/${appt.therapist_id}`} style={{ fontSize: '0.75rem', color: 'var(--blue-primary)' }}>
                                             {lang === 'fr' ? 'Voir tous les créneaux →' : 'View all slots →'}
                                           </Link>
                                         </div>
                                       ) : (
-                                        <div className="flex flex-col gap-2">
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                           {Object.entries(byDate).map(([date, daySlots]) => (
-                                            <div key={date} className="flex items-center gap-2 flex-wrap">
-                                              <span className="text-xs capitalize" style={{ color: '#4A6070', minWidth: '80px' }}>
+                                            <div key={date} style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                              <span style={{ fontSize: '0.75rem', color: MUTED, minWidth: '80px', textTransform: 'capitalize' }}>
                                                 {new Date(date + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' })}
                                               </span>
                                               {daySlots.map(s => (
-                                                <Link
-                                                  key={s.id}
-                                                  href={`/book/${s.id}`}
-                                                  className="text-xs px-2 py-1 hover:opacity-80 transition-opacity"
-                                                  style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', border: '1px solid var(--border)', borderRadius: '6px' }}
-                                                >
+                                                <Link key={s.id} href={`/book/${s.id}`}
+                                                  style={{ fontSize: '0.75rem', padding: '4px 10px', backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', border: '1px solid var(--border)', borderRadius: '6px' }}>
                                                   {s.start_time.slice(0, 5)}
                                                 </Link>
                                               ))}
@@ -745,20 +801,13 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                                           ))}
                                         </div>
                                       )}
-                                      <div className="flex items-center gap-4 mt-3">
-                                        <button
-                                          onClick={() => setRebookOpen(prev => ({ ...prev, [appt.id]: false }))}
-                                          className="text-xs hover:opacity-70"
-                                          style={{ color: '#8A9BAD', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                                        >
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '12px' }}>
+                                        <button onClick={() => setRebookOpen(prev => ({ ...prev, [appt.id]: false }))}
+                                          style={{ fontSize: '0.75rem', color: MUTED, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                                           {lang === 'fr' ? 'Fermer' : 'Close'}
                                         </button>
-                                        <Link
-                                          href="/therapists"
-                                          className="text-xs hover:opacity-70"
-                                          style={{ color: '#8A9BAD' }}
-                                        >
-                                          {lang === 'fr' ? 'Voir d\'autres thérapeutes' : 'See other therapists'}
+                                        <Link href="/therapists" style={{ fontSize: '0.75rem', color: MUTED }}>
+                                          {lang === 'fr' ? "Voir d'autres thérapeutes" : 'See other therapists'}
                                         </Link>
                                       </div>
                                     </div>
@@ -767,20 +816,12 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                               </div>
                             )
                           ) : (
-                            // No streak: simple rebook link + gentle streak prompt
-                            <div className="flex items-center gap-4">
-                              <Link
-                                href={`/therapists/${appt.therapist_id}`}
-                                className="text-xs hover:opacity-70 transition-opacity"
-                                style={{ color: 'var(--blue-primary)' }}
-                              >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                              <Link href={`/therapists/${appt.therapist_id}`} style={{ fontSize: '0.75rem', color: 'var(--blue-primary)' }}>
                                 {lang === 'fr' ? 'Reprendre un rendez-vous →' : 'Book another session →'}
                               </Link>
-                              <button
-                                onClick={() => setShowStreakModal(true)}
-                                className="text-xs hover:opacity-70 transition-opacity"
-                                style={{ color: '#8A9BAD', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                              >
+                              <button onClick={() => setShowStreakModal(true)}
+                                style={{ fontSize: '0.75rem', color: MUTED, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                                 {lang === 'fr' ? 'Configurer un suivi ?' : 'Set up a streak?'}
                               </button>
                             </div>
@@ -788,32 +829,27 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                         </div>
                       )}
 
-                      {/* Pre-session check-in */}
                       {future && (
                         <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
                           {!checkinOpen[appt.id] && !checkinSaved[appt.id] && (
-                            <button
-                              onClick={() => setCheckinOpen(prev => ({ ...prev, [appt.id]: true }))}
-                              className="text-xs hover:opacity-70 transition-opacity"
-                              style={{ color: 'var(--blue-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                            >
+                            <button onClick={() => setCheckinOpen(prev => ({ ...prev, [appt.id]: true }))}
+                              style={{ fontSize: '0.75rem', color: 'var(--blue-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                               {lang === 'fr' ? 'Préparer ma séance →' : 'Prepare my session →'}
                             </button>
                           )}
                           {checkinSaved[appt.id] && (
-                            <p className="text-xs" style={{ color: 'var(--blue-primary)' }}>
+                            <p style={{ fontSize: '0.75rem', color: 'var(--blue-primary)' }}>
                               {lang === 'fr' ? '✓ Check-in enregistré' : '✓ Check-in saved'}
                             </p>
                           )}
                           {checkinOpen[appt.id] && !checkinSaved[appt.id] && (
                             <div>
-                              <p className="text-xs mb-3" style={{ color: '#4A6070' }}>
-                                {lang === 'fr' ? 'Comment vous sentez-vous aujourd\'hui ?' : 'How are you feeling today?'}
+                              <p style={{ fontSize: '0.75rem', marginBottom: '12px', color: MUTED }}>
+                                {lang === 'fr' ? "Comment vous sentez-vous aujourd'hui ?" : 'How are you feeling today?'}
                               </p>
-                              <div className="flex gap-2 mb-3">
+                              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
                                 {[1, 2, 3, 4, 5].map(score => (
                                   <button key={score} onClick={() => setCheckinMood(prev => ({ ...prev, [appt.id]: score }))}
-                                    className="text-lg transition-opacity"
                                     style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: checkinMood[appt.id] === score ? 1 : 0.35, fontSize: '1.4rem', padding: '2px 4px' }}>
                                     {['😔', '😕', '😐', '🙂', '😊'][score - 1]}
                                   </button>
@@ -824,23 +860,15 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                                 onChange={e => setCheckinNote(prev => ({ ...prev, [appt.id]: e.target.value }))}
                                 rows={2}
                                 placeholder={lang === 'fr' ? 'Une note pour votre thérapeute (facultatif)...' : 'A note for your therapist (optional)...'}
-                                className="w-full px-3 py-2 text-xs"
-                                style={{ ...inputStyle, resize: 'none', marginBottom: '8px' }}
+                                style={{ resize: 'none', marginBottom: '8px', width: '100%', padding: '8px 12px', fontSize: '0.75rem', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)', outline: 'none', boxSizing: 'border-box' }}
                               />
-                              <div className="flex items-center gap-3">
-                                <button
-                                  onClick={() => saveCheckin(appt.id)}
-                                  disabled={!checkinMood[appt.id] || checkinSaving[appt.id]}
-                                  className="text-xs px-4 py-1.5 text-white transition-opacity hover:opacity-80 disabled:opacity-40"
-                                  style={{ backgroundColor: 'var(--blue-primary)', cursor: 'pointer', borderRadius: '8px', border: 'none' }}
-                                >
-                                  {checkinSaving[appt.id]
-                                    ? (lang === 'fr' ? 'Enregistrement...' : 'Saving...')
-                                    : (lang === 'fr' ? 'Enregistrer' : 'Save')}
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <button onClick={() => saveCheckin(appt.id)} disabled={!checkinMood[appt.id] || checkinSaving[appt.id]}
+                                  style={{ fontSize: '0.75rem', padding: '6px 16px', color: 'white', backgroundColor: 'var(--blue-primary)', cursor: 'pointer', borderRadius: '8px', border: 'none', opacity: (!checkinMood[appt.id] || checkinSaving[appt.id]) ? 0.4 : 1 }}>
+                                  {checkinSaving[appt.id] ? (lang === 'fr' ? 'Enregistrement...' : 'Saving...') : (lang === 'fr' ? 'Enregistrer' : 'Save')}
                                 </button>
                                 <button onClick={() => setCheckinOpen(prev => ({ ...prev, [appt.id]: false }))}
-                                  className="text-xs hover:opacity-70"
-                                  style={{ color: '#8A9BAD', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                                  style={{ fontSize: '0.75rem', color: MUTED, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                                   {lang === 'fr' ? 'Annuler' : 'Cancel'}
                                 </button>
                               </div>
@@ -849,39 +877,24 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                         </div>
                       )}
 
-                      {/* Cancel */}
                       {future && (
                         <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
                           {!confirming ? (
-                            <button
-                              onClick={() => setCancelConfirmId(appt.id)}
-                              className="text-xs hover:opacity-70 transition-opacity"
-                              style={{ color: '#8A9BAD', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                            >
+                            <button onClick={() => setCancelConfirmId(appt.id)}
+                              style={{ fontSize: '0.75rem', color: MUTED, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                               {lang === 'fr' ? 'Annuler ce rendez-vous' : 'Cancel this appointment'}
                             </button>
                           ) : (
-                            <div className="flex items-center gap-4">
-                              <p className="text-xs" style={{ color: '#4A6070' }}>
-                                {lang === 'fr'
-                                  ? 'Remboursement si annulation ≥ 24h avant. Confirmer ?'
-                                  : 'Refund if cancelled ≥ 24h before. Confirm?'}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                              <p style={{ fontSize: '0.75rem', color: MUTED }}>
+                                {lang === 'fr' ? 'Remboursement si annulation ≥ 24h avant. Confirmer ?' : 'Refund if cancelled ≥ 24h before. Confirm?'}
                               </p>
-                              <button
-                                onClick={() => cancelAppointment(appt.id)}
-                                disabled={cancellingId === appt.id}
-                                className="text-xs hover:opacity-70 disabled:opacity-40"
-                                style={{ color: '#C0392B', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                              >
-                                {cancellingId === appt.id
-                                  ? (lang === 'fr' ? 'Annulation...' : 'Cancelling...')
-                                  : (lang === 'fr' ? 'Confirmer' : 'Confirm')}
+                              <button onClick={() => cancelAppointment(appt.id)} disabled={cancellingId === appt.id}
+                                style={{ fontSize: '0.75rem', color: '#C0392B', background: 'none', border: 'none', cursor: 'pointer', padding: 0, opacity: cancellingId === appt.id ? 0.4 : 1 }}>
+                                {cancellingId === appt.id ? (lang === 'fr' ? 'Annulation...' : 'Cancelling...') : (lang === 'fr' ? 'Confirmer' : 'Confirm')}
                               </button>
-                              <button
-                                onClick={() => setCancelConfirmId(null)}
-                                className="text-xs hover:opacity-70"
-                                style={{ color: '#8A9BAD', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                              >
+                              <button onClick={() => setCancelConfirmId(null)}
+                                style={{ fontSize: '0.75rem', color: MUTED, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                                 {lang === 'fr' ? 'Retour' : 'Back'}
                               </button>
                             </div>
@@ -893,49 +906,42 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                 })}
               </div>
             )}
-          </div>
-        )}
 
-        {/* Waitlist section within appointments tab */}
-        {tab === 'appointments' && localWaitlist.length > 0 && (
-          <div style={{ marginTop: '40px', paddingTop: '28px', borderTop: '1px solid var(--border)' }}>
-            <p className="text-xs uppercase tracking-widest mb-4" style={{ color: 'var(--blue-primary)' }}>
-              {lang === 'fr' ? 'Listes d\'attente' : 'Waitlists'}
-            </p>
-            <div className="flex flex-col gap-2">
-              {localWaitlist.map(entry => (
-                <div key={entry.therapist_id} className="flex items-center justify-between bg-[var(--surface)] px-5 py-4"
-                  style={{ border: '1px solid var(--border)', borderRadius: '8px' }}>
-                  <div>
-                    <p className="text-sm" style={{ color: 'var(--text)' }}>
-                      {entry.therapists?.profiles?.full_name}
-                    </p>
-                    <p className="text-xs mt-0.5" style={{ color: '#8A9BAD' }}>
-                      {lang === 'fr' ? 'Vous serez notifié dès qu\'un créneau se libère' : 'You\'ll be notified when a slot opens'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => removeFromWaitlist(entry.therapist_id)}
-                    disabled={removingWaitlist === entry.therapist_id}
-                    className="text-xs hover:opacity-70 transition-opacity disabled:opacity-40"
-                    style={{ color: '#8A9BAD', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                  >
-                    {removingWaitlist === entry.therapist_id
-                      ? '...'
-                      : (lang === 'fr' ? 'Retirer' : 'Remove')}
-                  </button>
+            {/* Waitlist */}
+            {localWaitlist.length > 0 && (
+              <div style={{ marginTop: '2.5rem', paddingTop: '1.75rem', borderTop: '1px solid var(--border)' }}>
+                <p style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.18em', color: MUTED, marginBottom: '1rem' }}>
+                  {lang === 'fr' ? "Listes d'attente" : 'Waitlists'}
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {localWaitlist.map(entry => (
+                    <div key={entry.therapist_id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'var(--surface)', padding: '14px 20px', border: '1px solid var(--border)', borderRadius: '8px' }}>
+                      <div>
+                        <p style={{ fontSize: '0.875rem', color: 'rgba(44,40,32,0.85)' }}>{entry.therapists?.profiles?.full_name}</p>
+                        <p style={{ fontSize: '0.72rem', marginTop: '2px', color: MUTED }}>
+                          {lang === 'fr' ? "Vous serez notifié dès qu'un créneau se libère" : "You'll be notified when a slot opens"}
+                        </p>
+                      </div>
+                      <button onClick={() => removeFromWaitlist(entry.therapist_id)} disabled={removingWaitlist === entry.therapist_id}
+                        style={{ fontSize: '0.75rem', color: MUTED, background: 'none', border: 'none', cursor: 'pointer', padding: 0, opacity: removingWaitlist === entry.therapist_id ? 0.4 : 1 }}>
+                        {removingWaitlist === entry.therapist_id ? '...' : (lang === 'fr' ? 'Retirer' : 'Remove')}
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Calendar tab */}
+        {/* ── Calendar tab ── */}
         {tab === 'calendar' && (
-          <MembreCalendarTab appointments={appointments} lang={lang} />
+          <div style={{ padding: '2rem 2.5rem', flex: 1 }}>
+            <MembreCalendarTab appointments={appointments} lang={lang} />
+          </div>
         )}
 
-      </div>
+      </main>
 
       {/* Streak setup modal */}
       {showStreakModal && (
@@ -948,8 +954,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
           lang={lang}
         />
       )}
-
-    </main>
+    </>
   )
 }
 
@@ -970,40 +975,21 @@ function StreakSetupModal({ current, onSave, onSkip, saving, errorMsg, lang }: {
     titleFr: string; titleEn: string
     descFr: string; descEn: string
   }[] = [
-    {
-      key: 'weekly',
-      titleFr: 'Chaque semaine', titleEn: 'Every week',
-      descFr: 'Une séance par semaine', descEn: 'One session per week',
-    },
-    {
-      key: 'biweekly',
-      titleFr: 'Toutes les deux semaines', titleEn: 'Every two weeks',
-      descFr: 'Une séance toutes les deux semaines', descEn: 'One session every two weeks',
-    },
-    {
-      key: 'monthly',
-      titleFr: 'Chaque mois', titleEn: 'Every month',
-      descFr: 'Une séance par mois', descEn: 'One session per month',
-    },
+    { key: 'weekly', titleFr: 'Chaque semaine', titleEn: 'Every week', descFr: 'Une séance par semaine', descEn: 'One session per week' },
+    { key: 'biweekly', titleFr: 'Toutes les deux semaines', titleEn: 'Every two weeks', descFr: 'Une séance toutes les deux semaines', descEn: 'One session every two weeks' },
+    { key: 'monthly', titleFr: 'Chaque mois', titleEn: 'Every month', descFr: 'Une séance par mois', descEn: 'One session per month' },
   ]
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.35)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      zIndex: 50, padding: '24px',
-    }}>
-      <div style={{
-        backgroundColor: 'var(--surface)', width: '100%', maxWidth: '400px',
-        padding: '36px 32px', border: '1px solid var(--border)', borderRadius: '16px',
-      }}>
-        <p style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--blue-primary)', marginBottom: '12px' }}>
+    <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '24px' }}>
+      <div style={{ backgroundColor: '#F2EFE8', width: '100%', maxWidth: '400px', padding: '36px 32px', border: '0.5px solid rgba(44,40,32,0.15)', borderRadius: '8px' }}>
+        <p style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: ACCENT, marginBottom: '12px' }}>
           {lang === 'fr' ? 'Suivi thérapeutique' : 'Therapy streak'}
         </p>
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 300, color: 'var(--text)', marginBottom: '8px' }}>
+        <h2 style={{ fontFamily: GARAMOND, fontSize: '1.4rem', fontWeight: 400, color: 'rgba(44,40,32,0.9)', marginBottom: '8px' }}>
           {lang === 'fr' ? 'Continuez sur votre lancée.' : 'Keep the momentum going.'}
         </h2>
-        <p style={{ fontSize: '0.8rem', color: '#4A6070', marginBottom: '28px', lineHeight: 1.7 }}>
+        <p style={{ fontSize: '0.8rem', color: MUTED, marginBottom: '28px', lineHeight: 1.7 }}>
           {lang === 'fr'
             ? "Choisissez votre fréquence de rendez-vous désirée. Ceci ne vous engage à rien, c'est simplement un système pour vous motiver à prendre le nombre de rendez-vous qui vous aidera à respirer."
             : "Choose your desired session frequency. This is not a commitment — it's simply a way to motivate yourself to book the sessions that will help you feel zen."}
@@ -1011,47 +997,27 @@ function StreakSetupModal({ current, onSave, onSkip, saving, errorMsg, lang }: {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '28px' }}>
           {options.map(opt => (
-            <button
-              key={opt.key}
-              type="button"
-              onClick={() => setSelected(opt.key)}
-              style={{
-                textAlign: 'left', padding: '14px 16px', cursor: 'pointer',
-                border: `1px solid ${selected === opt.key ? 'var(--blue-primary)' : 'var(--border)'}`,
-                borderRadius: '8px',
-                backgroundColor: selected === opt.key ? 'var(--blue-accent)' : 'var(--surface)',
-                transition: 'all 0.15s',
-              }}
-            >
-              <p style={{ fontSize: '0.875rem', fontWeight: 500, color: selected === opt.key ? 'var(--blue-primary)' : 'var(--text)', marginBottom: '2px' }}>
+            <button key={opt.key} type="button" onClick={() => setSelected(opt.key)}
+              style={{ textAlign: 'left', padding: '14px 16px', cursor: 'pointer', border: `0.5px solid ${selected === opt.key ? ACCENT : 'rgba(44,40,32,0.15)'}`, borderRadius: '4px', backgroundColor: selected === opt.key ? 'rgba(156,123,90,0.08)' : '#EDE9E0', transition: 'all 0.15s' }}>
+              <p style={{ fontSize: '0.875rem', fontWeight: 500, color: selected === opt.key ? ACCENT : 'rgba(44,40,32,0.85)', marginBottom: '2px' }}>
                 {lang === 'fr' ? opt.titleFr : opt.titleEn}
               </p>
-              <p style={{ fontSize: '0.72rem', color: '#4A6070' }}>
+              <p style={{ fontSize: '0.72rem', color: MUTED }}>
                 {lang === 'fr' ? opt.descFr : opt.descEn}
               </p>
             </button>
           ))}
         </div>
 
-        {errorMsg && (
-          <p style={{ fontSize: '0.75rem', color: '#C0392B', marginBottom: '12px' }}>{errorMsg}</p>
-        )}
+        {errorMsg && <p style={{ fontSize: '0.75rem', color: '#C0392B', marginBottom: '12px' }}>{errorMsg}</p>}
 
-        <button
-          onClick={() => selected && onSave(selected)}
-          disabled={!selected || saving}
-          className="w-full py-3 text-white text-sm transition-opacity hover:opacity-80 disabled:opacity-40"
-          style={{ backgroundColor: 'var(--blue-primary)', cursor: selected ? 'pointer' : 'default', borderRadius: '8px', border: 'none' }}
-        >
-          {saving
-            ? (lang === 'fr' ? 'Enregistrement...' : 'Saving...')
-            : (lang === 'fr' ? 'Commencer mon suivi' : 'Start tracking')}
+        <button onClick={() => selected && onSave(selected)} disabled={!selected || saving}
+          style={{ width: '100%', padding: '0.75rem', color: '#fff', fontSize: '0.78rem', letterSpacing: '0.1em', textTransform: 'uppercase', backgroundColor: ACCENT, cursor: selected ? 'pointer' : 'default', borderRadius: '4px', border: 'none', opacity: (!selected || saving) ? 0.4 : 1, transition: 'opacity 0.15s' }}>
+          {saving ? (lang === 'fr' ? 'Enregistrement...' : 'Saving...') : (lang === 'fr' ? 'Commencer mon suivi' : 'Start tracking')}
         </button>
 
-        <button
-          onClick={onSkip}
-          style={{ display: 'block', margin: '16px auto 0', fontSize: '0.75rem', color: '#8A9BAD', background: 'none', border: 'none', cursor: 'pointer' }}
-        >
+        <button onClick={onSkip}
+          style={{ display: 'block', margin: '16px auto 0', fontSize: '0.75rem', color: MUTED, background: 'none', border: 'none', cursor: 'pointer' }}>
           {lang === 'fr' ? 'Plus tard' : 'Maybe later'}
         </button>
       </div>
@@ -1077,7 +1043,6 @@ function MembreCalendarTab({ appointments, lang }: { appointments: Appointment[]
     return d
   })
 
-  // Build lookup: date -> HH:MM -> Appointment
   const apptMap: Record<string, Record<string, Appointment>> = {}
   for (const appt of appointments) {
     if (!appt.availability) continue
@@ -1087,7 +1052,6 @@ function MembreCalendarTab({ appointments, lang }: { appointments: Appointment[]
     apptMap[dateStr][timeStr] = appt
   }
 
-  // Only show time rows present in this week
   const weekDates = days.map(d => d.toISOString().split('T')[0])
   const timesThisWeek = new Set<string>()
   for (const date of weekDates) {
@@ -1095,8 +1059,6 @@ function MembreCalendarTab({ appointments, lang }: { appointments: Appointment[]
   }
   const timeRows = Array.from(timesThisWeek).sort()
 
-  const blue = 'var(--blue-primary)'
-  const border = 'var(--border)'
   const locale = lang === 'fr' ? 'fr-FR' : 'en-GB'
 
   function DayHeader() {
@@ -1106,11 +1068,11 @@ function MembreCalendarTab({ appointments, lang }: { appointments: Appointment[]
         {days.map((d, i) => {
           const isToday = d.toDateString() === today.toDateString()
           return (
-            <div key={i} style={{ backgroundColor: isToday ? '#EEF5FF' : 'var(--surface)', textAlign: 'center', padding: '10px 4px' }}>
+            <div key={i} style={{ backgroundColor: isToday ? 'var(--blue-accent)' : 'var(--surface)', textAlign: 'center', padding: '10px 4px' }}>
               <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#4A6070' }}>
                 {d.toLocaleDateString(locale, { weekday: 'short' })}
               </div>
-              <div style={{ fontSize: '1rem', fontWeight: isToday ? 600 : 400, color: isToday ? blue : 'var(--text)', marginTop: '2px', lineHeight: 1 }}>
+              <div style={{ fontSize: '1rem', fontWeight: isToday ? 600 : 400, color: isToday ? 'var(--blue-primary)' : 'var(--text)', marginTop: '2px', lineHeight: 1 }}>
                 {d.getDate()}
               </div>
             </div>
@@ -1122,34 +1084,30 @@ function MembreCalendarTab({ appointments, lang }: { appointments: Appointment[]
 
   return (
     <div>
-      {/* Navigation */}
-      <div className="flex items-center gap-4 mb-4">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
         <button onClick={() => setWeekOffset(o => o - 1)}
-          style={{ border: `1px solid ${border}`, borderRadius: '8px', background: 'var(--surface)', cursor: 'pointer', color: 'var(--text)', padding: '6px 14px', fontSize: '0.875rem' }}>
+          style={{ border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface)', cursor: 'pointer', color: 'var(--text)', padding: '6px 14px', fontSize: '0.875rem' }}>
           ←
         </button>
-        <span className="text-sm" style={{ color: 'var(--text)' }}>
+        <span style={{ fontSize: '0.875rem', color: 'var(--text)' }}>
           {lang === 'fr' ? 'Semaine du' : 'Week of'}{' '}
           {monday.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}
         </span>
         <button onClick={() => setWeekOffset(o => o + 1)}
-          style={{ border: `1px solid ${border}`, borderRadius: '8px', background: 'var(--surface)', cursor: 'pointer', color: 'var(--text)', padding: '6px 14px', fontSize: '0.875rem' }}>
+          style={{ border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface)', cursor: 'pointer', color: 'var(--text)', padding: '6px 14px', fontSize: '0.875rem' }}>
           →
         </button>
       </div>
 
-      <div style={{ overflowX: 'auto', borderRadius: '12px', border: `1px solid ${border}` }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '48px repeat(7, 1fr)', minWidth: '560px', backgroundColor: border, gap: '1px' }}>
+      <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid var(--border)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '48px repeat(7, 1fr)', minWidth: '560px', backgroundColor: 'var(--border)', gap: '1px' }}>
           <DayHeader />
-
           {timeRows.length === 0 ? (
-            <>
-              <div style={{ gridColumn: '1 / -1', backgroundColor: 'var(--surface)', textAlign: 'center', padding: '40px 0' }}>
-                <p style={{ color: '#4A6070', fontSize: '0.875rem' }}>
-                  {lang === 'fr' ? 'Aucun rendez-vous cette semaine.' : 'No appointments this week.'}
-                </p>
-              </div>
-            </>
+            <div style={{ gridColumn: '1 / -1', backgroundColor: 'var(--surface)', textAlign: 'center', padding: '40px 0' }}>
+              <p style={{ color: '#4A6070', fontSize: '0.875rem' }}>
+                {lang === 'fr' ? 'Aucun rendez-vous cette semaine.' : 'No appointments this week.'}
+              </p>
+            </div>
           ) : (
             timeRows.map(time => (
               <Fragment key={time}>
@@ -1162,10 +1120,7 @@ function MembreCalendarTab({ appointments, lang }: { appointments: Appointment[]
                   return (
                     <div key={colIdx} style={{ backgroundColor: 'var(--surface)', height: '56px', padding: '4px' }}>
                       {appt && (
-                        <div style={{
-                          height: '100%', backgroundColor: blue, borderRadius: '2px',
-                          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2px 6px',
-                        }}>
+                        <div style={{ height: '100%', backgroundColor: 'var(--blue-primary)', borderRadius: '2px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2px 6px' }}>
                           <span style={{ fontSize: '0.62rem', color: 'white', textAlign: 'center', overflow: 'hidden', maxWidth: '100%', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {appt.therapists?.profiles?.full_name ?? ''}
                           </span>
@@ -1214,13 +1169,10 @@ function MemberBioEditor({ value, onChange, placeholder, inputStyle }: {
       suppressContentEditableWarning
       onInput={handleInput}
       data-placeholder={placeholder}
-      className="bio-editor w-full px-4 py-3 text-sm"
+      className="bio-editor w-full"
       style={{
         ...inputStyle,
-        minHeight: '220px',
-        textAlign: 'justify',
         wordBreak: 'break-word',
-        outline: 'none',
         overflowY: 'auto',
       }}
     />

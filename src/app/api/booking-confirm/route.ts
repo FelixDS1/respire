@@ -30,9 +30,22 @@ export async function GET(req: NextRequest) {
 
   const { data: appointment } = await supabase
     .from('appointments')
-    .select('id')
+    .select('id, availability(date, start_time, end_time), therapists(profiles(full_name))')
     .eq('stripe_payment_intent_id', paymentIntentId)
     .single()
 
-  return NextResponse.json({ confirmed: !!appointment })
+  if (!appointment) return NextResponse.json({ confirmed: false })
+
+  const av = appointment.availability as { date: string; start_time: string; end_time: string } | null
+  const th = appointment.therapists as { profiles: { full_name: string } | null } | null
+
+  return NextResponse.json({
+    confirmed: true,
+    appointment: av ? {
+      date: av.date,
+      startTime: av.start_time,
+      endTime: av.end_time,
+      therapistName: th?.profiles?.full_name ?? null,
+    } : null,
+  })
 }
