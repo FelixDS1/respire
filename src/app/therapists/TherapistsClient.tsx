@@ -21,6 +21,7 @@ interface Therapist {
   location: string | null
   sector: string | null
   consultation_type: string | null
+  profession: string | null
   is_verified: boolean
   profiles: {
     full_name: string | null
@@ -68,7 +69,8 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
   const [searchText, setSearchText] = useState('')
   const [selectedPills, setSelectedPills] = useState<string[]>([])
   const [availFilter, setAvailFilter] = useState<'all' | 'this_week' | 'next_week'>('all')
-  const [consultFilter, setConsultFilter] = useState<'all' | 'presentiel' | 'video' | 'both'>('all')
+  const [consultFilter, setConsultFilter] = useState<'all' | 'presentiel' | 'video'>('all')
+  const [professionFilter, setProfessionFilter] = useState<'all' | 'Psychologue' | 'Psychiatre'>('all')
   const [hoveredId, setHoveredId] = useState<string | null>(null)
 
   const thisWeekSet = new Set(thisWeekIds)
@@ -85,6 +87,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
     setSelectedPills([])
     setAvailFilter('all')
     setConsultFilter('all')
+    setProfessionFilter('all')
   }
 
   const filtered = therapists.filter(th => {
@@ -104,7 +107,8 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
     // Consultation type
     if (consultFilter === 'presentiel' && th.consultation_type !== 'presentiel' && th.consultation_type !== 'both') return false
     if (consultFilter === 'video' && th.consultation_type !== 'video' && th.consultation_type !== 'both') return false
-    if (consultFilter === 'both' && th.consultation_type !== 'both') return false
+    // Profession
+    if (professionFilter !== 'all' && th.profession !== professionFilter) return false
     return true
   })
 
@@ -112,11 +116,12 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
     searchText.trim() !== '' ||
     selectedPills.length > 0 ||
     availFilter !== 'all' ||
-    consultFilter !== 'all'
+    consultFilter !== 'all' ||
+    professionFilter !== 'all'
 
   return (
     <main style={{ backgroundColor: 'var(--bg)', minHeight: '100vh' }}>
-      <div style={{ maxWidth: '960px', margin: '0 auto', padding: '0 40px' }}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 56px' }}>
 
         {/* ── Header ── */}
         <div style={{ padding: '48px 0 28px' }}>
@@ -212,10 +217,24 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
             active={consultFilter === 'video'}
             onClick={() => setConsultFilter('video')}
           />
+
+          {/* Divider */}
+          <div style={{ width: '1px', height: '22px', backgroundColor: 'var(--border)', margin: '0 4px' }} />
+
           <PillToggle
-            label={lang === 'fr' ? 'Les deux' : 'Both'}
-            active={consultFilter === 'both'}
-            onClick={() => setConsultFilter('both')}
+            label={lang === 'fr' ? 'Psychologues & psychiatres' : 'Psychologists & psychiatrists'}
+            active={professionFilter === 'all'}
+            onClick={() => setProfessionFilter('all')}
+          />
+          <PillToggle
+            label={lang === 'fr' ? 'Psychologues' : 'Psychologists'}
+            active={professionFilter === 'Psychologue'}
+            onClick={() => setProfessionFilter('Psychologue')}
+          />
+          <PillToggle
+            label={lang === 'fr' ? 'Psychiatres' : 'Psychiatrists'}
+            active={professionFilter === 'Psychiatre'}
+            onClick={() => setProfessionFilter('Psychiatre')}
           />
         </div>
 
@@ -412,9 +431,9 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
       {/* Footer */}
       <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)', marginTop: '5rem' }}>
         <div style={{
-          maxWidth: '960px',
+          maxWidth: '1400px',
           margin: '0 auto',
-          padding: '28px 40px',
+          padding: '28px 56px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
