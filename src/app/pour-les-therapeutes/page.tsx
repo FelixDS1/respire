@@ -162,17 +162,6 @@ export default function PourLesTherapeutesPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer style={{ position: 'relative', zIndex: 1, borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '28px 56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', color: '#4A6070', fontFamily: 'Georgia, serif' }}>
-          <span>© 2026 Respire</span>
-          <div style={{ display: 'flex', gap: '24px' }}>
-            <Link href="/privacy" style={{ color: '#4A6070', textDecoration: 'none' }}>Confidentialité</Link>
-            <Link href="/terms" style={{ color: '#4A6070', textDecoration: 'none' }}>Conditions</Link>
-          </div>
-        </div>
-      </footer>
-
     </main>
   )
 }

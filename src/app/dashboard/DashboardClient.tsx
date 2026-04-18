@@ -1297,16 +1297,6 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
       </div>
 
-      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
-        <div style={{ maxWidth: '1400px', width: '100%', margin: '0 auto', padding: '28px 56px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', color: '#4A6070', fontFamily: 'Georgia, serif', boxSizing: 'border-box' }}>
-          <span>© 2026 Respire</span>
-          <div className="flex gap-6">
-            <a href="/about" style={{ color: '#4A6070', textDecoration: 'none' }}>{lang === 'fr' ? 'Nous contacter' : 'Contact us'}</a>
-            <a href="/privacy" style={{ color: '#4A6070', textDecoration: 'none' }}>{lang === 'fr' ? 'Politique de confidentialité' : 'Privacy policy'}</a>
-            <a href="/terms" style={{ color: '#4A6070', textDecoration: 'none' }}>{lang === 'fr' ? 'CGU' : 'Terms'}</a>
-          </div>
-        </div>
-      </footer>
     </main>
   )
 }

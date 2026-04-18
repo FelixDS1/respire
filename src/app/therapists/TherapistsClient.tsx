@@ -137,7 +137,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
           <p style={{ fontSize: '0.88rem', color: '#8A9BAD', fontFamily: 'Georgia, serif', margin: 0 }}>
             {filtered.length}{' '}
             {filtered.length !== 1 ? t.therapists.available_many : t.therapists.available_one}
-            {' '}à Paris
+            {' '}{lang === 'fr' ? 'à Paris' : 'in Paris'}
           </p>
         </div>
 
@@ -240,7 +240,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
 
         {/* ── Result count ── */}
         <p style={{ fontSize: '0.78rem', color: '#8A9BAD', fontFamily: 'Georgia, serif', marginBottom: '4px' }}>
-          {filtered.length} résultat{filtered.length !== 1 ? 's' : ''}
+          {filtered.length} {lang === 'fr' ? `résultat${filtered.length !== 1 ? 's' : ''}` : `result${filtered.length !== 1 ? 's' : ''}`}
         </p>
 
         {/* ── Card list ── */}
@@ -392,7 +392,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
                       )}
                       {therapist.sector && (
                         <p style={{ fontSize: '0.73rem', color: '#8A9BAD', fontFamily: 'Georgia, serif', margin: 0 }}>
-                          Secteur {therapist.sector}
+                          {lang === 'fr' ? 'Secteur' : 'Sector'} {therapist.sector}
                         </p>
                       )}
                       {reimbursement !== null && (
@@ -406,7 +406,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
                           whiteSpace: 'nowrap',
                           border: '1px solid #C8E6C9',
                         }}>
-                          ~{reimbursement}€ après remboursement
+                          ~{reimbursement}€ {lang === 'fr' ? 'après remboursement' : 'after reimbursement'}
                         </span>
                       )}
                       {therapist.location && (
@@ -432,29 +432,6 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
 
       </div>
 
-      {/* Footer */}
-      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)', marginTop: '5rem' }}>
-        <div style={{
-          maxWidth: '1400px',
-          margin: '0 auto',
-          padding: '28px 56px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          fontSize: '0.88rem',
-          color: '#4A6070',
-          fontFamily: 'Georgia, serif',
-        }}>
-          <span>© 2026 Respire</span>
-          <div style={{ display: 'flex', gap: '24px' }}>
-            <Link href="/about" style={{ color: '#4A6070', textDecoration: 'none' }}>
-              {lang === 'fr' ? 'Nous contacter' : 'Contact us'}
-            </Link>
-            <Link href="/privacy" style={{ color: '#4A6070', textDecoration: 'none' }}>{t.footer.privacy}</Link>
-            <Link href="/terms" style={{ color: '#4A6070', textDecoration: 'none' }}>{t.footer.terms}</Link>
-          </div>
-        </div>
-      </footer>
     </main>
   )
 }

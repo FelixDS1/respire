@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import CookieBanner from "@/components/CookieBanner";
 import { LanguageProvider } from "@/lib/language";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
@@ -32,7 +33,8 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         <LanguageProvider>
           <Navbar initialEmail={user?.email ?? null} initialRole={role} />
-          {children}
+          <div style={{ flex: 1 }}>{children}</div>
+          <Footer />
           <CookieBanner />
         </LanguageProvider>
       </body>

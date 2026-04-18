@@ -360,16 +360,6 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
 
       </div>
 
-      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)', marginTop: '4rem' }}>
-        <div className="max-w-[1400px] mx-auto px-14 py-8 flex justify-between items-center text-sm" style={{ color: '#4A6070' }}>
-          <span>© 2026 Respire</span>
-          <div className="flex gap-6">
-            <Link href="/privacy" className="hover:opacity-70 transition-opacity">{t.footer.privacy}</Link>
-            <Link href="/terms" className="hover:opacity-70 transition-opacity">{t.footer.terms}</Link>
-          </div>
-        </div>
-      </footer>
-
     </main>
   )
 }

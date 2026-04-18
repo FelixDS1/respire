@@ -569,23 +569,6 @@ export default function MessagesClient({
         </div>
       </div>
 
-      {/* Footer */}
-      <footer style={{ borderTop: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
-        <div
-          className="max-w-[1400px] mx-auto px-14 py-8 flex justify-between items-center text-sm"
-          style={{ color: '#4A6070' }}
-        >
-          <span>© 2026 Respire</span>
-          <div className="flex gap-6">
-            <a href="/privacy" className="hover:opacity-70 transition-opacity">
-              {lang === 'en' ? 'Privacy' : 'Confidentialité'}
-            </a>
-            <a href="/terms" className="hover:opacity-70 transition-opacity">
-              {lang === 'en' ? 'Terms' : 'Conditions'}
-            </a>
-          </div>
-        </div>
-      </footer>
     </main>
   )
 }
