@@ -353,8 +353,12 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
                           color: '#4A6070',
                           fontFamily: 'Georgia, serif',
                           margin: 0,
-                        }}>
-                          {bio.length > 150 ? bio.slice(0, 150) + '…' : bio}
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                        } as React.CSSProperties}>
+                          {bio}
                         </p>
                       )}
                     </div>
