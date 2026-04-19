@@ -39,19 +39,29 @@ function SignupForm() {
         return
       }
 
-      const profileRes = await fetch('/api/create-profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: data.user.id, fullName, email, role }),
+      // Email confirmation is disabled — session exists immediately, so client-side insert works
+      const { error: profileError } = await supabase.from('profiles').insert({
+        id: data.user.id,
+        full_name: fullName,
+        email,
+        role,
       })
 
-      const profileJson = await profileRes.json()
-
-      if (!profileRes.ok) {
-        console.error('profile creation error:', profileJson.error)
-        setError('Erreur lors de la création du profil : ' + (profileJson.error ?? profileRes.status))
+      if (profileError) {
+        console.error('profile insert error:', profileError)
+        setError('Erreur lors de la création du profil : ' + profileError.message)
         setLoading(false)
         return
+      }
+
+      if (role === 'therapist') {
+        const { error: therapistError } = await supabase.from('therapists').insert({ id: data.user.id })
+        if (therapistError) {
+          console.error('therapist insert error:', therapistError)
+          setError('Erreur lors de la création du profil thérapeute : ' + therapistError.message)
+          setLoading(false)
+          return
+        }
       }
 
       router.push(redirectTo ? `/onboarding?redirectTo=${encodeURIComponent(redirectTo)}` : '/onboarding')
