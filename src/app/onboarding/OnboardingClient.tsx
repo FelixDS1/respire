@@ -88,69 +88,79 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
     setLoading(true)
     const supabase = createClient()
 
-    // Upload profile photo
-    let photoUrl: string | null = null
-    const photoFd = new FormData()
-    photoFd.append('file', photo)
-    const photoRes = await fetch('/api/upload-avatar', { method: 'POST', body: photoFd })
-    const photoJson = await photoRes.json()
-    if (!photoRes.ok) {
-      setError('Erreur lors du téléversement de la photo. Veuillez réessayer.')
-      setLoading(false)
-      return
-    }
-    photoUrl = photoJson.url
-
-    if (role === 'patient') {
-      await supabase.from('profiles').update({
-        bio: bio.trim(),
-        avatar_url: photoUrl,
-      }).eq('id', userId)
-
-      router.push(redirectAfter ?? '/therapists')
-
-    } else {
-      // Upload ID document (mandatory)
-      const idExt = idDoc!.name.split('.').pop()
-      const idPath = `${userId}/id_${Date.now()}.${idExt}`
-      const { error: idError } = await supabase.storage
-        .from('credentials')
-        .upload(idPath, idDoc!, { upsert: true })
-      if (idError) {
-        setError('Erreur lors du téléversement de la pièce d\'identité.')
+    try {
+      // Upload profile photo
+      const photoFd = new FormData()
+      photoFd.append('file', photo)
+      const photoRes = await fetch('/api/upload-avatar', { method: 'POST', body: photoFd })
+      const photoJson = await photoRes.json()
+      if (!photoRes.ok) {
+        setError('Erreur lors du téléversement de la photo : ' + (photoJson.error ?? photoRes.status))
         setLoading(false)
         return
       }
+      const photoUrl = photoJson.url
 
-      // Upload credential documents (diplomas etc.)
-      const credPaths: string[] = [idPath]
-      for (let i = 0; i < credentials.length; i++) {
-        const file = credentials[i]
-        const credExt = file.name.split('.').pop()
-        const path = `${userId}/${Date.now()}_${i}.${credExt}`
-        const { data: credData, error: credError } = await supabase.storage
+      if (role === 'patient') {
+        const { error: profileErr } = await supabase.from('profiles').update({
+          bio: bio.trim(),
+          avatar_url: photoUrl,
+        }).eq('id', userId)
+        if (profileErr) { setError('Erreur : ' + profileErr.message); setLoading(false); return }
+        router.push(redirectAfter ?? '/therapists')
+
+      } else {
+        // Upload ID document (mandatory)
+        const idExt = idDoc!.name.split('.').pop()
+        const idPath = `${userId}/id_${Date.now()}.${idExt}`
+        const { error: idError } = await supabase.storage
           .from('credentials')
-          .upload(path, file, { upsert: true })
-        if (credError) {
-          setError(`Erreur lors du téléversement de ${file.name}.`)
+          .upload(idPath, idDoc!, { upsert: true })
+        if (idError) {
+          setError('Erreur pièce d\'identité : ' + idError.message)
           setLoading(false)
           return
         }
-        credPaths.push(credData.path)
+
+        // Upload credential documents (diplomas etc.)
+        const credPaths: string[] = [idPath]
+        for (let i = 0; i < credentials.length; i++) {
+          const file = credentials[i]
+          const credExt = file.name.split('.').pop()
+          const path = `${userId}/${Date.now()}_${i}.${credExt}`
+          const { data: credData, error: credError } = await supabase.storage
+            .from('credentials')
+            .upload(path, file, { upsert: true })
+          if (credError) {
+            setError(`Erreur téléversement ${file.name} : ` + credError.message)
+            setLoading(false)
+            return
+          }
+          credPaths.push(credData.path)
+        }
+
+        const { error: therapistErr } = await supabase.from('therapists').update({
+          photo_url: photoUrl,
+          rpps_number: hasRpps ? rpps.trim() : null,
+          adeli_number: !hasRpps ? adeli.trim() : null,
+          credentials_urls: credPaths,
+          dpa_accepted_at: new Date().toISOString(),
+          dpa_version: DPA_CURRENT_VERSION,
+        }).eq('id', userId)
+
+        if (therapistErr) {
+          setError('Erreur enregistrement : ' + therapistErr.message)
+          setLoading(false)
+          return
+        }
+
+        setLoading(false)
+        setStep(2)
       }
-
-      await supabase.from('therapists').update({
-        photo_url: photoUrl,
-        rpps_number: hasRpps ? rpps.trim() : null,
-        adeli_number: !hasRpps ? adeli.trim() : null,
-        credentials_urls: credPaths,
-        dpa_accepted_at: new Date().toISOString(),
-        dpa_version: DPA_CURRENT_VERSION,
-      }).eq('id', userId)
-
+    } catch (err) {
+      console.error('onboarding error:', err)
+      setError('Une erreur inattendue est survenue. Veuillez réessayer.')
       setLoading(false)
-      setStep(2)
-      return
     }
   }
 
@@ -163,17 +173,23 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
 
     setLoading(true)
     const supabase = createClient()
-    await supabase.from('therapists').update({
-      bio: therapistBio.trim(),
-      specialties,
-      languages,
-      consultation_fee: Number(fee),
-      location,
-      sector,
-      consultation_type: consultationType,
-    }).eq('id', userId)
-
-    router.push('/dashboard')
+    try {
+      const { error: err } = await supabase.from('therapists').update({
+        bio: therapistBio.trim(),
+        specialties,
+        languages,
+        consultation_fee: Number(fee),
+        location,
+        sector,
+        consultation_type: consultationType,
+      }).eq('id', userId)
+      if (err) { setError('Erreur : ' + err.message); setLoading(false); return }
+      router.push('/dashboard')
+    } catch (err) {
+      console.error('step2 error:', err)
+      setError('Une erreur inattendue est survenue. Veuillez réessayer.')
+      setLoading(false)
+    }
   }
 
   function addSpecialty(term: string) {
