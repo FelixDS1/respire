@@ -14,12 +14,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
   }
 
-  // Verify the user actually exists in auth before touching any tables
-  const { data: authUser, error: authErr } = await supabase.auth.admin.getUserById(userId)
-  if (authErr || !authUser.user) {
-    return NextResponse.json({ error: 'User not found in auth' }, { status: 400 })
-  }
-
   const { error: profileError } = await supabase.from('profiles').insert({
     id: userId,
     full_name: fullName,
