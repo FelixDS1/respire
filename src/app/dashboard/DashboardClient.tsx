@@ -284,17 +284,22 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
     if (res.ok) {
       setScheduleMessage(`${data.count} créneaux générés.`)
-      // Refresh slots
-      const { data: fresh } = await supabase
-        .from('availability')
-        .select('*, appointments(id)')
-        .eq('therapist_id', userId)
-        .order('date').order('start_time')
-      setSlots(fresh ?? [])
+      setScheduleGenerating(false)
+      // Refresh slots — non-blocking, failure is cosmetic
+      try {
+        const { data: fresh } = await supabase
+          .from('availability')
+          .select('*, appointments(id)')
+          .eq('therapist_id', userId)
+          .order('date').order('start_time')
+        setSlots(fresh ?? [])
+      } catch {
+        // Slots were generated — UI will reflect on next page load
+      }
     } else {
       setScheduleMessage('Une erreur est survenue.')
+      setScheduleGenerating(false)
     }
-    setScheduleGenerating(false)
   }
 
   async function deleteSlot(slotId: string) {
