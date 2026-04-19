@@ -114,7 +114,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
         const idExt = idDoc!.name.split('.').pop()
         const idPath = `${userId}/id_${Date.now()}.${idExt}`
         const { error: idError } = await supabase.storage
-          .from('credentials')
+          .from('Credentials')
           .upload(idPath, idDoc!, { upsert: true })
         if (idError) {
           setError('Erreur pièce d\'identité : ' + idError.message)
@@ -129,7 +129,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
           const credExt = file.name.split('.').pop()
           const path = `${userId}/${Date.now()}_${i}.${credExt}`
           const { data: credData, error: credError } = await supabase.storage
-            .from('credentials')
+            .from('Credentials')
             .upload(path, file, { upsert: true })
           if (credError) {
             setError(`Erreur téléversement ${file.name} : ` + credError.message)
