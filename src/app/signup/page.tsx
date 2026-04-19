@@ -21,39 +21,45 @@ function SignupForm() {
     setLoading(true)
     setError('')
 
-    const supabase = createClient()
+    try {
+      const supabase = createClient()
 
-    const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
+      const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
 
-    if (signUpError) {
-      console.error('signUp error:', signUpError)
-      setError(signUpError.message || 'Une erreur est survenue. Veuillez réessayer.')
+      if (signUpError) {
+        console.error('signUp error:', signUpError)
+        setError(signUpError.message || 'Une erreur est survenue. Veuillez réessayer.')
+        setLoading(false)
+        return
+      }
+
+      if (!data.user) {
+        setError('Cette adresse e-mail est déjà utilisée. Essayez de vous connecter.')
+        setLoading(false)
+        return
+      }
+
+      const profileRes = await fetch('/api/create-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: data.user.id, fullName, email, role }),
+      })
+
+      const profileJson = await profileRes.json()
+
+      if (!profileRes.ok) {
+        console.error('profile creation error:', profileJson.error)
+        setError('Erreur lors de la création du profil : ' + (profileJson.error ?? profileRes.status))
+        setLoading(false)
+        return
+      }
+
+      router.push(redirectTo ? `/onboarding?redirectTo=${encodeURIComponent(redirectTo)}` : '/onboarding')
+    } catch (err) {
+      console.error('unexpected signup error:', err)
+      setError('Une erreur inattendue est survenue. Veuillez réessayer.')
       setLoading(false)
-      return
     }
-
-    if (!data.user) {
-      // Email already registered (Supabase returns user:null silently when confirm-email is on)
-      setError('Cette adresse e-mail est déjà utilisée. Essayez de vous connecter.')
-      setLoading(false)
-      return
-    }
-
-    const profileRes = await fetch('/api/create-profile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: data.user.id, fullName, email, role }),
-    })
-
-    if (!profileRes.ok) {
-      const { error: profileError } = await profileRes.json()
-      console.error('profile creation error:', profileError)
-      setError('Une erreur est survenue lors de la création du profil : ' + profileError)
-      setLoading(false)
-      return
-    }
-
-    router.push(redirectTo ? `/onboarding?redirectTo=${encodeURIComponent(redirectTo)}` : '/onboarding')
   }
 
   return (
