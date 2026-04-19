@@ -26,7 +26,10 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
   const [bio, setBio] = useState('')
 
   // Therapist step 1 fields
+  const [rpps, setRpps] = useState('')
+  const [hasRpps, setHasRpps] = useState(true)
   const [adeli, setAdeli] = useState('')
+  const [idDoc, setIdDoc] = useState<File | null>(null)
   const [credentials, setCredentials] = useState<File[]>([])
   const [dpaAccepted, setDpaAccepted] = useState(false)
 
@@ -46,6 +49,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
   const [error, setError] = useState('')
 
   const photoInputRef = useRef<HTMLInputElement>(null)
+  const idDocInputRef = useRef<HTMLInputElement>(null)
   const credInputRef = useRef<HTMLInputElement>(null)
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -75,8 +79,10 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
 
     if (!photo) { setError('Veuillez ajouter une photo de profil.'); return }
     if (role === 'patient' && !bio.trim()) { setError('Veuillez compléter votre présentation.'); return }
-    if (role === 'therapist' && !adeli.trim()) { setError('Veuillez entrer votre numéro ADELI.'); return }
-    if (role === 'therapist' && credentials.length === 0) { setError('Veuillez téléverser au moins un justificatif.'); return }
+    if (role === 'therapist' && hasRpps && !rpps.trim()) { setError('Veuillez entrer votre numéro RPPS.'); return }
+    if (role === 'therapist' && !hasRpps && !adeli.trim()) { setError('Veuillez entrer votre numéro ADELI.'); return }
+    if (role === 'therapist' && !idDoc) { setError('Veuillez téléverser une pièce d\'identité.'); return }
+    if (role === 'therapist' && credentials.length === 0) { setError('Veuillez téléverser au moins un justificatif (diplôme ou certificat).'); return }
     if (role === 'therapist' && !dpaAccepted) { setError('Veuillez accepter l\'accord de traitement des données.'); return }
 
     setLoading(true)
@@ -104,8 +110,20 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
       router.push(redirectAfter ?? '/therapists')
 
     } else {
-      // Upload credential documents
-      const credPaths: string[] = []
+      // Upload ID document (mandatory)
+      const idExt = idDoc!.name.split('.').pop()
+      const idPath = `${userId}/id_${Date.now()}.${idExt}`
+      const { error: idError } = await supabase.storage
+        .from('credentials')
+        .upload(idPath, idDoc!, { upsert: true })
+      if (idError) {
+        setError('Erreur lors du téléversement de la pièce d\'identité.')
+        setLoading(false)
+        return
+      }
+
+      // Upload credential documents (diplomas etc.)
+      const credPaths: string[] = [idPath]
       for (let i = 0; i < credentials.length; i++) {
         const file = credentials[i]
         const credExt = file.name.split('.').pop()
@@ -123,7 +141,8 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
 
       await supabase.from('therapists').update({
         photo_url: photoUrl,
-        adeli_number: adeli.trim(),
+        rpps_number: hasRpps ? rpps.trim() : null,
+        adeli_number: !hasRpps ? adeli.trim() : null,
         credentials_urls: credPaths,
         dpa_accepted_at: new Date().toISOString(),
         dpa_version: DPA_CURRENT_VERSION,
@@ -441,29 +460,101 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
           {/* Therapist fields */}
           {role === 'therapist' && (
             <>
+              {/* RPPS / ADELI */}
               <div>
-                <label className="block text-sm mb-1" style={{ color: 'var(--text)' }}>
-                  Numéro ADELI
-                </label>
-                <p className="text-xs mb-2" style={{ color: '#4A6070' }}>
-                  Votre numéro d'inscription au répertoire national des professionnels de santé.
-                </p>
-                <input
-                  type="text"
-                  value={adeli}
-                  onChange={e => setAdeli(e.target.value)}
-                  className="w-full px-4 py-2 text-sm"
-                  style={inputStyle}
-                  placeholder="ex. 759012345"
-                />
+                {hasRpps ? (
+                  <>
+                    <label className="block text-sm mb-1" style={{ color: 'var(--text)' }}>
+                      Numéro RPPS
+                    </label>
+                    <p className="text-xs mb-2" style={{ color: '#4A6070' }}>
+                      Votre numéro au Répertoire Partagé des Professionnels de Santé (11 chiffres).
+                    </p>
+                    <input
+                      type="text"
+                      value={rpps}
+                      onChange={e => setRpps(e.target.value)}
+                      className="w-full px-4 py-2 text-sm"
+                      style={inputStyle}
+                      placeholder="ex. 10012345678"
+                      maxLength={11}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <label className="block text-sm mb-1" style={{ color: 'var(--text)' }}>
+                      Numéro ADELI
+                    </label>
+                    <p className="text-xs mb-2" style={{ color: '#4A6070' }}>
+                      Votre numéro d'inscription au répertoire national des professionnels de santé (9 chiffres).
+                    </p>
+                    <input
+                      type="text"
+                      value={adeli}
+                      onChange={e => setAdeli(e.target.value)}
+                      className="w-full px-4 py-2 text-sm"
+                      style={inputStyle}
+                      placeholder="ex. 759012345"
+                      maxLength={9}
+                    />
+                  </>
+                )}
+                <button
+                  type="button"
+                  onClick={() => { setHasRpps(v => !v); setRpps(''); setAdeli('') }}
+                  className="text-xs mt-2 hover:opacity-70"
+                  style={{ color: 'var(--blue-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                >
+                  {hasRpps
+                    ? "Je n'ai pas encore de numéro RPPS (psychologue) → utiliser mon numéro ADELI"
+                    : "← J'ai un numéro RPPS"}
+                </button>
               </div>
 
+              {/* Mandatory ID document */}
               <div>
-                <label className="block text-sm mb-2" style={{ color: 'var(--text)' }}>
-                  Justificatifs
+                <label className="block text-sm mb-1" style={{ color: 'var(--text)' }}>
+                  Pièce d'identité <span style={{ color: '#C0392B' }}>*</span>
                 </label>
                 <p className="text-xs mb-3" style={{ color: '#4A6070' }}>
-                  Diplômes, certificats professionnels ou pièce d'identité. PDF ou image · max 10 Mo par fichier.
+                  Carte nationale d'identité ou passeport. PDF ou image · max 10 Mo.
+                </p>
+                {idDoc ? (
+                  <div className="flex items-center justify-between px-3 py-2 text-sm"
+                    style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
+                    <span className="text-sm truncate mr-4" style={{ color: 'var(--text)' }}>{idDoc.name}</span>
+                    <button type="button" onClick={() => setIdDoc(null)}
+                      className="text-xs flex-shrink-0 hover:opacity-70"
+                      style={{ color: '#C0392B', background: 'none', border: 'none', cursor: 'pointer' }}>
+                      Supprimer
+                    </button>
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => idDocInputRef.current?.click()}
+                    className="px-4 py-2 text-sm hover:opacity-70 transition-opacity"
+                    style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface)', color: 'var(--text)', cursor: 'pointer' }}>
+                    + Ajouter ma pièce d'identité
+                  </button>
+                )}
+                <input ref={idDocInputRef} type="file"
+                  accept="application/pdf,image/jpeg,image/png,image/webp"
+                  onChange={e => {
+                    const file = e.target.files?.[0]
+                    if (!file) return
+                    if (file.size > 10 * 1024 * 1024) { setError('Le fichier ne doit pas dépasser 10 Mo.'); return }
+                    setIdDoc(file)
+                    setError('')
+                  }}
+                  className="hidden" />
+              </div>
+
+              {/* Other credentials (diplomas etc.) */}
+              <div>
+                <label className="block text-sm mb-2" style={{ color: 'var(--text)' }}>
+                  Diplômes et certificats professionnels
+                </label>
+                <p className="text-xs mb-3" style={{ color: '#4A6070' }}>
+                  Diplôme de psychologie, certificats de formation, etc. PDF ou image · max 10 Mo par fichier.
                 </p>
 
                 {credentials.length > 0 && (

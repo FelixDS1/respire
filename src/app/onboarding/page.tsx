@@ -21,10 +21,10 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
   if (profile.role === 'therapist') {
     const { data: therapist } = await supabase
       .from('therapists')
-      .select('adeli_number')
+      .select('adeli_number, rpps_number')
       .eq('id', user.id)
       .single()
-    if (therapist?.adeli_number) redirect('/dashboard')
+    if (therapist?.adeli_number || therapist?.rpps_number) redirect('/dashboard')
   }
 
   return (
