@@ -23,6 +23,11 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
+  // If onboarding was never completed, send back to onboarding
+  if (!therapistData?.adeli_number && !therapistData?.rpps_number) {
+    redirect('/onboarding')
+  }
+
   if ((therapistData?.dpa_version ?? 0) < DPA_CURRENT_VERSION) {
     redirect('/dpa/accept')
   }

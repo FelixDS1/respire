@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase'
 
 export default function DpaAcceptClient({ userId, currentVersion }: { userId: string; currentVersion: number }) {
   const router = useRouter()
@@ -13,22 +12,19 @@ export default function DpaAcceptClient({ userId, currentVersion }: { userId: st
   async function handleAccept() {
     if (!accepted) { setError('Veuillez cocher la case pour continuer.'); return }
     setSaving(true)
-    const supabase = createClient()
-    const { error: updateError } = await supabase
-      .from('therapists')
-      .update({
-        dpa_version: currentVersion,
-        dpa_accepted_at: new Date().toISOString(),
-      })
-      .eq('id', userId)
-
-    if (updateError) {
-      setError('Une erreur est survenue. Veuillez réessayer.')
+    try {
+      const res = await fetch('/api/accept-dpa', { method: 'POST' })
+      if (!res.ok) {
+        const json = await res.json()
+        setError('Une erreur est survenue : ' + (json.error ?? res.status))
+        setSaving(false)
+        return
+      }
+      router.push('/dashboard')
+    } catch {
+      setError('Une erreur inattendue est survenue. Veuillez réessayer.')
       setSaving(false)
-      return
     }
-
-    router.push('/dashboard')
   }
 
   return (
