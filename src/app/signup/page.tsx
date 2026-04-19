@@ -25,27 +25,32 @@ function SignupForm() {
 
     const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
 
-    if (signUpError || !data.user) {
-      setError('Une erreur est survenue. Veuillez réessayer.')
+    if (signUpError) {
+      console.error('signUp error:', signUpError)
+      setError(signUpError.message || 'Une erreur est survenue. Veuillez réessayer.')
       setLoading(false)
       return
     }
 
-    const { error: profileError } = await supabase.from('profiles').insert({
-      id: data.user.id,
-      full_name: fullName,
-      email,
-      role,
+    if (!data.user) {
+      // Email already registered (Supabase returns user:null silently when confirm-email is on)
+      setError('Cette adresse e-mail est déjà utilisée. Essayez de vous connecter.')
+      setLoading(false)
+      return
+    }
+
+    const profileRes = await fetch('/api/create-profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: data.user.id, fullName, email, role }),
     })
 
-    if (profileError) {
-      setError('Une erreur est survenue lors de la création du profil.')
+    if (!profileRes.ok) {
+      const { error: profileError } = await profileRes.json()
+      console.error('profile creation error:', profileError)
+      setError('Une erreur est survenue lors de la création du profil : ' + profileError)
       setLoading(false)
       return
-    }
-
-    if (role === 'therapist') {
-      await supabase.from('therapists').insert({ id: data.user.id })
     }
 
     router.push(redirectTo ? `/onboarding?redirectTo=${encodeURIComponent(redirectTo)}` : '/onboarding')

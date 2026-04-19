@@ -1,10 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useLanguage, specialtyTranslations } from '@/lib/language'
-
-const COMMON_PILLS = ['Anxiété', 'Stress', 'TCC', 'Dépression', 'Relations', 'Deuil']
 
 function normalize(s: string) {
   return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -66,15 +64,58 @@ function PillToggle({
 
 export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds }: Props) {
   const { t, lang } = useLanguage()
-  const [searchText, setSearchText] = useState('')
+
+  // inputText drives the dropdown only — does NOT filter therapists
+  const [inputText, setInputText] = useState('')
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+
   const [selectedPills, setSelectedPills] = useState<string[]>([])
   const [availFilter, setAvailFilter] = useState<'all' | 'this_week' | 'next_week'>('all')
   const [consultFilter, setConsultFilter] = useState<'all' | 'presentiel' | 'video'>('all')
   const [professionFilter, setProfessionFilter] = useState<'all' | 'Psychologue' | 'Psychiatre'>('all')
   const [hoveredId, setHoveredId] = useState<string | null>(null)
 
+  const searchWrapperRef = useRef<HTMLDivElement>(null)
+
   const thisWeekSet = new Set(thisWeekIds)
   const nextWeekSet = new Set(nextWeekIds)
+
+  // All known specialties: full catalogue from specialtyTranslations + anything extra from DB
+  const allSpecialties = Array.from(
+    new Set([
+      ...Object.keys(specialtyTranslations),
+      ...therapists.flatMap(t => t.specialties ?? []),
+    ])
+  ).sort((a, b) => normalize(a).localeCompare(normalize(b)))
+
+  // Suggestions: specialties where any word starts with the typed prefix
+  const suggestions = inputText.trim().length > 0
+    ? allSpecialties.filter(specialty => {
+        const query = normalize(inputText.trim())
+        const frWords = normalize(specialty).split(/\s+/)
+        const enWords = normalize(specialtyTranslations[specialty] ?? specialty).split(/\s+/)
+        return [...frWords, ...enWords].some(word => word.startsWith(query))
+      }).slice(0, 10)
+    : []
+
+  // Close dropdown when clicking outside the search area
+  useEffect(() => {
+    function handleOutsideClick(e: MouseEvent) {
+      if (searchWrapperRef.current && !searchWrapperRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleOutsideClick)
+    return () => document.removeEventListener('mousedown', handleOutsideClick)
+  }, [])
+
+  function selectSuggestion(specialty: string) {
+    if (!selectedPills.includes(specialty)) {
+      setSelectedPills(prev => [...prev, specialty])
+    }
+    setInputText('')
+    setDropdownOpen(false)
+  }
 
   function togglePill(pill: string) {
     setSelectedPills(prev =>
@@ -83,41 +124,34 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
   }
 
   function clearAll() {
-    setSearchText('')
+    setInputText('')
     setSelectedPills([])
     setAvailFilter('all')
     setConsultFilter('all')
     setProfessionFilter('all')
+    setDropdownOpen(false)
   }
 
+  // Therapist list updates only when selectedPills / other filters change — not on every keystroke
   const filtered = therapists.filter(th => {
-    // Text search: any specialty must match the typed text
-    if (searchText.trim()) {
-      const norm = normalize(searchText.trim())
-      const hasMatch = th.specialties?.some(s => normalize(s).includes(norm))
-      if (!hasMatch) return false
-    }
-    // Selected pills: AND — therapist must have every selected specialty
     for (const pill of selectedPills) {
       if (!th.specialties?.includes(pill)) return false
     }
-    // Availability
     if (availFilter === 'this_week' && !thisWeekSet.has(th.id)) return false
     if (availFilter === 'next_week' && !nextWeekSet.has(th.id)) return false
-    // Consultation type
     if (consultFilter === 'presentiel' && th.consultation_type !== 'presentiel' && th.consultation_type !== 'both') return false
     if (consultFilter === 'video' && th.consultation_type !== 'video' && th.consultation_type !== 'both') return false
-    // Profession
     if (professionFilter !== 'all' && th.profession !== professionFilter) return false
     return true
   })
 
   const hasActiveFilters =
-    searchText.trim() !== '' ||
     selectedPills.length > 0 ||
     availFilter !== 'all' ||
     consultFilter !== 'all' ||
     professionFilter !== 'all'
+
+  const showDropdown = dropdownOpen && suggestions.length > 0
 
   return (
     <main style={{ backgroundColor: 'var(--bg)', minHeight: '100vh' }}>
@@ -141,44 +175,105 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
           </p>
         </div>
 
-        {/* ── Specialty search ── */}
+        {/* ── Specialty search with dropdown ── */}
         <div style={{ marginBottom: '20px' }}>
-          <input
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-            placeholder={
-              lang === 'fr'
-                ? 'Rechercher une problématique… (ex: anxiété, deuil, relations)'
-                : 'Search for an issue… (e.g. anxiety, grief, relationships)'
-            }
-            style={{
-              width: '100%',
-              padding: '12px 16px',
-              fontSize: '0.92rem',
-              fontFamily: 'Georgia, serif',
-              border: '1px solid var(--border)',
-              borderRadius: '8px',
-              backgroundColor: 'var(--surface)',
-              color: 'var(--text)',
-              outline: 'none',
-              boxSizing: 'border-box',
-              marginBottom: '12px',
-            }}
-          />
-          {/* Common specialty quick-select pills */}
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {COMMON_PILLS.map(pill => {
-              const label = lang === 'en' ? (specialtyTranslations[pill] ?? pill) : pill
-              return (
-                <PillToggle
-                  key={pill}
-                  label={label}
-                  active={selectedPills.includes(pill)}
-                  onClick={() => togglePill(pill)}
-                />
-              )
-            })}
+          <div ref={searchWrapperRef} style={{ position: 'relative', marginBottom: '12px' }}>
+            <input
+              value={inputText}
+              onChange={e => {
+                setInputText(e.target.value)
+                setDropdownOpen(true)
+              }}
+              onFocus={() => {
+                if (inputText.trim()) setDropdownOpen(true)
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Escape') {
+                  setDropdownOpen(false)
+                  setInputText('')
+                }
+              }}
+              placeholder={
+                lang === 'fr'
+                  ? 'Rechercher une problématique… (ex: anxiété, deuil, relations)'
+                  : 'Search for an issue… (e.g. anxiety, grief, relationships)'
+              }
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                fontSize: '0.92rem',
+                fontFamily: 'Georgia, serif',
+                border: '1px solid var(--border)',
+                borderRadius: showDropdown ? '8px 8px 0 0' : '8px',
+                backgroundColor: 'var(--surface)',
+                color: 'var(--text)',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+            />
+
+            {/* Dropdown */}
+            {showDropdown && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+                backgroundColor: 'var(--surface)',
+                border: '1px solid var(--border)',
+                borderTop: 'none',
+                borderRadius: '0 0 8px 8px',
+                zIndex: 20,
+                maxHeight: '260px',
+                overflowY: 'auto',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+              }}>
+                {suggestions.map((specialty, i) => {
+                  const label = lang === 'en' ? (specialtyTranslations[specialty] ?? specialty) : specialty
+                  const alreadySelected = selectedPills.includes(specialty)
+                  return (
+                    <button
+                      key={specialty}
+                      // onMouseDown + preventDefault prevents the input blur from firing
+                      // before the click registers, which would close the dropdown first
+                      onMouseDown={e => {
+                        e.preventDefault()
+                        if (!alreadySelected) selectSuggestion(specialty)
+                      }}
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        textAlign: 'left',
+                        padding: '10px 16px',
+                        fontSize: '0.88rem',
+                        fontFamily: 'Georgia, serif',
+                        color: alreadySelected ? '#8A9BAD' : 'var(--text)',
+                        background: 'none',
+                        border: 'none',
+                        borderBottom: i < suggestions.length - 1 ? '1px solid var(--border)' : 'none',
+                        cursor: alreadySelected ? 'default' : 'pointer',
+                        transition: 'background-color 0.1s',
+                      }}
+                      onMouseEnter={e => {
+                        if (!alreadySelected) (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--blue-accent)'
+                      }}
+                      onMouseLeave={e => {
+                        (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent'
+                      }}
+                    >
+                      {label}
+                      {alreadySelected && (
+                        <span style={{ fontSize: '0.72rem', color: '#8A9BAD', marginLeft: '8px' }}>
+                          {lang === 'fr' ? '· déjà sélectionné' : '· already selected'}
+                        </span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
           </div>
+
         </div>
 
         {/* ── Availability + format filters ── */}
@@ -199,7 +294,6 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
             onClick={() => setAvailFilter('next_week')}
           />
 
-          {/* Divider */}
           <div style={{ width: '1px', height: '22px', backgroundColor: 'var(--border)', margin: '0 4px' }} />
 
           <PillToggle
@@ -218,7 +312,6 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
             onClick={() => setConsultFilter('video')}
           />
 
-          {/* Divider */}
           <div style={{ width: '1px', height: '22px', backgroundColor: 'var(--border)', margin: '0 4px' }} />
 
           <PillToggle
