@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV === 'development'
+
 const nextConfig: NextConfig = {
   async headers() {
     return [
@@ -25,7 +27,8 @@ const nextConfig: NextConfig = {
               `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com https://api.resend.com`,
               // Stripe checkout redirect + scripts
               "frame-src 'self' https://js.stripe.com https://checkout.stripe.com",
-              "script-src 'self' 'unsafe-inline' https://js.stripe.com",
+              // unsafe-eval required by React/Turbopack in dev mode only
+              `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} https://js.stripe.com`,
               // Styles — unsafe-inline needed for Tailwind's runtime styles
               "style-src 'self' 'unsafe-inline'",
               // Images — Supabase storage for avatars/credentials
