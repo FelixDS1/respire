@@ -139,14 +139,15 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
           credPaths.push(credData.path)
         }
 
-        const { error: therapistErr } = await supabase.from('therapists').update({
+        const { error: therapistErr } = await supabase.from('therapists').upsert({
+          id: userId,
           photo_url: photoUrl,
           rpps_number: hasRpps ? rpps.trim() : null,
           adeli_number: !hasRpps ? adeli.trim() : null,
           credentials_urls: credPaths,
           dpa_accepted_at: new Date().toISOString(),
           dpa_version: DPA_CURRENT_VERSION,
-        }).eq('id', userId)
+        })
 
         if (therapistErr) {
           setError('Erreur enregistrement : ' + therapistErr.message)
@@ -174,7 +175,8 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
     setLoading(true)
     const supabase = createClient()
     try {
-      const { error: err } = await supabase.from('therapists').update({
+      const { error: err } = await supabase.from('therapists').upsert({
+        id: userId,
         bio: therapistBio.trim(),
         specialties,
         languages,
@@ -182,7 +184,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
         location,
         sector,
         consultation_type: consultationType,
-      }).eq('id', userId)
+      })
       if (err) { setError('Erreur : ' + err.message); setLoading(false); return }
       router.push('/dashboard')
     } catch (err) {

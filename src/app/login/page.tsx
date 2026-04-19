@@ -36,7 +36,7 @@ function LoginForm() {
     setError('')
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data: signInData, error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
       setError('Email ou mot de passe incorrect.')
@@ -48,6 +48,19 @@ function LoginForm() {
       localStorage.setItem('respire_remember', JSON.stringify({ email, password }))
     } else {
       localStorage.removeItem('respire_remember')
+    }
+
+    // If profile is missing (orphaned auth user), send to onboarding
+    if (signInData.user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', signInData.user.id)
+        .single()
+      if (!profile) {
+        router.push('/onboarding')
+        return
+      }
     }
 
     router.push(redirectTo)
