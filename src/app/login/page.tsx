@@ -15,7 +15,7 @@ function LoginForm() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // Pre-fill fields from saved credentials on mount
+  // Redirect already-authenticated users away from the login page
   useEffect(() => {
     const saved = localStorage.getItem('respire_remember')
     if (saved) {
@@ -28,7 +28,12 @@ function LoginForm() {
         localStorage.removeItem('respire_remember')
       }
     }
-  }, [])
+
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) router.replace(redirectTo)
+    })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -36,7 +41,7 @@ function LoginForm() {
     setError('')
 
     const supabase = createClient()
-    const { data: signInData, error } = await supabase.auth.signInWithPassword({ email, password })
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
       setError('Email ou mot de passe incorrect.')
@@ -48,19 +53,6 @@ function LoginForm() {
       localStorage.setItem('respire_remember', JSON.stringify({ email, password }))
     } else {
       localStorage.removeItem('respire_remember')
-    }
-
-    // If profile is missing (orphaned auth user), send to onboarding
-    if (signInData.user) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('id', signInData.user.id)
-        .single()
-      if (!profile) {
-        router.push('/onboarding')
-        return
-      }
     }
 
     router.push(redirectTo)
