@@ -2,17 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-
-// Service-role client — needed to read appointment regardless of RLS
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
-
 // Polled by the success page to check whether the webhook has confirmed the booking.
 // Read-only — never writes anything.
 export async function GET(req: NextRequest) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
   const sessionId = req.nextUrl.searchParams.get('session_id')
 
   if (!sessionId) {
@@ -36,8 +33,8 @@ export async function GET(req: NextRequest) {
 
   if (!appointment) return NextResponse.json({ confirmed: false })
 
-  const av = appointment.availability as { date: string; start_time: string; end_time: string } | null
-  const th = appointment.therapists as { profiles: { full_name: string } | null } | null
+  const av = appointment.availability as unknown as { date: string; start_time: string; end_time: string } | null
+  const th = appointment.therapists as unknown as { profiles: { full_name: string } | null } | null
 
   return NextResponse.json({
     confirmed: true,

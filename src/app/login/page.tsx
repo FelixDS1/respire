@@ -30,7 +30,7 @@ function LoginForm() {
     }
 
     const supabase = createClient()
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(({ data }: { data: { session: unknown } }) => {
       if (data.session) router.replace(redirectTo)
     })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
