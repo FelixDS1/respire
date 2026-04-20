@@ -168,12 +168,12 @@ export default function About() {
         <div style={{ position: 'relative' }}>
           <div className="about-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', perspective: '1000px', position: 'relative', zIndex: 1 }}>
             <InflateBox className="about-box about-value-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)' }}>
-              <span className="about-deco-number" style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>01</span>
+              <span className="about-deco-number" style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>1</span>
               <p className="about-value-text" style={{ ...bodyStyle, color: 'var(--text)', fontWeight: 400 }}>{c.values[0]}</p>
             </InflateBox>
 
             <InflateBox className="about-box about-value-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)' }}>
-              <span className="about-deco-number" style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>02</span>
+              <span className="about-deco-number" style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>2</span>
               <p className="about-value-text" style={{ ...bodyStyle, color: 'var(--text)', fontWeight: 400 }}>{c.values[1]}</p>
             </InflateBox>
           </div>
