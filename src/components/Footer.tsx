@@ -17,26 +17,40 @@ export default function Footer() {
       <div className="footer-inner" style={{
         maxWidth: '1400px',
         margin: '0 auto',
-        padding: '20px 56px',
+        padding: '2.5rem 3rem',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        fontSize: '0.88rem',
-        color: '#4A6070',
-        fontFamily: 'Georgia, serif',
+        flexWrap: 'wrap',
+        gap: '1rem',
       }}>
-        <span>© 2026 Respire</span>
-        <div className="footer-links" style={{ display: 'flex', gap: '24px' }}>
-          <Link href="/about" style={{ color: '#4A6070', textDecoration: 'none' }}>
+        {/* Left: logo */}
+        <span style={{
+          fontFamily: 'var(--font-cormorant), Georgia, serif',
+          fontSize: '1.1rem',
+          color: 'var(--blue-primary)',
+          letterSpacing: '0.04em',
+        }}>
+          Respire
+        </span>
+
+        {/* Center: nav links */}
+        <div className="footer-links" style={{ display: 'flex', gap: '1.5rem' }}>
+          <Link href="/about" style={{ fontSize: '0.72rem', color: 'rgba(44,40,32,0.35)', textDecoration: 'none' }}>
             {lang === 'fr' ? 'Nous contacter' : 'Contact us'}
           </Link>
-          <Link href="/privacy" style={{ color: '#4A6070', textDecoration: 'none' }}>
+          <Link href="/privacy" style={{ fontSize: '0.72rem', color: 'rgba(44,40,32,0.35)', textDecoration: 'none' }}>
             {t.footer.privacy}
           </Link>
-          <Link href="/terms" style={{ color: '#4A6070', textDecoration: 'none' }}>
+          <Link href="/terms" style={{ fontSize: '0.72rem', color: 'rgba(44,40,32,0.35)', textDecoration: 'none' }}>
             {t.footer.terms}
           </Link>
         </div>
+
+        {/* Right: copyright */}
+        <span style={{ fontSize: '0.72rem', color: 'rgba(44,40,32,0.3)' }}>
+          © 2026 Respire
+        </span>
       </div>
     </footer>
   )

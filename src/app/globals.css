@@ -58,16 +58,24 @@ body {
   }
 }
 
-/* Homepage hero */
+/* Homepage */
 @media (max-width: 768px) {
-  .hero-section {
+  .home-hero {
     grid-template-columns: 1fr !important;
-    padding-top: 32px !important;
-    padding-bottom: 20px !important;
-    gap: 0 !important;
+    padding: 3rem 20px 2rem !important;
+    gap: 1.5rem !important;
   }
-  .hero-title { font-size: 2.1rem !important; line-height: 1.25 !important; }
+  .hero-title { font-size: 2.4rem !important; line-height: 1.2 !important; }
+  .home-cta-row { flex-direction: column !important; align-items: flex-start !important; }
+  .home-hiw-section { margin: 0 1rem !important; }
+  .home-hiw-inner { padding: 2.5rem 1.5rem !important; }
   .how-it-works-grid { grid-template-columns: 1fr !important; }
+  .home-cta-strip { margin: 1rem !important; }
+  .home-cta-strip-inner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 2.5rem 1.5rem !important;
+  }
 }
 
 /* Therapist listing */

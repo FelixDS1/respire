@@ -1,10 +1,19 @@
 import type { Metadata } from "next";
+import { Cormorant_Garamond } from 'next/font/google'
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CookieBanner from "@/components/CookieBanner";
 import { LanguageProvider } from "@/lib/language";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
+
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['300', '400', '500'],
+  style: ['normal', 'italic'],
+  variable: '--font-cormorant',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: "Respire — Trouvez votre thérapeute à Paris",
@@ -29,7 +38,7 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="fr" className="h-full">
+    <html lang="fr" className={`h-full ${cormorant.variable}`}>
       <body className="min-h-full flex flex-col">
         <LanguageProvider>
           <Navbar initialEmail={user?.email ?? null} initialRole={role} />
