@@ -911,7 +911,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
               <button
                 onClick={saveProfile}
                 disabled={saving}
-                style={{ backgroundColor: 'var(--blue-primary)', color: 'white', cursor: 'pointer', padding: '12px 32px', fontSize: '0.95rem', borderRadius: '8px', border: 'none', opacity: saving ? 0.5 : 1 }}
+                style={{ backgroundColor: 'var(--blue-primary)', color: 'white', cursor: 'pointer', padding: '12px 32px', fontSize: '0.95rem', borderRadius: '999px', border: 'none', opacity: saving ? 0.5 : 1 }}
               >
                 {saving ? (lang === 'fr' ? 'Enregistrement...' : 'Saving...') : (lang === 'fr' ? 'Enregistrer' : 'Save')}
               </button>

@@ -382,7 +382,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
     <>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap');`}</style>
 
-      <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#F2EFE8', width: '100%' }}>
+      <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg)', width: '100%' }}>
 
         {/* Page header */}
         <div style={{ padding: '2rem 2.5rem 0' }}>
@@ -627,7 +627,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                     background: ACCENT, color: '#fff', border: 'none',
                     padding: '0.75rem 2rem', fontSize: '0.78rem',
                     letterSpacing: '0.1em', textTransform: 'uppercase',
-                    borderRadius: '4px', cursor: saving ? 'default' : 'pointer',
+                    borderRadius: '999px', cursor: saving ? 'default' : 'pointer',
                     opacity: saving ? 0.6 : 1, transition: 'opacity 0.15s',
                   }}
                 >
