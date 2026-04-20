@@ -128,14 +128,14 @@ export default function About() {
                   {step.num}
                 </div>
                 <h3 style={{
-                  fontFamily: CG, fontSize: '1.25rem', fontWeight: 400,
-                  marginBottom: '0.6rem', color: '#2C2820',
+                  fontFamily: 'Georgia, serif', fontSize: '1.4rem', fontWeight: 400,
+                  marginBottom: '0.75rem', color: '#2C2820',
                 }}>
                   {step.title}
                 </h3>
                 <p style={{
-                  fontFamily: JOST, fontSize: '0.84rem', lineHeight: 1.8,
-                  color: 'rgba(44,40,32,0.55)', fontWeight: 300, margin: 0,
+                  fontFamily: 'Georgia, serif', fontSize: '1.1rem', lineHeight: 1.75,
+                  color: 'rgba(44,40,32,0.6)', fontWeight: 300, margin: 0,
                 }}>
                   {step.body}
                 </p>
