@@ -32,9 +32,10 @@ interface Therapist {
 interface Props {
   therapist: Therapist
   byDate: Record<string, Slot[]>
+  stripeReady: boolean
 }
 
-export default function TherapistProfileClient({ therapist, byDate }: Props) {
+export default function TherapistProfileClient({ therapist, byDate, stripeReady }: Props) {
   const { t, lang } = useLanguage()
   const [onWaitlist, setOnWaitlist] = useState(false)
   const [waitlistLoading, setWaitlistLoading] = useState(false)
@@ -104,7 +105,7 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
               <img
                 src={therapist.photo_url}
                 alt={therapist.profiles?.full_name ?? ''}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
               />
             )}
           </div>
@@ -230,7 +231,13 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
               {t.profile.availability}
             </h2>
 
-            {Object.keys(byDate).length === 0 ? (
+            {!stripeReady ? (
+              <p className="text-sm" style={{ color: '#4A6070' }}>
+                {lang === 'fr'
+                  ? 'Ce thérapeute n\'accepte pas encore de réservations en ligne.'
+                  : 'This therapist is not yet accepting online bookings.'}
+              </p>
+            ) : Object.keys(byDate).length === 0 ? (
               <p className="text-sm" style={{ color: '#4A6070' }}>{t.profile.noSlots}</p>
             ) : (() => {
               const year = calendarMonth.getFullYear()

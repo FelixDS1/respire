@@ -16,12 +16,14 @@ export default async function TherapistProfile({ params }: { params: Promise<{ i
 
   if (!therapist) notFound()
 
+  const stripeReady = !!therapist.stripe_account_id
+
   type SlotItem = NonNullable<typeof slots>[number]
   const byDate: Record<string, SlotItem[]> = {}
-  for (const slot of slots ?? []) {
+  for (const slot of (stripeReady ? slots : []) ?? []) {
     if (!byDate[slot.date]) byDate[slot.date] = []
     byDate[slot.date].push(slot)
   }
 
-  return <TherapistProfileClient therapist={therapist as any} byDate={byDate} />
+  return <TherapistProfileClient therapist={therapist as any} byDate={byDate} stripeReady={stripeReady} />
 }

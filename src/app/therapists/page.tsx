@@ -9,6 +9,7 @@ export default async function TherapistsPage() {
     .select('*, profiles(full_name)')
     .not('bio', 'is', null)
     .not('consultation_fee', 'is', null)
+    .not('stripe_account_id', 'is', null)
 
   // Compute week date ranges
   const today = new Date()

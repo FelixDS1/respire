@@ -13,7 +13,9 @@ export default async function AccountPage() {
     .eq('id', user.id)
     .single()
 
-  if (!profile || profile.role !== 'patient') redirect('/')
+  if (!profile) redirect('/')
+  if (profile.role === 'therapist') redirect('/dashboard')
+  if (profile.role !== 'patient') redirect('/')
 
   const { data: appointments } = await supabase
     .from('appointments')
