@@ -8,19 +8,22 @@ export async function POST(req: Request) {
 
   const body = await req.json()
 
-  const { error } = await supabase.from('therapists').update({
-    bio: body.bio ?? null,
-    bio_en: body.bio_en ?? null,
-    specialties: body.specialties ?? [],
-    consultation_fee: body.consultation_fee ?? null,
-    languages: body.languages ?? [],
-    location: body.location ?? null,
-    profession: body.profession ?? null,
-    sector: body.sector ?? null,
-    consultation_type: body.consultation_type ?? 'both',
-    diploma_institution: body.diploma_institution ?? null,
-  }).eq('id', user.id)
+  // Build update object from only the fields present in the request body
+  const allowed = [
+    'bio', 'bio_en', 'specialties', 'consultation_fee', 'languages',
+    'location', 'profession', 'sector', 'consultation_type',
+    'diploma_institution', 'diploma_url',
+  ]
+  const update: Record<string, unknown> = {}
+  for (const key of allowed) {
+    if (key in body) update[key] = body[key] ?? null
+  }
 
+  if (Object.keys(update).length === 0) {
+    return NextResponse.json({ error: 'No fields to update' }, { status: 400 })
+  }
+
+  const { error } = await supabase.from('therapists').update(update).eq('id', user.id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   return NextResponse.json({ ok: true })

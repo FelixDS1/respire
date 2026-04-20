@@ -211,27 +211,36 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
     const file = e.target.files?.[0]
     e.target.value = ''
     if (!file) return
-    if (file.size > 10 * 1024 * 1024) {
-      setDiplomaError('Le fichier ne doit pas dépasser 10 Mo.')
-      return
-    }
     setDiplomaUploading(true)
     setDiplomaError('')
     try {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Non connecté')
       const ext = file.name.split('.').pop()?.toLowerCase() ?? 'pdf'
-      const path = `${user.id}/diploma.${ext}`
-      const buffer = await file.arrayBuffer()
-      const res = await fetch('/api/upload-diploma', {
+
+      // Step 1: get a short-lived signed upload URL from our server
+      const urlRes = await fetch('/api/diploma-upload-url', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path, contentType: file.type || 'application/octet-stream', data: Array.from(new Uint8Array(buffer)) }),
+        body: JSON.stringify({ ext }),
       })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error ?? `Erreur ${res.status}`)
-      setTherapist(prev => ({ ...prev, diploma_url: json.path }))
+      const urlJson = await urlRes.json()
+      if (!urlRes.ok) throw new Error(urlJson.error ?? `Erreur ${urlRes.status}`)
+
+      // Step 2: upload directly to Supabase Storage (no size limit from our server)
+      const uploadRes = await fetch(urlJson.signedUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type || 'application/octet-stream' },
+        body: file,
+      })
+      if (!uploadRes.ok) throw new Error('Échec de l\'envoi du fichier')
+
+      // Step 3: persist the path on the therapist row
+      await fetch('/api/save-therapist-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ diploma_url: urlJson.path }),
+      })
+
+      setTherapist(prev => ({ ...prev, diploma_url: urlJson.path }))
     } catch (err: any) {
       setDiplomaError(err?.message ?? 'Erreur inconnue')
     } finally {
