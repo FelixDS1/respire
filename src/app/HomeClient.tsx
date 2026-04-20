@@ -15,6 +15,8 @@ interface PreviewTherapist {
   sector: string | null
   specialties: string[] | null
   photo_url: string | null
+  bio: string | null
+  location: string | null
   profiles: { full_name: string | null }
 }
 
@@ -23,31 +25,46 @@ interface Props {
   previewSlots: Slot[]
 }
 
+// Matches the listing card style exactly
 function PreviewCard({ therapist, slots }: { therapist: PreviewTherapist; slots: Slot[] }) {
-  const { lang } = useLanguage()
-  const displayed = (therapist.consultation_fee ?? 0) + 4
-  const outOfPocket = Math.max(displayed - 55, 6)
+  const { lang, t } = useLanguage()
+  const price = therapist.consultation_fee ? therapist.consultation_fee + 4 : null
+  const reimbursement = price ? Math.max(price - 55, 6) : null
+  const bio = lang === 'en' ? therapist.bio : therapist.bio
 
   return (
-    <div style={{ background: '#EDE9E0', borderRadius: '20px', padding: '1.5rem 1.8rem' }}>
+    <div style={{
+      background: '#EDE9E0',
+      borderRadius: '20px',
+      padding: '1.5rem 1.8rem',
+    }}>
+      {/* Small muted label */}
       <p style={{
         fontSize: '0.65rem', letterSpacing: '0.18em', textTransform: 'uppercase',
-        color: 'rgba(44,40,32,0.4)', marginBottom: '0.75rem', fontFamily: 'Georgia, serif',
+        color: 'rgba(44,40,32,0.4)', marginBottom: '0.9rem', fontFamily: 'Georgia, serif',
       }}>
         {lang === 'en' ? 'Available therapist' : 'Thérapeute disponible'}
       </p>
 
-      <p style={{
-        fontFamily: 'var(--font-cormorant), Georgia, serif',
-        fontSize: '1.5rem', fontWeight: 300, color: '#2C2820',
-        marginBottom: '0.75rem', lineHeight: 1.2,
+      {/* Name — matches listing h2 */}
+      <h2 style={{
+        fontSize: '1.1rem', fontWeight: 400, fontFamily: 'Georgia, serif',
+        color: 'var(--text)', margin: '0 0 4px 0',
       }}>
         {therapist.profiles?.full_name}
-      </p>
+      </h2>
 
+      {/* Location */}
+      {therapist.location && (
+        <p style={{ fontSize: '0.75rem', color: '#4A6070', fontFamily: 'Georgia, serif', margin: '0 0 8px' }}>
+          {therapist.location}
+        </p>
+      )}
+
+      {/* Specialty pills — exact listing style */}
       {therapist.specialties && therapist.specialties.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '1rem' }}>
-          {therapist.specialties.slice(0, 3).map(s => (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '10px' }}>
+          {therapist.specialties.slice(0, 4).map(s => (
             <span key={s} style={{
               fontSize: '0.7rem', padding: '3px 8px', borderRadius: '20px',
               backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)',
@@ -59,34 +76,52 @@ function PreviewCard({ therapist, slots }: { therapist: PreviewTherapist; slots:
         </div>
       )}
 
-      {therapist.consultation_fee && (
-        <>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.4rem', marginBottom: '0.35rem' }}>
-            <span style={{
-              fontFamily: 'var(--font-cormorant), Georgia, serif',
-              fontSize: '1.5rem', fontWeight: 300, color: '#2C2820',
-            }}>
-              {displayed}€
+      {/* Bio excerpt — matches listing style */}
+      {bio && (
+        <p style={{
+          fontSize: '0.875rem', fontWeight: 300, lineHeight: 1.65,
+          color: '#4A6070', fontFamily: 'Georgia, serif',
+          margin: '0 0 8px',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+        } as React.CSSProperties}>
+          {bio}
+        </p>
+      )}
+
+      {/* Price + sector + reimbursement row — matches listing right col */}
+      {price && (
+        <div style={{ marginBottom: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '3px' }}>
+            <span style={{ fontSize: '1.7rem', fontWeight: 300, fontFamily: 'Georgia, serif', color: 'var(--text)', lineHeight: 1 }}>
+              {price}€
             </span>
-            <span style={{
-              fontSize: '0.72rem', color: 'rgba(44,40,32,0.45)',
-              fontFamily: 'system-ui, sans-serif', fontWeight: 300,
-            }}>
-              / {lang === 'en' ? 'session' : 'séance'}
+            <span style={{ fontSize: '0.78rem', color: '#8A9BAD', fontFamily: 'Georgia, serif' }}>
+              {t.therapists.perSession}
             </span>
           </div>
           {therapist.sector && (
-            <p style={{ fontSize: '0.72rem', color: '#7A9E7E', marginBottom: '1.2rem' }}>
-              {lang === 'en'
-                ? `≈ ${outOfPocket}€ out-of-pocket with Sécu + mutuelle`
-                : `≈ ${outOfPocket}€ reste à charge avec Sécu + mutuelle`}
+            <p style={{ fontSize: '0.73rem', color: '#8A9BAD', fontFamily: 'Georgia, serif', margin: '0 0 5px' }}>
+              {lang === 'fr' ? 'Secteur' : 'Sector'} {therapist.sector}
             </p>
           )}
-        </>
+          {reimbursement !== null && (
+            <span style={{
+              fontSize: '0.7rem', padding: '3px 8px', borderRadius: '20px',
+              backgroundColor: '#EEFAF0', color: '#2E7D32', fontFamily: 'Georgia, serif',
+              whiteSpace: 'nowrap', border: '1px solid #C8E6C9', display: 'inline-block',
+            }}>
+              ~{reimbursement}€ {lang === 'fr' ? 'après remboursement' : 'after reimbursement'}
+            </span>
+          )}
+        </div>
       )}
 
+      {/* Time slot pills */}
       {slots.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '12px' }}>
           {slots.map((slot, i) => (
             <Link
               key={slot.id}
@@ -107,6 +142,14 @@ function PreviewCard({ therapist, slots }: { therapist: PreviewTherapist; slots:
           ))}
         </div>
       )}
+
+      {/* View profile link — matches listing style */}
+      <Link
+        href={`/therapists/${therapist.id}`}
+        style={{ display: 'block', fontSize: '0.82rem', color: 'var(--blue-primary)', fontFamily: 'Georgia, serif', textDecoration: 'none' }}
+      >
+        {lang === 'fr' ? 'Voir le profil' : 'View profile'} →
+      </Link>
     </div>
   )
 }
@@ -114,6 +157,7 @@ function PreviewCard({ therapist, slots }: { therapist: PreviewTherapist; slots:
 export default function HomeClient({ previewTherapist, previewSlots }: Props) {
   const { t, lang } = useLanguage()
 
+  // Split last word for italic styling
   const heroTitle = t.home.heroTitle
   const lastSpaceIdx = heroTitle.lastIndexOf(' ')
   const heroMain = heroTitle.slice(0, lastSpaceIdx)
@@ -145,9 +189,10 @@ export default function HomeClient({ previewTherapist, previewSlots }: Props) {
             {lang === 'en' ? 'Paris · Therapy for everyone' : 'Paris · Thérapie pour tous'}
           </p>
 
+          {/* H1 — Georgia, same as before, italic last word in brown */}
           <h1 className="hero-title" style={{
-            fontFamily: 'var(--font-cormorant), Georgia, serif',
-            fontSize: '3.6rem', fontWeight: 300, lineHeight: 1.15,
+            fontFamily: 'Georgia, serif',
+            fontSize: '3.4rem', fontWeight: 300, lineHeight: 1.2,
             margin: '0 0 1.5rem 0',
           }}>
             <span style={{ whiteSpace: 'pre-line' }}>{heroMain} </span>
@@ -158,30 +203,33 @@ export default function HomeClient({ previewTherapist, previewSlots }: Props) {
             fontSize: '0.92rem', lineHeight: 1.85,
             color: 'rgba(44,40,32,0.6)', fontWeight: 300,
             maxWidth: '400px', marginBottom: '2rem',
+            fontFamily: 'Georgia, serif',
           }}>
             {t.home.heroSubtitle}
           </p>
 
+          {/* CTA pills — same size, left filled brown, right outlined black */}
           <div className="home-cta-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <Link href="/therapists" style={{
               display: 'inline-block',
-              padding: '15px 38px',
+              padding: '14px 32px',
               backgroundColor: 'var(--blue-primary)',
               color: 'white',
-              borderRadius: '8px',
+              borderRadius: '999px',
               textDecoration: 'none',
-              fontSize: '1.1rem',
+              fontSize: '1rem',
               fontFamily: 'Georgia, serif',
+              border: '2px solid var(--blue-primary)',
             }}>
               {t.home.cta}
             </Link>
             <Link href="/pour-les-therapeutes" style={{
               display: 'inline-block',
-              padding: '14px 28px',
+              padding: '14px 32px',
               backgroundColor: 'transparent',
-              color: 'var(--blue-primary)',
-              borderRadius: '8px',
-              border: '1px solid var(--blue-primary)',
+              color: '#2C2820',
+              borderRadius: '999px',
+              border: '2px solid #2C2820',
               textDecoration: 'none',
               fontSize: '1rem',
               fontFamily: 'Georgia, serif',
@@ -208,7 +256,7 @@ export default function HomeClient({ previewTherapist, previewSlots }: Props) {
           }}>
             {t.home.howItWorks}
           </p>
-          <div className="how-it-works-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem' }}>
+          <div className="how-it-works-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2.5rem' }}>
             {[
               { num: '01', title: t.home.step1Title, body: t.home.step1Body },
               { num: '02', title: t.home.step2Title, body: t.home.step2Body },
@@ -216,22 +264,22 @@ export default function HomeClient({ previewTherapist, previewSlots }: Props) {
             ].map(step => (
               <div key={step.num}>
                 <div style={{
-                  fontFamily: 'var(--font-cormorant), Georgia, serif',
-                  fontSize: '5rem', fontWeight: 300, lineHeight: 1,
-                  color: 'rgba(44,40,32,0.1)', marginBottom: '0.5rem',
+                  fontFamily: 'Georgia, serif',
+                  fontSize: '4rem', fontWeight: 300, lineHeight: 1,
+                  color: 'rgba(44,40,32,0.12)', marginBottom: '0.75rem',
                 }}>
                   {step.num}
                 </div>
                 <h3 style={{
-                  fontFamily: 'var(--font-cormorant), Georgia, serif',
-                  fontSize: '1.25rem', fontWeight: 400,
-                  marginBottom: '0.6rem', color: '#2C2820',
+                  fontFamily: 'Georgia, serif',
+                  fontSize: '1.4rem', fontWeight: 400,
+                  marginBottom: '0.75rem', color: '#2C2820', lineHeight: 1.2,
                 }}>
                   {step.title}
                 </h3>
                 <p style={{
-                  fontSize: '0.84rem', lineHeight: 1.8,
-                  color: 'rgba(44,40,32,0.55)', fontWeight: 300,
+                  fontSize: '1.1rem', lineHeight: 1.75,
+                  color: 'rgba(44,40,32,0.6)', fontWeight: 300,
                   fontFamily: 'Georgia, serif',
                 }}>
                   {step.body}
@@ -262,7 +310,7 @@ export default function HomeClient({ previewTherapist, previewSlots }: Props) {
               {lang === 'en' ? 'Ready to start?' : 'Prêt à commencer ?'}
             </p>
             <h2 style={{
-              fontFamily: 'var(--font-cormorant), Georgia, serif',
+              fontFamily: 'Georgia, serif',
               fontSize: '2.2rem', fontWeight: 300, fontStyle: 'italic',
               color: '#F2EFE8', lineHeight: 1.2, margin: 0,
             }}>
@@ -274,16 +322,17 @@ export default function HomeClient({ previewTherapist, previewSlots }: Props) {
             <Link href="/signup" style={{
               background: '#F2EFE8', color: '#2C2820',
               borderRadius: '999px', padding: '0.8rem 1.8rem',
-              fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase',
+              fontSize: '0.9rem', letterSpacing: '0.06em',
               textDecoration: 'none', display: 'inline-block', fontFamily: 'Georgia, serif',
+              border: '2px solid #F2EFE8',
             }}>
               {lang === 'en' ? 'Create my account' : 'Créer mon compte'}
             </Link>
             <Link href="/pour-les-therapeutes" style={{
-              background: 'transparent', color: 'rgba(242,239,232,0.6)',
-              border: '0.5px solid rgba(242,239,232,0.25)',
+              background: 'transparent', color: 'rgba(242,239,232,0.7)',
+              border: '1px solid rgba(242,239,232,0.3)',
               borderRadius: '999px', padding: '0.8rem 1.8rem',
-              fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase',
+              fontSize: '0.9rem', letterSpacing: '0.06em',
               textDecoration: 'none', display: 'inline-block', fontFamily: 'Georgia, serif',
             }}>
               {t.home.therapistCta}
