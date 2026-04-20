@@ -23,8 +23,8 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
-  // If onboarding was never completed, send back to onboarding
-  if (!therapistData?.adeli_number && !therapistData?.rpps_number) {
+  // If onboarding was never completed and not manually verified, send back to onboarding
+  if (!therapistData?.adeli_number && !therapistData?.rpps_number && !therapistData?.is_verified) {
     redirect('/onboarding')
   }
 
