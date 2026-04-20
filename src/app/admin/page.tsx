@@ -27,7 +27,7 @@ export default async function AdminPage() {
       const urls: string[] = []
       for (const path of (t.credentials_urls ?? [])) {
         const { data } = await admin.storage
-          \.from('Credentials')
+          .from('Credentials')
           .createSignedUrl(path, 3600)
         if (data?.signedUrl) urls.push(data.signedUrl)
       }
