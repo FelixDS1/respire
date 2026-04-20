@@ -34,8 +34,8 @@ export default function About() {
 
         {/* Same format as homepage h1 */}
         <h1 style={{
-          fontFamily: G, fontSize: '3.4rem', fontWeight: 300,
-          lineHeight: 1.2, maxWidth: '680px', margin: '0 0 1.5rem 0',
+          fontFamily: G, fontSize: '4.5rem', fontWeight: 300,
+          lineHeight: 1.1, maxWidth: '680px', margin: '0 0 1.5rem 0',
         }}>
           {fr
             ? <>Vous méritez de <em style={{ fontStyle: 'italic', color: '#9C7B5A' }}>respirer.</em></>
