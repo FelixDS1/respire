@@ -3,8 +3,8 @@
 import Link from 'next/link'
 import { useLanguage } from '@/lib/language'
 
-const CG = 'var(--font-cormorant), Georgia, serif'
-const JOST = 'Jost, system-ui, sans-serif'
+const G = 'Georgia, serif'
+const CG = 'var(--font-cormorant), Georgia, serif' // founder quote only
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
@@ -12,13 +12,12 @@ const labelStyle: React.CSSProperties = {
   letterSpacing: '0.2em',
   textTransform: 'uppercase',
   color: 'rgba(44,40,32,0.4)',
-  fontFamily: JOST,
+  fontFamily: G,
   marginBottom: '1.2rem',
 }
 
 export default function About() {
   const { lang, t } = useLanguage()
-
   const fr = lang === 'fr'
 
   return (
@@ -28,21 +27,23 @@ export default function About() {
       <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '5rem 3rem 4rem' }}>
         <p style={{
           fontSize: '0.68rem', letterSpacing: '0.2em', textTransform: 'uppercase',
-          color: '#9C7B5A', marginBottom: '1.5rem', fontFamily: JOST,
+          color: '#9C7B5A', marginBottom: '1.5rem', fontFamily: G,
         }}>
           {fr ? 'À propos' : 'About'}
         </p>
 
+        {/* Same format as homepage h1 */}
         <h1 style={{
-          fontFamily: CG, fontSize: '4rem', fontWeight: 300,
-          lineHeight: 1.1, maxWidth: '680px', margin: '0 0 1.5rem 0',
+          fontFamily: G, fontSize: '3.4rem', fontWeight: 300,
+          lineHeight: 1.2, maxWidth: '680px', margin: '0 0 1.5rem 0',
         }}>
-          {fr ? <>Vous méritez de <em style={{ fontStyle: 'italic', color: '#9C7B5A' }}>respirer.</em></>
-               : <>You deserve to <em style={{ fontStyle: 'italic', color: '#9C7B5A' }}>breathe.</em></>}
+          {fr
+            ? <>Vous méritez de <em style={{ fontStyle: 'italic', color: '#9C7B5A' }}>respirer.</em></>
+            : <>You deserve to <em style={{ fontStyle: 'italic', color: '#9C7B5A' }}>breathe.</em></>}
         </h1>
 
         <p style={{
-          fontFamily: JOST, fontSize: '0.95rem', lineHeight: 1.9,
+          fontFamily: G, fontSize: '0.95rem', lineHeight: 1.9,
           color: 'rgba(44,40,32,0.6)', fontWeight: 300, maxWidth: '520px', margin: 0,
         }}>
           {fr
@@ -57,26 +58,26 @@ export default function About() {
           display: 'grid', gridTemplateColumns: '1fr 1fr',
           borderRadius: '24px', overflow: 'hidden',
         }}>
-          {/* Left: Pourquoi */}
+          {/* Left */}
           <div className="about-split-left" style={{ background: '#EDE9E0', padding: '3.5rem' }}>
             <span style={labelStyle}>
               {fr ? 'Pourquoi Respire existe' : 'Why Respire exists'}
             </span>
             <h2 style={{
-              fontFamily: CG, fontSize: '2rem', fontWeight: 400,
+              fontFamily: G, fontSize: '2rem', fontWeight: 300,
               fontStyle: 'italic', lineHeight: 1.3, marginBottom: '1.2rem', color: '#2C2820',
             }}>
               {fr ? 'Simplifier le suivi psychologique.' : 'Simplifying mental health care.'}
             </h2>
             <p style={{
-              fontFamily: CG, fontSize: '1.15rem', fontStyle: 'italic',
-              color: '#9C7B5A', lineHeight: 1.5, margin: 0,
+              fontFamily: G, fontSize: '1.15rem', fontStyle: 'italic',
+              color: '#9C7B5A', lineHeight: 1.5, margin: 0, fontWeight: 300,
             }}>
-              {fr ? 'Plus c\'est simple, mieux vous êtes servis.' : 'The simpler it is, the better served you are.'}
+              {fr ? "Plus c'est simple, mieux vous êtes servis." : 'The simpler it is, the better served you are.'}
             </p>
           </div>
 
-          {/* Right: Engagements */}
+          {/* Right */}
           <div className="about-split-right" style={{ background: '#E5E0D5', padding: '3.5rem' }}>
             <span style={labelStyle}>
               {fr ? 'Nos engagements' : 'Our commitments'}
@@ -88,13 +89,13 @@ export default function About() {
               ].map((text, i) => (
                 <div key={i} style={{ display: 'flex', gap: '1.2rem', alignItems: 'flex-start' }}>
                   <span style={{
-                    fontFamily: CG, fontSize: '3.5rem', fontWeight: 300,
+                    fontFamily: G, fontSize: '3.5rem', fontWeight: 300,
                     color: 'rgba(44,40,32,0.15)', width: '48px', flexShrink: 0, lineHeight: 1,
                   }}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <p style={{
-                    fontFamily: CG, fontSize: '1.2rem', fontWeight: 400,
+                    fontFamily: G, fontSize: '1.2rem', fontWeight: 300,
                     lineHeight: 1.45, paddingTop: '0.6rem', margin: 0, color: '#2C2820',
                   }}>
                     {text}
@@ -122,19 +123,19 @@ export default function About() {
             ].map(step => (
               <div key={step.num}>
                 <div style={{
-                  fontFamily: CG, fontSize: '5rem', fontWeight: 300,
+                  fontFamily: G, fontSize: '4rem', fontWeight: 300,
                   lineHeight: 1, color: 'rgba(44,40,32,0.1)', marginBottom: '0.5rem',
                 }}>
                   {step.num}
                 </div>
                 <h3 style={{
-                  fontFamily: 'Georgia, serif', fontSize: '1.4rem', fontWeight: 400,
+                  fontFamily: G, fontSize: '1.4rem', fontWeight: 400,
                   marginBottom: '0.75rem', color: '#2C2820',
                 }}>
                   {step.title}
                 </h3>
                 <p style={{
-                  fontFamily: 'Georgia, serif', fontSize: '1.1rem', lineHeight: 1.75,
+                  fontFamily: G, fontSize: '1.1rem', lineHeight: 1.75,
                   color: 'rgba(44,40,32,0.6)', fontWeight: 300, margin: 0,
                 }}>
                   {step.body}
@@ -146,42 +147,23 @@ export default function About() {
       </section>
 
       {/* ── Founder note ── */}
-      <section style={{ maxWidth: '1400px', margin: '0 auto' }}>
-        <div className="about-founder-grid" style={{
-          display: 'grid', gridTemplateColumns: 'auto 1fr',
-          gap: '2.5rem', padding: '4rem 3rem', alignItems: 'start',
+      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '4rem 3rem' }}>
+        <span style={labelStyle}>
+          {fr ? 'Note du fondateur' : 'A note from the founder'}
+        </span>
+        {/* Quote stays in Cormorant Garamond italic */}
+        <p style={{
+          fontFamily: CG, fontSize: '1.3rem', fontStyle: 'italic',
+          fontWeight: 300, lineHeight: 1.8, color: '#2C2820',
+          marginBottom: '1.2rem', maxWidth: '560px',
         }}>
-          {/* Decorative F */}
-          <div className="about-founder-f" style={{
-            fontFamily: CG, fontSize: '9rem', fontWeight: 300,
-            lineHeight: 1, color: 'rgba(156,123,90,0.15)',
-            letterSpacing: '-0.04em', userSelect: 'none',
-          }}>
-            F
-          </div>
-
-          {/* Content */}
-          <div>
-            <span style={labelStyle}>
-              {fr ? 'Note du fondateur' : 'A note from the founder'}
-            </span>
-            <p style={{
-              fontFamily: CG, fontSize: '1.3rem', fontStyle: 'italic',
-              fontWeight: 300, lineHeight: 1.8, color: '#2C2820',
-              marginBottom: '1.2rem', maxWidth: '560px',
-            }}>
-              {fr
-                ? "Je m'appelle Félix, j'habite à Paris. Bien que j'ai toujours voulu trouver un(e) psy, j'ai longtemps hésité à me lancer — et si je ne trouvais pas la/le psy qui me correspondait\u00a0? Ça vous parle\u00a0?"
-                : "My name is Félix, I live in Paris. Although I always wanted to find a therapist, I hesitated for a long time — what if I couldn't find the therapist who was right for me? Sound familiar?"}
-            </p>
-            <span style={{
-              fontFamily: JOST, fontSize: '0.78rem',
-              color: '#9C7B5A', letterSpacing: '0.1em',
-            }}>
-              — Félix, fondateur
-            </span>
-          </div>
-        </div>
+          {fr
+            ? "Je m'appelle Félix, j'habite à Paris. Bien que j'ai toujours voulu trouver un(e) psy, j'ai longtemps hésité à me lancer — et si je ne trouvais pas la/le psy qui me correspondait\u00a0? Ça vous parle\u00a0?"
+            : "My name is Félix, I live in Paris. Although I always wanted to find a therapist, I hesitated for a long time — what if I couldn't find the therapist who was right for me? Sound familiar?"}
+        </p>
+        <span style={{ fontFamily: G, fontSize: '0.78rem', color: '#9C7B5A', letterSpacing: '0.1em' }}>
+          — Félix
+        </span>
       </section>
 
       {/* ── CTA strip ── */}
@@ -194,13 +176,13 @@ export default function About() {
         }}>
           <div>
             <p style={{
-              fontFamily: JOST, fontSize: '0.8rem',
+              fontFamily: G, fontSize: '0.8rem',
               color: 'rgba(242,239,232,0.45)', fontWeight: 300, marginBottom: '0.4rem',
             }}>
               {fr ? 'Prêt à commencer ?' : 'Ready to start?'}
             </p>
             <h2 style={{
-              fontFamily: CG, fontSize: '2.2rem', fontWeight: 300,
+              fontFamily: G, fontSize: '2.2rem', fontWeight: 300,
               fontStyle: 'italic', color: '#F2EFE8', lineHeight: 1.2, margin: 0,
             }}>
               {fr ? 'Vous avez le droit de respirer.' : 'You deserve to breathe.'}
@@ -210,7 +192,7 @@ export default function About() {
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <Link href="/signup" style={{
               background: '#F2EFE8', color: '#2C2820', borderRadius: '999px',
-              padding: '0.8rem 1.8rem', border: 'none', fontFamily: JOST,
+              padding: '0.8rem 1.8rem', border: 'none', fontFamily: G,
               fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase',
               textDecoration: 'none', display: 'inline-block',
             }}>
@@ -219,7 +201,7 @@ export default function About() {
             <Link href="/pour-les-therapeutes" style={{
               background: 'transparent', color: 'rgba(242,239,232,0.6)',
               border: '0.5px solid rgba(242,239,232,0.25)', borderRadius: '999px',
-              padding: '0.8rem 1.8rem', fontFamily: JOST,
+              padding: '0.8rem 1.8rem', fontFamily: G,
               fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase',
               textDecoration: 'none', display: 'inline-block',
             }}>
