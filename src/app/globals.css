@@ -39,6 +39,9 @@ body {
 @media (max-width: 768px) {
   .hide-mobile { display: none !important; }
 }
+@media (max-width: 768px) {
+  .show-mobile { display: flex !important; }
+}
 @media (min-width: 769px) {
   .show-mobile { display: none !important; }
 }
