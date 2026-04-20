@@ -18,6 +18,7 @@ export async function POST(req: Request) {
     profession: body.profession ?? null,
     sector: body.sector ?? null,
     consultation_type: body.consultation_type ?? 'both',
+    diploma_institution: body.diploma_institution ?? null,
   }).eq('id', user.id)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

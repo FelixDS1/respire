@@ -79,6 +79,8 @@ export default async function DashboardPage() {
         photo_url: therapistData?.photo_url ?? null,
         stripe_account_id: therapistData?.stripe_account_id ?? null,
         stripe_onboarding_complete: therapistData?.stripe_onboarding_complete ?? false,
+        diploma_institution: therapistData?.diploma_institution ?? null,
+        diploma_url: therapistData?.diploma_url ?? null,
       }}
       initialSlots={slotsData ?? []}
       initialAppointments={(apptData ?? []) as any}

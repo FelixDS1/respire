@@ -22,6 +22,7 @@ interface Therapist {
   location: string | null
   sector: string | null
   is_verified: boolean
+  diploma_institution: string | null
   profiles: {
     full_name: string | null
     email: string | null
@@ -136,12 +137,23 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
             )}
 
             {bio && (
-              <div>
+              <div style={{ marginBottom: therapist.diploma_institution ? '20px' : undefined }}>
                 <h2 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--blue-primary)', marginBottom: '12px' }}>
                   {t.profile.about}
                 </h2>
                 <p style={{ fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.9, color: 'var(--text)' }}>
                   {bio}
+                </p>
+              </div>
+            )}
+
+            {therapist.diploma_institution && (
+              <div>
+                <h2 style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--blue-primary)', marginBottom: '8px' }}>
+                  {lang === 'fr' ? 'Formation' : 'Education'}
+                </h2>
+                <p style={{ fontSize: '0.95rem', fontWeight: 300, color: 'var(--text)' }}>
+                  {therapist.diploma_institution}
                 </p>
               </div>
             )}

@@ -32,6 +32,8 @@ interface TherapistData {
   photo_url: string | null
   stripe_account_id: string | null
   stripe_onboarding_complete: boolean
+  diploma_institution: string | null
+  diploma_url: string | null
 }
 
 interface Slot {
@@ -121,6 +123,11 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
   const avatarInputRef = useRef<HTMLInputElement>(null)
   const lastSavedBioRef = useRef({ fr: initialTherapist?.bio ?? '', en: initialTherapist?.bio_en ?? '' })
 
+  // Diploma upload state
+  const [diplomaUploading, setDiplomaUploading] = useState(false)
+  const [diplomaError, setDiplomaError] = useState('')
+  const diplomaInputRef = useRef<HTMLInputElement>(null)
+
   // Schedule state
   const [scheduleDays, setScheduleDays] = useState<number[]>(initialSchedule?.days_of_week ?? [1, 2, 3, 4, 5])
   const [scheduleStart, setScheduleStart] = useState(initialSchedule?.start_time?.slice(0, 5) ?? '09:00')
@@ -200,6 +207,38 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
     }
   }
 
+  async function handleDiplomaUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    if (file.size > 10 * 1024 * 1024) {
+      setDiplomaError('Le fichier ne doit pas dépasser 10 Mo.')
+      return
+    }
+    setDiplomaUploading(true)
+    setDiplomaError('')
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Non connecté')
+      const ext = file.name.split('.').pop()?.toLowerCase() ?? 'pdf'
+      const path = `${user.id}/diploma.${ext}`
+      const buffer = await file.arrayBuffer()
+      const res = await fetch('/api/upload-diploma', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path, contentType: file.type || 'application/octet-stream', data: Array.from(new Uint8Array(buffer)) }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error ?? `Erreur ${res.status}`)
+      setTherapist(prev => ({ ...prev, diploma_url: json.path }))
+    } catch (err: any) {
+      setDiplomaError(err?.message ?? 'Erreur inconnue')
+    } finally {
+      setDiplomaUploading(false)
+    }
+  }
+
   async function saveProfile() {
     setSaving(true)
     const sourceText = lang === 'fr' ? therapist.bio : therapist.bio_en
@@ -219,6 +258,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
           profession: therapist.profession || null,
           sector: therapist.sector || null,
           consultation_type: therapist.consultation_type || 'both',
+          diploma_institution: therapist.diploma_institution || null,
         }),
       })
       const json = await res.json()
@@ -320,28 +360,39 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
   async function addTimeBlock() {
     if (!newBlockDate || !newBlockStart || !newBlockEnd) return
-    const supabase = createClient()
-    const { data } = await supabase.from('time_blocks').insert({
-      therapist_id: userId,
-      date: newBlockDate,
-      end_date: newBlockEndDate || null,
-      start_time: newBlockStart,
-      end_time: newBlockEnd,
-      label: newBlockLabel || null,
-    }).select().single()
-    if (data) {
-      setTimeBlocks(prev => [...prev, data])
+    try {
+      const res = await fetch('/api/time-blocks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date: newBlockDate,
+          end_date: newBlockEndDate || null,
+          start_time: newBlockStart,
+          end_time: newBlockEnd,
+          label: newBlockLabel || null,
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error ?? `Erreur ${res.status}`)
+      setTimeBlocks(prev => [...prev, json.data])
       setNewBlockDate('')
       setNewBlockEndDate('')
       setNewBlockStart('09:00')
       setNewBlockEnd('10:00')
       setNewBlockLabel('')
+    } catch (e: any) {
+      alert(e?.message ?? 'Erreur lors de l\'ajout du blocage.')
     }
   }
 
   async function deleteTimeBlock(id: string) {
-    const supabase = createClient()
-    await supabase.from('time_blocks').delete().eq('id', id)
+    try {
+      await fetch('/api/time-blocks', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+    } catch { /* best-effort */ }
     setTimeBlocks(prev => prev.filter(b => b.id !== id))
   }
 
@@ -782,6 +833,51 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                   </div>
                 </div>
 
+              </div>
+            </div>
+
+            {/* Diploma / Formation */}
+            <div style={{ marginTop: '28px', paddingTop: '24px', borderTop: '1px solid var(--border)' }}>
+              <p style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '16px', color: 'var(--blue-primary)', fontWeight: 500 }}>
+                {lang === 'fr' ? 'Formation' : 'Education'}
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '0.8rem', color: '#4A6070', display: 'block', marginBottom: '6px' }}>
+                    {lang === 'fr' ? 'Établissement (université, école…)' : 'Institution (university, school…)'}
+                  </label>
+                  <input
+                    type="text"
+                    value={therapist.diploma_institution ?? ''}
+                    onChange={e => setTherapist(prev => ({ ...prev, diploma_institution: e.target.value }))}
+                    placeholder={lang === 'fr' ? 'Ex : Université Paris Cité' : 'e.g. University of Paris'}
+                    style={{ width: '100%', padding: '10px 14px', fontSize: '0.9rem', border: '1px solid var(--border)', borderRadius: '8px', backgroundColor: 'var(--surface)', color: 'var(--text)', outline: 'none' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.8rem', color: '#4A6070', display: 'block', marginBottom: '6px' }}>
+                    {lang === 'fr' ? 'Diplôme (fichier PDF ou image)' : 'Diploma document (PDF or image)'}
+                  </label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <button
+                      type="button"
+                      onClick={() => { setDiplomaError(''); diplomaInputRef.current?.click() }}
+                      disabled={diplomaUploading}
+                      style={{ padding: '9px 18px', fontSize: '0.85rem', border: '1px solid var(--border)', borderRadius: '8px', backgroundColor: 'var(--surface)', color: '#4A6070', cursor: 'pointer', opacity: diplomaUploading ? 0.5 : 1 }}
+                    >
+                      {diplomaUploading
+                        ? (lang === 'fr' ? 'Envoi...' : 'Uploading...')
+                        : (lang === 'fr' ? 'Choisir un fichier' : 'Choose file')}
+                    </button>
+                    {therapist.diploma_url && !diplomaUploading && (
+                      <span style={{ fontSize: '0.8rem', color: 'var(--blue-primary)' }}>
+                        {lang === 'fr' ? '✓ Document enregistré' : '✓ Document saved'}
+                      </span>
+                    )}
+                  </div>
+                  {diplomaError && <p style={{ fontSize: '0.8rem', color: '#C0392B', marginTop: '6px' }}>{diplomaError}</p>}
+                  <input ref={diplomaInputRef} type="file" accept=".pdf,image/jpeg,image/png,image/webp" style={{ display: 'none' }} onChange={handleDiplomaUpload} />
+                </div>
               </div>
             </div>
 
