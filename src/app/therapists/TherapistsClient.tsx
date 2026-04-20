@@ -155,7 +155,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
 
   return (
     <main style={{ backgroundColor: 'var(--bg)', minHeight: '100vh' }}>
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 56px' }}>
+      <div className="page-x" style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 56px' }}>
 
         {/* ── Header ── */}
         <div style={{ padding: '48px 0 28px' }}>
@@ -277,7 +277,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
         </div>
 
         {/* ── Availability + format filters ── */}
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '32px' }}>
+        <div className="filter-row" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '32px' }}>
           <PillToggle
             label={lang === 'fr' ? 'Toutes disponibilités' : 'All availability'}
             active={availFilter === 'all'}
@@ -294,7 +294,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
             onClick={() => setAvailFilter('next_week')}
           />
 
-          <div style={{ width: '1px', height: '22px', backgroundColor: 'var(--border)', margin: '0 4px' }} />
+          <div className="filter-divider" style={{ width: '1px', height: '22px', backgroundColor: 'var(--border)', margin: '0 4px' }} />
 
           <PillToggle
             label={lang === 'fr' ? 'Présentiel & vidéo' : 'In-person & video'}
@@ -312,7 +312,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
             onClick={() => setConsultFilter('video')}
           />
 
-          <div style={{ width: '1px', height: '22px', backgroundColor: 'var(--border)', margin: '0 4px' }} />
+          <div className="filter-divider" style={{ width: '1px', height: '22px', backgroundColor: 'var(--border)', margin: '0 4px' }} />
 
           <PillToggle
             label={lang === 'fr' ? 'Psychologues & psychiatres' : 'Psychologists & psychiatrists'}
@@ -379,10 +379,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
                     onMouseEnter={() => setHoveredId(therapist.id)}
                     onMouseLeave={() => setHoveredId(null)}
                     style={{
-                      display: 'flex',
-                      gap: '24px',
-                      alignItems: 'flex-start',
-                      padding: '24px 12px',
+                      padding: '20px 12px',
                       borderBottom: '1px solid var(--border)',
                       backgroundColor: isHovered ? 'var(--surface)' : 'transparent',
                       transition: 'background-color 0.15s',
@@ -390,131 +387,133 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
                       borderRadius: '4px',
                     }}
                   >
-                    {/* Left: rectangular photo */}
-                    <div style={{
-                      flexShrink: 0,
-                      width: '100px',
-                      height: '120px',
-                      borderRadius: '8px',
-                      overflow: 'hidden',
-                      backgroundColor: 'var(--blue-accent)',
-                    }}>
-                      {therapist.photo_url && (
-                        <img
-                          src={therapist.photo_url}
-                          alt={name}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                        />
-                      )}
-                    </div>
-
-                    {/* Center: name, specialty tags, bio excerpt */}
-                    <div style={{ flex: 1, minWidth: 0, paddingTop: '2px' }}>
-                      <h2 style={{
-                        fontSize: '1.1rem',
-                        fontWeight: 400,
-                        fontFamily: 'Georgia, serif',
-                        color: 'var(--text)',
-                        margin: '0 0 8px',
+                    <div className="therapist-card-row" style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
+                      {/* Left: photo */}
+                      <div className="therapist-card-photo" style={{
+                        flexShrink: 0,
+                        width: '100px',
+                        height: '120px',
+                        borderRadius: '8px',
+                        overflow: 'hidden',
+                        backgroundColor: 'var(--blue-accent)',
                       }}>
-                        {name}
-                      </h2>
-                      {therapist.specialties && therapist.specialties.length > 0 && (
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '10px' }}>
-                          {therapist.specialties.slice(0, 6).map(s => (
-                            <span key={s} style={{
-                              fontSize: '0.7rem',
-                              padding: '3px 8px',
-                              borderRadius: '20px',
-                              backgroundColor: selectedPills.includes(s)
-                                ? 'var(--blue-primary)'
-                                : 'var(--blue-accent)',
-                              color: selectedPills.includes(s) ? 'white' : 'var(--blue-primary)',
-                              fontFamily: 'Georgia, serif',
-                              whiteSpace: 'nowrap',
-                            }}>
-                              {lang === 'en' ? (specialtyTranslations[s] ?? s) : s}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      {bio && (
-                        <p style={{
-                          fontSize: '0.875rem',
-                          fontWeight: 300,
-                          lineHeight: 1.65,
-                          color: '#4A6070',
-                          fontFamily: 'Georgia, serif',
-                          margin: 0,
-                          display: '-webkit-box',
-                          WebkitLineClamp: 3,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                        } as React.CSSProperties}>
-                          {bio}
-                        </p>
-                      )}
-                    </div>
+                        {therapist.photo_url && (
+                          <img
+                            src={therapist.photo_url}
+                            alt={name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                          />
+                        )}
+                      </div>
 
-                    {/* Right: price, sector, reimbursement, location, CTA */}
-                    <div style={{
-                      flexShrink: 0,
-                      textAlign: 'right',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-end',
-                      gap: '5px',
-                      minWidth: '140px',
-                      paddingTop: '2px',
-                    }}>
-                      {price && (
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-                          <span style={{
-                            fontSize: '1.7rem',
-                            fontWeight: 300,
+                      {/* Center: name, specialty tags, bio excerpt, mobile price */}
+                      <div style={{ flex: 1, minWidth: 0, paddingTop: '2px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
+                          <h2 style={{
+                            fontSize: '1.1rem',
+                            fontWeight: 400,
                             fontFamily: 'Georgia, serif',
                             color: 'var(--text)',
-                            lineHeight: 1,
+                            margin: 0,
                           }}>
-                            {price}€
-                          </span>
-                          <span style={{ fontSize: '0.78rem', color: '#8A9BAD', fontFamily: 'Georgia, serif' }}>
-                            {t.therapists.perSession}
-                          </span>
+                            {name}
+                          </h2>
+                          {/* Mobile price — shown only on mobile via CSS */}
+                          {price && (
+                            <span className="therapist-card-mobile-price" style={{
+                              display: 'none',
+                              fontSize: '1.1rem',
+                              fontWeight: 300,
+                              fontFamily: 'Georgia, serif',
+                              color: 'var(--text)',
+                              flexShrink: 0,
+                              marginLeft: '8px',
+                            }}>
+                              {price}€
+                            </span>
+                          )}
                         </div>
-                      )}
-                      {therapist.sector && (
-                        <p style={{ fontSize: '0.73rem', color: '#8A9BAD', fontFamily: 'Georgia, serif', margin: 0 }}>
-                          {lang === 'fr' ? 'Secteur' : 'Sector'} {therapist.sector}
-                        </p>
-                      )}
-                      {reimbursement !== null && (
-                        <span style={{
-                          fontSize: '0.7rem',
-                          padding: '3px 8px',
-                          borderRadius: '20px',
-                          backgroundColor: '#EEFAF0',
-                          color: '#2E7D32',
-                          fontFamily: 'Georgia, serif',
-                          whiteSpace: 'nowrap',
-                          border: '1px solid #C8E6C9',
-                        }}>
-                          ~{reimbursement}€ {lang === 'fr' ? 'après remboursement' : 'after reimbursement'}
+                        {therapist.location && (
+                          <p style={{ fontSize: '0.75rem', color: '#4A6070', fontFamily: 'Georgia, serif', margin: '0 0 6px' }}>
+                            {therapist.location}
+                          </p>
+                        )}
+                        {therapist.specialties && therapist.specialties.length > 0 && (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '10px' }}>
+                            {therapist.specialties.slice(0, 4).map(s => (
+                              <span key={s} style={{
+                                fontSize: '0.7rem',
+                                padding: '3px 8px',
+                                borderRadius: '20px',
+                                backgroundColor: selectedPills.includes(s)
+                                  ? 'var(--blue-primary)'
+                                  : 'var(--blue-accent)',
+                                color: selectedPills.includes(s) ? 'white' : 'var(--blue-primary)',
+                                fontFamily: 'Georgia, serif',
+                                whiteSpace: 'nowrap',
+                              }}>
+                                {lang === 'en' ? (specialtyTranslations[s] ?? s) : s}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        {bio && (
+                          <p style={{
+                            fontSize: '0.875rem',
+                            fontWeight: 300,
+                            lineHeight: 1.65,
+                            color: '#4A6070',
+                            fontFamily: 'Georgia, serif',
+                            margin: 0,
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                          } as React.CSSProperties}>
+                            {bio}
+                          </p>
+                        )}
+                        <span style={{ display: 'block', marginTop: '10px', fontSize: '0.82rem', color: 'var(--blue-primary)', fontFamily: 'Georgia, serif' }}>
+                          {t.therapists.viewProfile} →
                         </span>
-                      )}
-                      {therapist.location && (
-                        <p style={{ fontSize: '0.75rem', color: '#4A6070', fontFamily: 'Georgia, serif', margin: 0 }}>
-                          {therapist.location}
-                        </p>
-                      )}
-                      <span style={{
-                        marginTop: '8px',
-                        fontSize: '0.82rem',
-                        color: 'var(--blue-primary)',
-                        fontFamily: 'Georgia, serif',
+                      </div>
+
+                      {/* Right: price col — hidden on mobile */}
+                      <div className="therapist-card-price-col" style={{
+                        flexShrink: 0,
+                        textAlign: 'right',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-end',
+                        gap: '5px',
+                        minWidth: '140px',
+                        paddingTop: '2px',
                       }}>
-                        {t.therapists.viewProfile}
-                      </span>
+                        {price && (
+                          <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                            <span style={{ fontSize: '1.7rem', fontWeight: 300, fontFamily: 'Georgia, serif', color: 'var(--text)', lineHeight: 1 }}>
+                              {price}€
+                            </span>
+                            <span style={{ fontSize: '0.78rem', color: '#8A9BAD', fontFamily: 'Georgia, serif' }}>
+                              {t.therapists.perSession}
+                            </span>
+                          </div>
+                        )}
+                        {therapist.sector && (
+                          <p style={{ fontSize: '0.73rem', color: '#8A9BAD', fontFamily: 'Georgia, serif', margin: 0 }}>
+                            {lang === 'fr' ? 'Secteur' : 'Sector'} {therapist.sector}
+                          </p>
+                        )}
+                        {reimbursement !== null && (
+                          <span style={{
+                            fontSize: '0.7rem', padding: '3px 8px', borderRadius: '20px',
+                            backgroundColor: '#EEFAF0', color: '#2E7D32', fontFamily: 'Georgia, serif',
+                            whiteSpace: 'nowrap', border: '1px solid #C8E6C9',
+                          }}>
+                            ~{reimbursement}€ {lang === 'fr' ? 'après remboursement' : 'after reimbursement'}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </Link>

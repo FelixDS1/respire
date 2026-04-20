@@ -14,7 +14,7 @@ export default function Footer() {
       bottom: 0,
       zIndex: 40,
     }}>
-      <div style={{
+      <div className="footer-inner" style={{
         maxWidth: '1400px',
         margin: '0 auto',
         padding: '20px 56px',
@@ -26,7 +26,7 @@ export default function Footer() {
         fontFamily: 'Georgia, serif',
       }}>
         <span>© 2026 Respire</span>
-        <div style={{ display: 'flex', gap: '24px' }}>
+        <div className="footer-links" style={{ display: 'flex', gap: '24px' }}>
           <Link href="/about" style={{ color: '#4A6070', textDecoration: 'none' }}>
             {lang === 'fr' ? 'Nous contacter' : 'Contact us'}
           </Link>

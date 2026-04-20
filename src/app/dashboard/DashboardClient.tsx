@@ -183,22 +183,38 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
     // Reset input so the same file can be re-selected after an error
     e.target.value = ''
     if (!file) return
-    if (file.size > 4 * 1024 * 1024) {
-      setAvatarError('La photo ne doit pas dépasser 4 Mo.')
-      return
-    }
     setAvatarUploading(true)
     setAvatarError('')
     try {
-      const formData = new FormData()
-      formData.append('file', file)
-      const res = await fetch('/api/upload-avatar', { method: 'POST', body: formData })
-      const data = await res.json().catch(() => ({}))
-      if (res.ok && data.url) {
-        setAvatarUrl(data.url)
-        setTherapist(prev => ({ ...prev, photo_url: data.url }))
-      } else {
-        setAvatarError(data.error ?? `Erreur ${res.status}`)
+      const ext = file.name.split('.').pop()?.toLowerCase() ?? 'jpg'
+
+      // Step 1: get signed upload URL
+      const urlRes = await fetch('/api/avatar-upload-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ext }),
+      })
+      const urlJson = await urlRes.json()
+      if (!urlRes.ok) throw new Error(urlJson.error ?? `Erreur ${urlRes.status}`)
+
+      // Step 2: upload directly to Supabase Storage
+      const uploadRes = await fetch(urlJson.signedUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type || 'image/jpeg' },
+        body: file,
+      })
+      if (!uploadRes.ok) throw new Error('Échec de l\'envoi de la photo')
+
+      // Step 3: cache-bust the public URL and update DB
+      const url = `${urlJson.publicUrl}?t=${Date.now()}`
+      const saveRes = await fetch('/api/upload-avatar/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      })
+      if (saveRes.ok) {
+        setAvatarUrl(url)
+        setTherapist(prev => ({ ...prev, photo_url: url }))
       }
     } catch (e: any) {
       setAvatarError(e?.message ?? 'Erreur inconnue')

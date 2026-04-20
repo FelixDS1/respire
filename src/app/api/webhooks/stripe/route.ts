@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 
   const { slot_id, patient_id, therapist_id, consultation_fee, stripe_account_id } = session.metadata!
 
-  // Idempotency — skip if already confirmed
+  // Idempotency — if slot already booked, refund this payment and bail
   const { data: existing } = await supabase
     .from('appointments')
     .select('id')
@@ -45,6 +45,14 @@ export async function POST(req: NextRequest) {
     .single()
 
   if (existing) {
+    // Refund the duplicate payment so the second person isn't charged
+    try {
+      if (session.payment_intent) {
+        await stripe.refunds.create({ payment_intent: session.payment_intent as string })
+      }
+    } catch (refundErr) {
+      console.error('webhook: duplicate refund failed', refundErr)
+    }
     return NextResponse.json({ received: true })
   }
 

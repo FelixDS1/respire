@@ -53,7 +53,13 @@ function SignupForm() {
         return
       }
 
-      router.push(redirectTo ? `/onboarding?redirectTo=${encodeURIComponent(redirectTo)}` : '/onboarding')
+      // Patients go directly to their destination (or therapist listing)
+      // Therapists go through onboarding, preserving any redirectTo for after completion
+      if (role === 'patient') {
+        router.push(redirectTo || '/therapists')
+      } else {
+        router.push(redirectTo ? `/onboarding?redirectTo=${encodeURIComponent(redirectTo)}` : '/onboarding')
+      }
     } catch (err) {
       console.error('unexpected signup error:', err)
       setError('Une erreur inattendue est survenue. Veuillez réessayer.')

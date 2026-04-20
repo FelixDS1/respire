@@ -20,9 +20,8 @@ function LoginForm() {
     const saved = localStorage.getItem('respire_remember')
     if (saved) {
       try {
-        const { email: e, password: p } = JSON.parse(saved)
+        const { email: e } = JSON.parse(saved)
         if (e) setEmail(e)
-        if (p) setPassword(p)
         setRemember(true)
       } catch {
         localStorage.removeItem('respire_remember')
@@ -50,7 +49,7 @@ function LoginForm() {
     }
 
     if (remember) {
-      localStorage.setItem('respire_remember', JSON.stringify({ email, password }))
+      localStorage.setItem('respire_remember', JSON.stringify({ email }))
     } else {
       localStorage.removeItem('respire_remember')
     }

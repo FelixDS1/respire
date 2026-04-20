@@ -89,17 +89,36 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
     const supabase = createClient()
 
     try {
-      // Upload profile photo
-      const photoFd = new FormData()
-      photoFd.append('file', photo)
-      const photoRes = await fetch('/api/upload-avatar', { method: 'POST', body: photoFd })
-      const photoJson = await photoRes.json()
-      if (!photoRes.ok) {
-        setError('Erreur lors du téléversement de la photo : ' + (photoJson.error ?? photoRes.status))
+      // Upload profile photo via signed URL (no size limit)
+      const ext = photo.name.split('.').pop()?.toLowerCase() ?? 'jpg'
+      const urlRes = await fetch('/api/avatar-upload-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ext }),
+      })
+      const urlJson = await urlRes.json()
+      if (!urlRes.ok) {
+        setError('Erreur lors du téléversement de la photo : ' + (urlJson.error ?? urlRes.status))
         setLoading(false)
         return
       }
-      const photoUrl = photoJson.url
+      const uploadRes = await fetch(urlJson.signedUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': photo.type || 'image/jpeg' },
+        body: photo,
+      })
+      if (!uploadRes.ok) {
+        setError('Erreur lors du téléversement de la photo.')
+        setLoading(false)
+        return
+      }
+      const photoUrl = `${urlJson.publicUrl}?t=${Date.now()}`
+      // Persist URL to both profiles and therapists tables
+      await fetch('/api/upload-avatar/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: photoUrl }),
+      })
 
       if (role === 'patient') {
         const { error: profileErr } = await supabase.from('profiles').update({

@@ -95,11 +95,11 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
   return (
     <main className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg)' }}>
 
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '48px 56px', flex: 1 }}>
+      <div className="page-x" style={{ maxWidth: '1400px', margin: '0 auto', padding: '48px 56px', flex: 1 }}>
 
         {/* Top section: large photo + info side by side */}
-        <div style={{ display: 'flex', gap: '48px', alignItems: 'flex-start', marginBottom: '40px' }}>
-          <div style={{ flexShrink: 0, width: '240px', height: '280px', backgroundColor: 'var(--blue-accent)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden' }}>
+        <div className="profile-top" style={{ display: 'flex', gap: '48px', alignItems: 'flex-start', marginBottom: '40px' }}>
+          <div className="profile-photo-wrap" style={{ flexShrink: 0, width: '240px', height: '280px', backgroundColor: 'var(--blue-accent)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden' }}>
             {therapist.photo_url && (
               <img
                 src={therapist.photo_url}
@@ -161,7 +161,7 @@ export default function TherapistProfileClient({ therapist, byDate }: Props) {
         </div>
 
         {/* Bottom section: price + calendar as a row */}
-        <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '40px', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '32px' }}>
+        <div className="profile-bottom-grid" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '40px', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '8px', padding: '32px' }}>
 
           {/* Price info */}
           <div>

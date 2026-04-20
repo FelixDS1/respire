@@ -78,7 +78,7 @@ export default function BookClient({ slot, therapist, isBooked, userId }: Props)
 
   return (
     <main className="min-h-screen" style={{ backgroundColor: 'var(--bg)' }}>
-      <div className="max-w-[1400px] mx-auto px-14 py-12">
+      <div className="booking-page-pad max-w-[1400px] mx-auto px-14 py-12">
         <div className="max-w-md">
 
           <h1 className="text-2xl font-light mb-8" style={{ color: 'var(--text)' }}>

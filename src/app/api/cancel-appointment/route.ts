@@ -2,9 +2,8 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-
 export async function POST(req: Request) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
   const { appointmentId } = await req.json()
   if (!appointmentId) return NextResponse.json({ error: 'Missing appointmentId' }, { status: 400 })
 

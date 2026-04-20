@@ -162,9 +162,9 @@ export default function Home() {
       </div>
 
       {/* Hero */}
-      <section style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '52px 56px 36px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'center' }}>
+      <section className="hero-section page-x" style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '52px 56px 36px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '3.4rem', fontWeight: 300, lineHeight: 1.2, marginBottom: '24px', fontFamily: 'Georgia, serif', whiteSpace: 'pre-line' }}>
+          <h1 className="hero-title" style={{ fontSize: '3.4rem', fontWeight: 300, lineHeight: 1.2, marginBottom: '24px', fontFamily: 'Georgia, serif', whiteSpace: 'pre-line' }}>
             {t.home.heroTitle}
           </h1>
           <p style={{ fontSize: '1.1rem', fontWeight: 300, lineHeight: 1.9, color: '#4A6070', marginBottom: '40px', fontFamily: 'Georgia, serif' }}>
@@ -205,8 +205,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Right: lily illustration */}
-        <div style={{ position: 'relative', height: '420px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {/* Right: lily illustration — hidden on mobile */}
+        <div className="hide-mobile" style={{ position: 'relative', height: '420px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div
             style={{ position: 'relative', zIndex: 1, width: '340px', height: '400px' }}
             className={treeHover ? 'tree-breathe' : ''}
@@ -224,14 +224,14 @@ export default function Home() {
       </div>
 
       {/* How it works */}
-      <section style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '36px 56px 72px' }}>
+      <section className="page-x" style={{ position: 'relative', zIndex: 1, maxWidth: '1400px', margin: '0 auto', padding: '36px 56px 72px' }}>
         <h2 style={{ fontSize: '2.4rem', fontWeight: 300, color: 'var(--text)', marginBottom: '36px', fontFamily: 'Georgia, serif' }}>
           {t.home.howItWorks}
         </h2>
         <div style={{ position: 'relative' }}>
           {/* Simple connector line — sits behind the white card backgrounds */}
           <div style={{ position: 'absolute', left: 0, right: 0, top: '44%', height: '1px', backgroundColor: LILY_PINK, opacity: 0.28, zIndex: 0, pointerEvents: 'none' }}/>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', perspective: '1000px', alignItems: 'stretch', position: 'relative', zIndex: 1 }}>
+          <div className="how-it-works-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px', perspective: '1000px', alignItems: 'stretch', position: 'relative', zIndex: 1 }}>
             <StepBubble number="1" gradient={STEP_GRADIENTS[0]} title={t.home.step1Title} body={t.home.step1Body} />
             <StepBubble number="2" gradient={STEP_GRADIENTS[1]} title={t.home.step2Title} body={t.home.step2Body} />
             <StepBubble number="3" gradient={STEP_GRADIENTS[2]} title={t.home.step3Title} body={t.home.step3Body} />
