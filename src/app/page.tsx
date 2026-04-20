@@ -19,10 +19,9 @@ export default async function Home() {
     .gte('date', today)
     .order('date')
     .order('start_time')
-    .limit(50)
+    .limit(200)
 
-  let previewTherapist: Record<string, unknown> | null = null
-  let previewSlots: Slot[] = []
+  const previews: { therapist: Record<string, unknown>; slots: Slot[] }[] = []
 
   if (slots && slots.length > 0) {
     const therapistIds = [...new Set((slots as Slot[]).map(s => s.therapist_id))]
@@ -33,15 +32,17 @@ export default async function Home() {
       .in('id', therapistIds)
       .not('stripe_account_id', 'is', null)
       .not('consultation_fee', 'is', null)
-      .limit(1)
+      .limit(6)
 
-    if (therapists && therapists.length > 0) {
-      previewTherapist = therapists[0]
-      previewSlots = (slots as Slot[])
-        .filter(s => s.therapist_id === (previewTherapist as { id: string }).id)
+    for (const t of therapists ?? []) {
+      const therapistSlots = (slots as Slot[])
+        .filter(s => s.therapist_id === (t as { id: string }).id)
         .slice(0, 4)
+      if (therapistSlots.length > 0) {
+        previews.push({ therapist: t as Record<string, unknown>, slots: therapistSlots })
+      }
     }
   }
 
-  return <HomeClient previewTherapist={previewTherapist as any} previewSlots={previewSlots} />
+  return <HomeClient previews={previews as any} />
 }

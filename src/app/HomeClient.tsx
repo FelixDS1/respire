@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useLanguage, specialtyTranslations } from '@/lib/language'
 
@@ -20,9 +21,13 @@ interface PreviewTherapist {
   profiles: { full_name: string | null }
 }
 
+interface PreviewItem {
+  therapist: PreviewTherapist
+  slots: Slot[]
+}
+
 interface Props {
-  previewTherapist: PreviewTherapist | null
-  previewSlots: Slot[]
+  previews: PreviewItem[]
 }
 
 // Matches the listing card style exactly
@@ -154,8 +159,24 @@ function PreviewCard({ therapist, slots }: { therapist: PreviewTherapist; slots:
   )
 }
 
-export default function HomeClient({ previewTherapist, previewSlots }: Props) {
+export default function HomeClient({ previews }: Props) {
   const { t, lang } = useLanguage()
+  const [currentIdx, setCurrentIdx] = useState(0)
+  const [visible, setVisible] = useState(true)
+
+  useEffect(() => {
+    if (previews.length <= 1) return
+    const interval = setInterval(() => {
+      setVisible(false)
+      setTimeout(() => {
+        setCurrentIdx(i => (i + 1) % previews.length)
+        setVisible(true)
+      }, 500)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [previews.length])
+
+  const current = previews[currentIdx] ?? null
 
   // Split last word for italic styling
   const heroTitle = t.home.heroTitle
@@ -239,10 +260,10 @@ export default function HomeClient({ previewTherapist, previewSlots }: Props) {
           </div>
         </div>
 
-        {/* Right column: preview card — hidden on mobile */}
-        <div className="hide-mobile">
-          {previewTherapist && (
-            <PreviewCard therapist={previewTherapist} slots={previewSlots} />
+        {/* Right column: preview card — hidden on mobile, cycles between therapists */}
+        <div className="hide-mobile" style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.5s ease' }}>
+          {current && (
+            <PreviewCard therapist={current.therapist} slots={current.slots} />
           )}
         </div>
       </section>
