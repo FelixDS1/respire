@@ -179,14 +179,23 @@ body {
   .about-deco-number {
     font-size: 2.5rem !important;
   }
-  /* Values: larger, more prominent */
+  /* Values: number top-right, large text */
   .about-value-box {
+    position: relative !important;
     padding: 36px 28px !important;
   }
+  .about-value-box .about-deco-number {
+    position: absolute !important;
+    top: 16px !important;
+    right: 20px !important;
+    font-size: 0.75rem !important;
+    margin-bottom: 0 !important;
+    letter-spacing: 0.08em !important;
+  }
   .about-value-text {
-    font-size: 1.25rem !important;
-    line-height: 1.7 !important;
-    font-weight: 500 !important;
+    font-size: 1.9rem !important;
+    line-height: 1.4 !important;
+    font-weight: 300 !important;
   }
   /* Steps: larger text */
   .about-step-title {

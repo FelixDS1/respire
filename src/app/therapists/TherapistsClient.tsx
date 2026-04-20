@@ -401,7 +401,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
                           <img
                             src={therapist.photo_url}
                             alt={name}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
                           />
                         )}
                       </div>
