@@ -1,242 +1,231 @@
 'use client'
 
-import { useRef } from 'react'
 import Link from 'next/link'
 import { useLanguage } from '@/lib/language'
 
-const LILY_PINK = '#C4849A'
-
-const content = {
-  fr: {
-    eyebrow: 'À propos',
-    mission: 'Vous méritez de respirer.',
-    subtitle: "La vie est parfois compliquée, stressante, on se force à vivre en courant. Quand on ralentit, on culpabilise de ne pas s'essouffler. Essayez de sortir de ce cercle vicieux. Prenez du temps pour vous, pour réfléchir à vous, pour respirer.",
-    whyEyebrow: 'Pourquoi Respire existe',
-    whyHeading: 'Simplifier le suivi psychologique.',
-    whyBody: "Votre santé commence d'abord dans votre tête. Trouver une bonne relation patient(e)/psy est un travail incertain. Les plateformes qui existent pour faciliter cette tâche posent trop de questions fastidieuses, et manquent de transparence.",
-    valuesEyebrow: 'Nos engagements',
-    values: [
-      'Être simples au niveau de nos (vos) démarches.',
-      'Être honnêtes avec nos membres et nos thérapeutes.',
-    ],
-    founderEyebrow: 'Note du fondateur',
-    founder: "Je m'appelle Félix, j'habite à Paris. Bien que j'ai toujours voulu trouver un(e) psy, j'ai longtemps eu peur de me lancer — et si je ne trouvais pas la/le psy qui me\u00a0correspondait\u00a0? Je pense que c'est un problème universel et j'ai créé Respire pour y répondre.",
-    ctaHeading: 'Prêt à commencer ?',
-    ctaMemberLabel: 'Créer mon compte',
-    ctaTherapistLabel: 'Vous êtes thérapeute ?',
-    contact: 'Contact',
-    email: 'E-mail',
-  },
-  en: {
-    eyebrow: 'About',
-    mission: 'You deserve to breathe.',
-    subtitle: "Life is sometimes complicated, stressful — we force ourselves to keep running. When we slow down, we feel guilty for not being out of breath. Try to break out of this vicious cycle. Take time for yourself, to reflect, to breathe.",
-    whyEyebrow: 'Why Respire exists',
-    whyHeading: 'Simplifying mental health care.',
-    whyBody: "Your health starts in your head. Finding the right patient/therapist relationship is uncertain work. The platforms built to help with this ask too many tedious questions and lack transparency.",
-    valuesEyebrow: 'Our commitments',
-    values: [
-      'To be simple when it comes to our (your) process.',
-      'To be honest with our members and our therapists.',
-    ],
-    founderEyebrow: 'A note from the founder',
-    founder: "My name is Félix, I live in Paris. Although I always wanted to find a therapist, I was always afraid to take the leap — what if I couldn't find the therapist who was\u00a0right\u00a0for\u00a0me? I think this is a universal problem and I created Respire to address it.",
-    ctaHeading: 'Ready to start?',
-    ctaMemberLabel: 'Create my account',
-    ctaTherapistLabel: 'Are you a therapist?',
-    contact: 'Contact',
-    email: 'Email',
-  },
-}
-
-function InflateBox({ children, style, className }: { children: React.ReactNode; style?: React.CSSProperties; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null)
-
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    const el = ref.current
-    if (!el) return
-    const rect = el.getBoundingClientRect()
-    const dx = (e.clientX - rect.left - rect.width / 2) / rect.width
-    const dy = (e.clientY - rect.top - rect.height / 2) / rect.height
-    const intensity = Math.sqrt(dx * dx + dy * dy)
-    el.style.transform = `translate(${dx * 8 * intensity}px, ${dy * 8 * intensity}px) rotateX(${-dy * 5}deg) rotateY(${dx * 5}deg) scale(1.03)`
-    el.style.transition = 'transform 0.1s ease-out'
-  }
-
-  function handleMouseLeave() {
-    const el = ref.current
-    if (!el) return
-    el.style.transform = 'translate(0,0) rotateX(0) rotateY(0) scale(1)'
-    el.style.transition = 'transform 0.6s cubic-bezier(0.34,1.56,0.64,1)'
-  }
-
-  return (
-    <div
-      ref={ref}
-      className={className}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ transformStyle: 'preserve-3d', willChange: 'transform', cursor: 'default', ...style }}
-    >
-      {children}
-    </div>
-  )
-}
-
-const bodyStyle: React.CSSProperties = {
-  fontSize: '1.05rem',
-  fontWeight: 300,
-  lineHeight: 1.9,
-  fontFamily: 'Georgia, serif',
-  margin: 0,
-}
+const CG = 'var(--font-cormorant), Georgia, serif'
+const JOST = 'Jost, system-ui, sans-serif'
 
 const labelStyle: React.CSSProperties = {
-  fontSize: '0.85rem',
+  display: 'block',
+  fontSize: '0.65rem',
+  letterSpacing: '0.2em',
   textTransform: 'uppercase',
-  letterSpacing: '0.12em',
-  color: 'var(--blue-primary)',
-  fontFamily: 'Georgia, serif',
-  marginBottom: '20px',
+  color: 'rgba(44,40,32,0.4)',
+  fontFamily: JOST,
+  marginBottom: '1.2rem',
 }
 
 export default function About() {
   const { lang, t } = useLanguage()
-  const c = content[lang as 'fr' | 'en'] ?? content.fr
 
-  const steps = [
-    { number: '1', title: t.home.step1Title, body: t.home.step1Body },
-    { number: '2', title: t.home.step2Title, body: t.home.step2Body },
-    { number: '3', title: t.home.step3Title, body: t.home.step3Body },
-  ]
+  const fr = lang === 'fr'
 
   return (
-    <main style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100vh', position: 'relative', overflowX: 'hidden' }}>
-
-      {/* ── Background shapes ── */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', width: '640px', height: '640px', borderRadius: '50%', backgroundColor: 'var(--blue-accent)', opacity: 0.52, top: '-220px', right: '-130px' }} />
-        <div style={{ position: 'absolute', width: '480px', height: '480px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.32, bottom: '8%', left: '-110px' }} />
-        <div style={{ position: 'absolute', width: '340px', height: '340px', borderRadius: '70px', backgroundColor: 'var(--blue-accent)', opacity: 0.24, top: '33%', left: '20%', transform: 'rotate(25deg)' }} />
-        <div style={{ position: 'absolute', width: '260px', height: '260px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.26, top: '10%', right: '26%' }} />
-        <div style={{ position: 'absolute', width: '220px', height: '220px', borderRadius: '50%', backgroundColor: 'var(--blue-accent)', opacity: 0.22, top: '58%', right: '18%' }} />
-        <div style={{ position: 'absolute', width: '200px', height: '200px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.2, top: '20%', left: '5%' }} />
-        <div style={{ position: 'absolute', width: '180px', height: '260px', borderRadius: '50%', backgroundColor: 'var(--blue-accent)', opacity: 0.18, bottom: '30%', right: '36%', transform: 'rotate(-18deg)' }} />
-        <div style={{ position: 'absolute', width: '130px', height: '130px', borderRadius: '50%', border: '2px solid var(--blue-primary)', opacity: 0.12, top: '52%', left: '9%' }} />
-        <div style={{ position: 'absolute', width: '100px', height: '100px', borderRadius: '20px', backgroundColor: 'var(--green-soft)', opacity: 0.22, bottom: '22%', right: '11%', transform: 'rotate(15deg)' }} />
-      </div>
+    <main style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100vh' }}>
 
       {/* ── Hero ── */}
-      <section className="about-section" style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '72px 56px 40px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-          <p style={{ fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--blue-primary)', marginBottom: '20px', fontFamily: 'Georgia, serif' }}>
-            {c.eyebrow}
-          </p>
-          <h1 className="about-hero-title" style={{ fontSize: '4rem', fontWeight: 300, lineHeight: 1.15, fontFamily: 'Georgia, serif', margin: 0 }}>
-            {c.mission}
-          </h1>
-        </div>
+      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '5rem 3rem 4rem' }}>
+        <p style={{
+          fontSize: '0.68rem', letterSpacing: '0.2em', textTransform: 'uppercase',
+          color: '#9C7B5A', marginBottom: '1.5rem', fontFamily: JOST,
+        }}>
+          {fr ? 'À propos' : 'About'}
+        </p>
 
-        <InflateBox className="about-hero-panel about-hero-subtitle about-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '28px 56px' }}>
-          <p style={{ ...bodyStyle, color: '#4A6070', textAlign: 'center' }}>
-            {c.subtitle}
-          </p>
-        </InflateBox>
+        <h1 style={{
+          fontFamily: CG, fontSize: '4rem', fontWeight: 300,
+          lineHeight: 1.1, maxWidth: '680px', margin: '0 0 1.5rem 0',
+        }}>
+          {fr ? <>Vous méritez de <em style={{ fontStyle: 'italic', color: '#9C7B5A' }}>respirer.</em></>
+               : <>You deserve to <em style={{ fontStyle: 'italic', color: '#9C7B5A' }}>breathe.</em></>}
+        </h1>
+
+        <p style={{
+          fontFamily: JOST, fontSize: '0.95rem', lineHeight: 1.9,
+          color: 'rgba(44,40,32,0.6)', fontWeight: 300, maxWidth: '520px', margin: 0,
+        }}>
+          {fr
+            ? 'On se force à vivre en courant. Quand on ralentit, on culpabilise. Prenez du temps pour respirer.'
+            : 'We force ourselves to keep running. When we slow down, we feel guilty. Take time to breathe.'}
+        </p>
       </section>
 
-      {/* ── Why we exist ── */}
-      <section className="about-section" style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '0 56px 40px' }}>
-        <div className="about-2col" style={{ display: 'grid', gridTemplateColumns: '2fr 3fr', gap: '24px' }}>
-          <InflateBox className="about-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '48px 40px' }}>
-            <p style={labelStyle}>{c.whyEyebrow}</p>
-            <h2 style={{ fontSize: '1.9rem', fontWeight: 300, lineHeight: 1.3, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0 }}>
-              {c.whyHeading}
+      {/* ── Pourquoi Respire + Nos engagements ── */}
+      <section style={{ margin: '0 2rem' }}>
+        <div className="about-split-card" style={{
+          display: 'grid', gridTemplateColumns: '1fr 1fr',
+          borderRadius: '24px', overflow: 'hidden',
+        }}>
+          {/* Left: Pourquoi */}
+          <div className="about-split-left" style={{ background: '#EDE9E0', padding: '3.5rem' }}>
+            <span style={labelStyle}>
+              {fr ? 'Pourquoi Respire existe' : 'Why Respire exists'}
+            </span>
+            <h2 style={{
+              fontFamily: CG, fontSize: '2rem', fontWeight: 400,
+              fontStyle: 'italic', lineHeight: 1.3, marginBottom: '1.2rem', color: '#2C2820',
+            }}>
+              {fr ? 'Simplifier le suivi psychologique.' : 'Simplifying mental health care.'}
             </h2>
-          </InflateBox>
-
-          <InflateBox className="about-box about-why-body" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '48px 44px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <p style={{ ...bodyStyle, color: '#4A6070' }}>
-              {c.whyBody}
+            <p style={{
+              fontFamily: CG, fontSize: '1.15rem', fontStyle: 'italic',
+              color: '#9C7B5A', lineHeight: 1.5, margin: 0,
+            }}>
+              {fr ? 'Plus c\'est simple, mieux vous êtes servis.' : 'The simpler it is, the better served you are.'}
             </p>
-          </InflateBox>
-        </div>
-      </section>
-
-      {/* ── Values ── */}
-      <section className="about-section" style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '0 56px 40px' }}>
-        <p style={labelStyle}>{c.valuesEyebrow}</p>
-        <div style={{ position: 'relative' }}>
-          <div className="about-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', perspective: '1000px', position: 'relative', zIndex: 1 }}>
-            <InflateBox className="about-box about-value-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)' }}>
-              <span className="about-deco-number" style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>1</span>
-              <p className="about-value-text" style={{ ...bodyStyle, color: 'var(--text)', fontWeight: 400 }}>{c.values[0]}</p>
-            </InflateBox>
-
-            <InflateBox className="about-box about-value-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)' }}>
-              <span className="about-deco-number" style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>2</span>
-              <p className="about-value-text" style={{ ...bodyStyle, color: 'var(--text)', fontWeight: 400 }}>{c.values[1]}</p>
-            </InflateBox>
           </div>
-        </div>
-      </section>
 
-      {/* ── Steps + Founder, CTA & Contact ── */}
-      <section className="about-section" style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '0 56px 72px' }}>
-        <div className="about-2col" style={{ display: 'grid', gridTemplateColumns: '2fr 3fr', gap: '24px', alignItems: 'stretch' }}>
-
-          {/* Left: stacked steps */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {steps.map((step) => (
-              <InflateBox
-                key={step.number}
-                className="about-box"
-                style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '28px 32px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
-              >
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', marginBottom: '10px' }}>
-                  <span style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, flexShrink: 0 }}>
-                    {step.number}
+          {/* Right: Engagements */}
+          <div className="about-split-right" style={{ background: '#E5E0D5', padding: '3.5rem' }}>
+            <span style={labelStyle}>
+              {fr ? 'Nos engagements' : 'Our commitments'}
+            </span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+              {[
+                fr ? 'Être simples au niveau de nos (vos) démarches.' : 'To be simple when it comes to our (your) process.',
+                fr ? 'Être honnêtes avec nos membres et nos thérapeutes.' : 'To be honest with our members and our therapists.',
+              ].map((text, i) => (
+                <div key={i} style={{ display: 'flex', gap: '1.2rem', alignItems: 'flex-start' }}>
+                  <span style={{
+                    fontFamily: CG, fontSize: '3.5rem', fontWeight: 300,
+                    color: 'rgba(44,40,32,0.15)', width: '48px', flexShrink: 0, lineHeight: 1,
+                  }}>
+                    {String(i + 1).padStart(2, '0')}
                   </span>
-                  <p className="about-step-title" style={{ fontSize: '1.15rem', fontWeight: 600, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0, lineHeight: 1.3 }}>
-                    {step.title}
+                  <p style={{
+                    fontFamily: CG, fontSize: '1.2rem', fontWeight: 400,
+                    lineHeight: 1.45, paddingTop: '0.6rem', margin: 0, color: '#2C2820',
+                  }}>
+                    {text}
                   </p>
                 </div>
-                <p className="about-step-body" style={{ ...bodyStyle, fontSize: '0.95rem', color: '#4A6070' }}>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Comment ça marche ── */}
+      <section style={{ margin: '2rem' }}>
+        <div style={{ background: '#EDE9E0', borderRadius: '24px', padding: '4rem 3rem' }}>
+          <p style={{ ...labelStyle, marginBottom: '3rem' }}>
+            {fr ? 'Comment ça marche' : 'How it works'}
+          </p>
+          <div className="about-steps-grid" style={{
+            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem',
+          }}>
+            {[
+              { num: '01', title: t.home.step1Title, body: t.home.step1Body },
+              { num: '02', title: t.home.step2Title, body: t.home.step2Body },
+              { num: '03', title: t.home.step3Title, body: t.home.step3Body },
+            ].map(step => (
+              <div key={step.num}>
+                <div style={{
+                  fontFamily: CG, fontSize: '5rem', fontWeight: 300,
+                  lineHeight: 1, color: 'rgba(44,40,32,0.1)', marginBottom: '0.5rem',
+                }}>
+                  {step.num}
+                </div>
+                <h3 style={{
+                  fontFamily: CG, fontSize: '1.25rem', fontWeight: 400,
+                  marginBottom: '0.6rem', color: '#2C2820',
+                }}>
+                  {step.title}
+                </h3>
+                <p style={{
+                  fontFamily: JOST, fontSize: '0.84rem', lineHeight: 1.8,
+                  color: 'rgba(44,40,32,0.55)', fontWeight: 300, margin: 0,
+                }}>
                   {step.body}
                 </p>
-              </InflateBox>
+              </div>
             ))}
           </div>
+        </div>
+      </section>
 
-          {/* Right: founder note + CTA + contact */}
-          <InflateBox className="about-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '52px 48px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-            <div>
-              <p style={{ ...labelStyle, fontSize: '0.9rem' }}>{c.founderEyebrow}</p>
-              <p style={{ ...bodyStyle, color: '#4A6070', marginBottom: '16px' }}>
-                {c.founder}
-              </p>
-            </div>
+      {/* ── Founder note ── */}
+      <section style={{ maxWidth: '1400px', margin: '0 auto' }}>
+        <div className="about-founder-grid" style={{
+          display: 'grid', gridTemplateColumns: 'auto 1fr',
+          gap: '2.5rem', padding: '4rem 3rem', alignItems: 'start',
+        }}>
+          {/* Decorative F */}
+          <div className="about-founder-f" style={{
+            fontFamily: CG, fontSize: '9rem', fontWeight: 300,
+            lineHeight: 1, color: 'rgba(156,123,90,0.15)',
+            letterSpacing: '-0.04em', userSelect: 'none',
+          }}>
+            F
+          </div>
 
-            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '24px', marginTop: '16px' }}>
-              <p style={{ ...bodyStyle, fontSize: '1.4rem', color: 'var(--text)', marginBottom: '16px' }}>
-                {c.ctaHeading}
-              </p>
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '24px' }}>
-                <Link href="/signup" style={{ display: 'inline-block', padding: '12px 28px', backgroundColor: 'var(--blue-primary)', color: 'white', borderRadius: '8px', textDecoration: 'none', fontSize: '0.9rem', fontFamily: 'Georgia, serif', letterSpacing: '0.04em' }}>
-                  {c.ctaMemberLabel.toUpperCase()}
-                </Link>
-                <Link href="/pour-les-therapeutes" style={{ display: 'inline-block', padding: '11px 28px', backgroundColor: 'transparent', color: 'var(--blue-primary)', borderRadius: '8px', border: '1px solid var(--blue-primary)', textDecoration: 'none', fontSize: '0.9rem', fontFamily: 'Georgia, serif', letterSpacing: '0.04em' }}>
-                  {c.ctaTherapistLabel.toUpperCase()}
-                </Link>
-              </div>
+          {/* Content */}
+          <div>
+            <span style={labelStyle}>
+              {fr ? 'Note du fondateur' : 'A note from the founder'}
+            </span>
+            <p style={{
+              fontFamily: CG, fontSize: '1.3rem', fontStyle: 'italic',
+              fontWeight: 300, lineHeight: 1.8, color: '#2C2820',
+              marginBottom: '1.2rem', maxWidth: '560px',
+            }}>
+              {fr
+                ? "Je m'appelle Félix, j'habite à Paris. Bien que j'ai toujours voulu trouver un(e) psy, j'ai longtemps hésité à me lancer — et si je ne trouvais pas la/le psy qui me correspondait\u00a0? Ça vous parle\u00a0?"
+                : "My name is Félix, I live in Paris. Although I always wanted to find a therapist, I hesitated for a long time — what if I couldn't find the therapist who was right for me? Sound familiar?"}
+            </p>
+            <span style={{
+              fontFamily: JOST, fontSize: '0.78rem',
+              color: '#9C7B5A', letterSpacing: '0.1em',
+            }}>
+              — Félix, fondateur
+            </span>
+          </div>
+        </div>
+      </section>
 
-              <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#8A9BAD', marginBottom: '4px', fontFamily: 'Georgia, serif' }}>
-                {c.email}
-              </p>
-              <p style={{ ...bodyStyle, fontSize: '0.95rem', color: '#4A6070' }}>
-                contact@respire.fr
-              </p>
-            </div>
-          </InflateBox>
+      {/* ── CTA strip ── */}
+      <section style={{ margin: '2rem' }}>
+        <div className="about-cta-inner" style={{
+          background: '#2C2820', borderRadius: '24px',
+          padding: '3.5rem 3rem', display: 'flex',
+          justifyContent: 'space-between', alignItems: 'center',
+          gap: '2rem', flexWrap: 'wrap',
+        }}>
+          <div>
+            <p style={{
+              fontFamily: JOST, fontSize: '0.8rem',
+              color: 'rgba(242,239,232,0.45)', fontWeight: 300, marginBottom: '0.4rem',
+            }}>
+              {fr ? 'Prêt à commencer ?' : 'Ready to start?'}
+            </p>
+            <h2 style={{
+              fontFamily: CG, fontSize: '2.2rem', fontWeight: 300,
+              fontStyle: 'italic', color: '#F2EFE8', lineHeight: 1.2, margin: 0,
+            }}>
+              {fr ? 'Vous avez le droit de respirer.' : 'You deserve to breathe.'}
+            </h2>
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <Link href="/signup" style={{
+              background: '#F2EFE8', color: '#2C2820', borderRadius: '999px',
+              padding: '0.8rem 1.8rem', border: 'none', fontFamily: JOST,
+              fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase',
+              textDecoration: 'none', display: 'inline-block',
+            }}>
+              {fr ? 'Créer mon compte' : 'Create my account'}
+            </Link>
+            <Link href="/pour-les-therapeutes" style={{
+              background: 'transparent', color: 'rgba(242,239,232,0.6)',
+              border: '0.5px solid rgba(242,239,232,0.25)', borderRadius: '999px',
+              padding: '0.8rem 1.8rem', fontFamily: JOST,
+              fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase',
+              textDecoration: 'none', display: 'inline-block',
+            }}>
+              {fr ? 'Vous êtes thérapeute ?' : 'Are you a therapist?'}
+            </Link>
+          </div>
         </div>
       </section>
 

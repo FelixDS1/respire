@@ -159,58 +159,27 @@ body {
 
 /* About page */
 @media (max-width: 768px) {
-  .about-section {
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-    padding-top: 32px !important;
+  .about-split-card {
+    grid-template-columns: 1fr !important;
+    margin: 0 1rem !important;
   }
-  .about-hero-title {
-    font-size: 2.4rem !important;
-    white-space: normal !important;
+  .about-split-left,
+  .about-split-right {
+    padding: 2.5rem 1.5rem !important;
   }
-  .about-hero-panel {
-    padding: 20px 24px !important;
-  }
-  /* Hide subtitle bubble and why-body bubble on mobile */
-  .about-hero-subtitle {
-    display: none !important;
-  }
-  .about-why-body {
-    display: none !important;
-  }
-  .about-2col {
+  .about-steps-grid {
     grid-template-columns: 1fr !important;
   }
-  .about-box {
-    padding: 28px 24px !important;
+  .about-founder-grid {
+    grid-template-columns: 1fr !important;
+    padding: 3rem 1.5rem !important;
   }
-  .about-deco-number {
-    font-size: 2.5rem !important;
+  .about-founder-f {
+    display: none !important;
   }
-  /* Values: number top-right, large text */
-  .about-value-box {
-    position: relative !important;
-    padding: 36px 28px !important;
-  }
-  .about-value-box .about-deco-number {
-    position: absolute !important;
-    top: 16px !important;
-    right: 20px !important;
-    font-size: 0.75rem !important;
-    margin-bottom: 0 !important;
-    letter-spacing: 0.08em !important;
-  }
-  .about-value-text {
-    font-size: 1.9rem !important;
-    line-height: 1.4 !important;
-    font-weight: 300 !important;
-  }
-  /* Steps: larger text */
-  .about-step-title {
-    font-size: 1.25rem !important;
-  }
-  .about-step-body {
-    font-size: 1.05rem !important;
-    line-height: 1.8 !important;
+  .about-cta-inner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 2.5rem 1.5rem !important;
   }
 }

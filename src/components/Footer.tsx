@@ -47,9 +47,12 @@ export default function Footer() {
           </Link>
         </div>
 
-        {/* Right: copyright */}
-        <span style={{ fontSize: '0.72rem', color: 'rgba(44,40,32,0.3)' }}>
-          © 2026 Respire
+        {/* Right: email + copyright */}
+        <span style={{ fontSize: '0.72rem', color: 'rgba(44,40,32,0.3)', display: 'flex', gap: '6px', alignItems: 'center' }}>
+          <a href="mailto:contact@respire.fr" style={{ color: '#9C7B5A', textDecoration: 'none' }}>
+            contact@respire.fr
+          </a>
+          · © 2026 Respire
         </span>
       </div>
     </footer>
