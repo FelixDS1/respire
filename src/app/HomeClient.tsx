@@ -171,7 +171,7 @@ export default function HomeClient({ previews }: Props) {
       setTimeout(() => {
         setCurrentIdx(i => (i + 1) % previews.length)
         setVisible(true)
-      }, 500)
+      }, 1500)
     }, 5000)
     return () => clearInterval(interval)
   }, [previews.length])
@@ -261,7 +261,7 @@ export default function HomeClient({ previews }: Props) {
         </div>
 
         {/* Right column: preview card — hidden on mobile, cycles between therapists */}
-        <div className="hide-mobile" style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.5s ease' }}>
+        <div className="hide-mobile" style={{ opacity: visible ? 1 : 0, transition: 'opacity 1.5s ease' }}>
           {current && (
             <PreviewCard therapist={current.therapist} slots={current.slots} />
           )}
