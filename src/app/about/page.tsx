@@ -137,7 +137,7 @@ export default function About() {
           </h1>
         </div>
 
-        <InflateBox className="about-hero-panel about-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '28px 56px' }}>
+        <InflateBox className="about-hero-panel about-hero-subtitle about-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '28px 56px' }}>
           <p style={{ ...bodyStyle, color: '#4A6070', textAlign: 'center' }}>
             {c.subtitle}
           </p>
@@ -154,7 +154,7 @@ export default function About() {
             </h2>
           </InflateBox>
 
-          <InflateBox className="about-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '48px 44px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <InflateBox className="about-box about-why-body" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '48px 44px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <p style={{ ...bodyStyle, color: '#4A6070' }}>
               {c.whyBody}
             </p>
@@ -167,14 +167,14 @@ export default function About() {
         <p style={labelStyle}>{c.valuesEyebrow}</p>
         <div style={{ position: 'relative' }}>
           <div className="about-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', perspective: '1000px', position: 'relative', zIndex: 1 }}>
-            <InflateBox className="about-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)' }}>
+            <InflateBox className="about-box about-value-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)' }}>
               <span className="about-deco-number" style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>01</span>
-              <p style={{ ...bodyStyle, color: 'var(--text)', fontWeight: 400 }}>{c.values[0]}</p>
+              <p className="about-value-text" style={{ ...bodyStyle, color: 'var(--text)', fontWeight: 400 }}>{c.values[0]}</p>
             </InflateBox>
 
-            <InflateBox className="about-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)' }}>
+            <InflateBox className="about-box about-value-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)' }}>
               <span className="about-deco-number" style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>02</span>
-              <p style={{ ...bodyStyle, color: 'var(--text)', fontWeight: 400 }}>{c.values[1]}</p>
+              <p className="about-value-text" style={{ ...bodyStyle, color: 'var(--text)', fontWeight: 400 }}>{c.values[1]}</p>
             </InflateBox>
           </div>
         </div>
@@ -196,11 +196,11 @@ export default function About() {
                   <span style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, flexShrink: 0 }}>
                     {step.number}
                   </span>
-                  <p style={{ fontSize: '1.15rem', fontWeight: 600, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0, lineHeight: 1.3 }}>
+                  <p className="about-step-title" style={{ fontSize: '1.15rem', fontWeight: 600, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0, lineHeight: 1.3 }}>
                     {step.title}
                   </p>
                 </div>
-                <p style={{ ...bodyStyle, fontSize: '0.95rem', color: '#4A6070' }}>
+                <p className="about-step-body" style={{ ...bodyStyle, fontSize: '0.95rem', color: '#4A6070' }}>
                   {step.body}
                 </p>
               </InflateBox>
