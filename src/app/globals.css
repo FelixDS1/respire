@@ -84,14 +84,10 @@ body {
   .filter-row::-webkit-scrollbar { display: none; }
   .filter-divider { display: none !important; }
 
-  /* Cards: stack photo + info, hide separate price column */
-  .therapist-card-row {
-    flex-direction: column !important;
-    gap: 12px !important;
-  }
+  /* Cards: keep photo portrait on mobile, hide separate price column */
   .therapist-card-photo {
-    width: 100% !important;
-    height: 180px !important;
+    width: 80px !important;
+    height: 100px !important;
   }
   .therapist-card-price-col { display: none !important; }
   .therapist-card-mobile-price { display: flex !important; }
@@ -105,7 +101,8 @@ body {
   }
   .profile-photo-wrap {
     width: 100% !important;
-    height: 220px !important;
+    height: auto !important;
+    aspect-ratio: 3 / 4 !important;
     flex-shrink: unset !important;
   }
   .profile-bottom-grid {
@@ -149,5 +146,30 @@ body {
   .nav-inner {
     padding-left: 20px !important;
     padding-right: 20px !important;
+  }
+}
+
+/* About page */
+@media (max-width: 768px) {
+  .about-section {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-top: 32px !important;
+  }
+  .about-hero-title {
+    font-size: 2.4rem !important;
+    white-space: normal !important;
+  }
+  .about-hero-panel {
+    padding: 20px 24px !important;
+  }
+  .about-2col {
+    grid-template-columns: 1fr !important;
+  }
+  .about-box {
+    padding: 28px 24px !important;
+  }
+  .about-deco-number {
+    font-size: 2.5rem !important;
   }
 }

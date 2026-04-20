@@ -49,7 +49,7 @@ const content = {
   },
 }
 
-function InflateBox({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
+function InflateBox({ children, style, className }: { children: React.ReactNode; style?: React.CSSProperties; className?: string }) {
   const ref = useRef<HTMLDivElement>(null)
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
@@ -73,6 +73,7 @@ function InflateBox({ children, style }: { children: React.ReactNode; style?: Re
   return (
     <div
       ref={ref}
+      className={className}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ transformStyle: 'preserve-3d', willChange: 'transform', cursor: 'default', ...style }}
@@ -82,7 +83,6 @@ function InflateBox({ children, style }: { children: React.ReactNode; style?: Re
   )
 }
 
-// Base body style matching the "why" bubble reference
 const bodyStyle: React.CSSProperties = {
   fontSize: '1.05rem',
   fontWeight: 300,
@@ -111,40 +111,33 @@ export default function About() {
   ]
 
   return (
-    <main style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
+    <main style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100vh', position: 'relative', overflowX: 'hidden' }}>
 
-      {/* ── Background shapes (absolute, z:0) ── */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
-        {/* Large anchors */}
+      {/* ── Background shapes ── */}
+      <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', width: '640px', height: '640px', borderRadius: '50%', backgroundColor: 'var(--blue-accent)', opacity: 0.52, top: '-220px', right: '-130px' }} />
         <div style={{ position: 'absolute', width: '480px', height: '480px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.32, bottom: '8%', left: '-110px' }} />
-        {/* Mid-size fills */}
         <div style={{ position: 'absolute', width: '340px', height: '340px', borderRadius: '70px', backgroundColor: 'var(--blue-accent)', opacity: 0.24, top: '33%', left: '20%', transform: 'rotate(25deg)' }} />
         <div style={{ position: 'absolute', width: '260px', height: '260px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.26, top: '10%', right: '26%' }} />
         <div style={{ position: 'absolute', width: '220px', height: '220px', borderRadius: '50%', backgroundColor: 'var(--blue-accent)', opacity: 0.22, top: '58%', right: '18%' }} />
         <div style={{ position: 'absolute', width: '200px', height: '200px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.2, top: '20%', left: '5%' }} />
         <div style={{ position: 'absolute', width: '180px', height: '260px', borderRadius: '50%', backgroundColor: 'var(--blue-accent)', opacity: 0.18, bottom: '30%', right: '36%', transform: 'rotate(-18deg)' }} />
-        {/* Small accents */}
         <div style={{ position: 'absolute', width: '130px', height: '130px', borderRadius: '50%', border: '2px solid var(--blue-primary)', opacity: 0.12, top: '52%', left: '9%' }} />
         <div style={{ position: 'absolute', width: '100px', height: '100px', borderRadius: '20px', backgroundColor: 'var(--green-soft)', opacity: 0.22, bottom: '22%', right: '11%', transform: 'rotate(15deg)' }} />
-        <div style={{ position: 'absolute', width: '80px', height: '80px', borderRadius: '50%', border: '2px solid var(--blue-primary)', opacity: 0.11, top: '78%', right: '42%' }} />
-        <div style={{ position: 'absolute', width: '70px', height: '70px', borderRadius: '12px', backgroundColor: 'var(--blue-accent)', opacity: 0.2, top: '5%', left: '42%', transform: 'rotate(35deg)' }} />
-        <div style={{ position: 'absolute', width: '55px', height: '55px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.24, bottom: '15%', left: '30%' }} />
-        <div style={{ position: 'absolute', width: '110px', height: '110px', borderRadius: '50%', border: '2px solid var(--blue-primary)', opacity: 0.09, top: '42%', right: '6%' }} />
       </div>
 
-      {/* ── Hero: centered title + full-width narrow panel ── */}
-      <section style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '72px 56px 40px' }}>
+      {/* ── Hero ── */}
+      <section className="about-section" style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '72px 56px 40px' }}>
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <p style={{ fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--blue-primary)', marginBottom: '20px', fontFamily: 'Georgia, serif' }}>
             {c.eyebrow}
           </p>
-          <h1 style={{ fontSize: '4rem', fontWeight: 300, lineHeight: 1.15, fontFamily: 'Georgia, serif', margin: 0, whiteSpace: 'nowrap' }}>
+          <h1 className="about-hero-title" style={{ fontSize: '4rem', fontWeight: 300, lineHeight: 1.15, fontFamily: 'Georgia, serif', margin: 0 }}>
             {c.mission}
           </h1>
         </div>
 
-        <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '28px 56px' }}>
+        <InflateBox className="about-hero-panel about-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '28px 56px' }}>
           <p style={{ ...bodyStyle, color: '#4A6070', textAlign: 'center' }}>
             {c.subtitle}
           </p>
@@ -152,16 +145,16 @@ export default function About() {
       </section>
 
       {/* ── Why we exist ── */}
-      <section style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '0 56px 40px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr', gap: '24px' }}>
-          <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '48px 40px' }}>
+      <section className="about-section" style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '0 56px 40px' }}>
+        <div className="about-2col" style={{ display: 'grid', gridTemplateColumns: '2fr 3fr', gap: '24px' }}>
+          <InflateBox className="about-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '48px 40px' }}>
             <p style={labelStyle}>{c.whyEyebrow}</p>
             <h2 style={{ fontSize: '1.9rem', fontWeight: 300, lineHeight: 1.3, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0 }}>
               {c.whyHeading}
             </h2>
           </InflateBox>
 
-          <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '48px 44px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <InflateBox className="about-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '48px 44px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <p style={{ ...bodyStyle, color: '#4A6070' }}>
               {c.whyBody}
             </p>
@@ -170,55 +163,52 @@ export default function About() {
       </section>
 
       {/* ── Values ── */}
-      <section style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '0 56px 40px' }}>
+      <section className="about-section" style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '0 56px 40px' }}>
         <p style={labelStyle}>{c.valuesEyebrow}</p>
         <div style={{ position: 'relative' }}>
-          <div style={{ position: 'absolute', top: '50%', left: 'calc(50% - 12px)', width: '24px', height: '1px', backgroundColor: LILY_PINK, opacity: 0.28, zIndex: 0, transform: 'translateY(-50%)', pointerEvents: 'none' }} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', perspective: '1000px', position: 'relative', zIndex: 1 }}>
-            <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)' }}>
-              <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>01</span>
+          <div className="about-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', perspective: '1000px', position: 'relative', zIndex: 1 }}>
+            <InflateBox className="about-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)' }}>
+              <span className="about-deco-number" style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>01</span>
               <p style={{ ...bodyStyle, color: 'var(--text)', fontWeight: 400 }}>{c.values[0]}</p>
             </InflateBox>
 
-            <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)' }}>
-              <span style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>02</span>
+            <InflateBox className="about-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '44px 40px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)' }}>
+              <span className="about-deco-number" style={{ display: 'block', fontSize: '4rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, marginBottom: '24px', userSelect: 'none' }}>02</span>
               <p style={{ ...bodyStyle, color: 'var(--text)', fontWeight: 400 }}>{c.values[1]}</p>
             </InflateBox>
           </div>
         </div>
       </section>
 
-      {/* ── Steps (left) + Founder, CTA & Contact (right) ── */}
-      <section style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '0 56px 72px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr', gap: '24px', alignItems: 'stretch' }}>
+      {/* ── Steps + Founder, CTA & Contact ── */}
+      <section className="about-section" style={{ position: 'relative', maxWidth: '1400px', margin: '0 auto', padding: '0 56px 72px' }}>
+        <div className="about-2col" style={{ display: 'grid', gridTemplateColumns: '2fr 3fr', gap: '24px', alignItems: 'stretch' }}>
 
           {/* Left: stacked steps */}
-          <div style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: '1px', backgroundColor: LILY_PINK, opacity: 0.28, zIndex: 0, pointerEvents: 'none' }} />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', perspective: '1000px', position: 'relative', zIndex: 1, flex: 1 }}>
-              {steps.map((step) => (
-                <InflateBox
-                  key={step.number}
-                  style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '28px 32px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', marginBottom: '10px' }}>
-                    <span style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, flexShrink: 0 }}>
-                      {step.number}
-                    </span>
-                    <p style={{ fontSize: '1.15rem', fontWeight: 600, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0, lineHeight: 1.3 }}>
-                      {step.title}
-                    </p>
-                  </div>
-                  <p style={{ ...bodyStyle, fontSize: '0.95rem', color: '#4A6070' }}>
-                    {step.body}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {steps.map((step) => (
+              <InflateBox
+                key={step.number}
+                className="about-box"
+                style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '28px 32px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--border)', fontFamily: 'Georgia, serif', lineHeight: 1, flexShrink: 0 }}>
+                    {step.number}
+                  </span>
+                  <p style={{ fontSize: '1.15rem', fontWeight: 600, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0, lineHeight: 1.3 }}>
+                    {step.title}
                   </p>
-                </InflateBox>
-              ))}
-            </div>
+                </div>
+                <p style={{ ...bodyStyle, fontSize: '0.95rem', color: '#4A6070' }}>
+                  {step.body}
+                </p>
+              </InflateBox>
+            ))}
           </div>
 
           {/* Right: founder note + CTA + contact */}
-          <InflateBox style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '52px 48px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <InflateBox className="about-box" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '52px 48px', boxShadow: '0 2px 16px rgba(44,26,14,0.06)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div>
               <p style={{ ...labelStyle, fontSize: '0.9rem' }}>{c.founderEyebrow}</p>
               <p style={{ ...bodyStyle, color: '#4A6070', marginBottom: '16px' }}>
@@ -226,7 +216,6 @@ export default function About() {
               </p>
             </div>
 
-            {/* CTA */}
             <div style={{ borderTop: '1px solid var(--border)', paddingTop: '24px', marginTop: '16px' }}>
               <p style={{ ...bodyStyle, fontSize: '1.4rem', color: 'var(--text)', marginBottom: '16px' }}>
                 {c.ctaHeading}
