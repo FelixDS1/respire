@@ -203,14 +203,15 @@ export default function HomeClient({ previews }: Props) {
       }}>
         {/* Left column */}
         <div>
-          <p style={{
+          {/* Desktop only: Paris tagline above title */}
+          <p className="hide-mobile" style={{
             fontSize: '0.68rem', letterSpacing: '0.2em', textTransform: 'uppercase',
             color: '#9C7B5A', marginBottom: '1.5rem', fontFamily: 'Georgia, serif',
           }}>
             {lang === 'en' ? 'Paris · Therapy for everyone' : 'Paris · Thérapie pour tous'}
           </p>
 
-          {/* H1 — Georgia, same as before, italic last word in brown */}
+          {/* H1 */}
           <h1 className="hero-title" style={{
             fontFamily: 'Georgia, serif',
             fontSize: '3.4rem', fontWeight: 300, lineHeight: 1.2,
@@ -220,7 +221,7 @@ export default function HomeClient({ previews }: Props) {
             <em style={{ fontStyle: 'italic', color: '#9C7B5A' }}>{heroLast}</em>
           </h1>
 
-          <p style={{
+          <p className="hero-subtitle" style={{
             fontSize: '0.92rem', lineHeight: 1.85,
             color: 'rgba(44,40,32,0.6)', fontWeight: 300,
             maxWidth: '400px', marginBottom: '2rem',
@@ -229,10 +230,10 @@ export default function HomeClient({ previews }: Props) {
             {t.home.heroSubtitle}
           </p>
 
-          {/* CTA pills — same size, left filled brown, right outlined black */}
+          {/* CTA pills */}
           <div className="home-cta-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <span className="inflate-pill" style={{ display: 'inline-block' }}>
-              <Link href="/therapists" style={{
+            <span className="inflate-pill cta-pill-wrap" style={{ display: 'inline-block' }}>
+              <Link href="/therapists" className="cta-pill-primary" style={{
                 display: 'inline-block',
                 padding: '14px 32px',
                 backgroundColor: 'var(--blue-primary)',
@@ -246,8 +247,8 @@ export default function HomeClient({ previews }: Props) {
                 {t.home.cta}
               </Link>
             </span>
-            <span className="inflate-pill" style={{ display: 'inline-block' }}>
-              <Link href="/pour-les-therapeutes" style={{
+            <span className="inflate-pill cta-pill-wrap" style={{ display: 'inline-block' }}>
+              <Link href="/pour-les-therapeutes" className="cta-pill-secondary" style={{
                 display: 'inline-block',
                 padding: '14px 32px',
                 backgroundColor: 'transparent',
@@ -273,47 +274,68 @@ export default function HomeClient({ previews }: Props) {
       </section>
 
       {/* ── How it works ── */}
-      <section className="home-hiw-section" style={{ position: 'relative', zIndex: 1, margin: '0 2rem' }}>
-        <div className="home-hiw-inner" style={{ background: '#EDE9E0', borderRadius: '24px', padding: '4rem 3rem' }}>
+      {(() => {
+        const steps = [
+          { num: '01', title: t.home.step1Title, body: t.home.step1Body },
+          { num: '02', title: t.home.step2Title, body: t.home.step2Body },
+          { num: '03', title: t.home.step3Title, body: t.home.step3Body },
+        ]
+        const label = (
           <p style={{
             fontSize: '0.68rem', letterSpacing: '0.2em', textTransform: 'uppercase',
             color: 'rgba(44,40,32,0.4)', marginBottom: '3rem', fontFamily: 'Georgia, serif',
           }}>
             {t.home.howItWorks}
           </p>
-          <div className="how-it-works-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2.5rem' }}>
-            {[
-              { num: '01', title: t.home.step1Title, body: t.home.step1Body },
-              { num: '02', title: t.home.step2Title, body: t.home.step2Body },
-              { num: '03', title: t.home.step3Title, body: t.home.step3Body },
-            ].map(step => (
-              <div key={step.num} className="inflate-card" style={{ background: '#F2EFE8', borderRadius: '16px', padding: '2rem' }}>
-                <div style={{
-                  fontFamily: 'Georgia, serif',
-                  fontSize: '4rem', fontWeight: 300, lineHeight: 1,
-                  color: 'rgba(44,40,32,0.12)', marginBottom: '0.75rem',
-                }}>
-                  {step.num}
-                </div>
-                <h3 style={{
-                  fontFamily: 'Georgia, serif',
-                  fontSize: '1.4rem', fontWeight: 400,
-                  marginBottom: '0.75rem', color: '#2C2820', lineHeight: 1.2,
-                }}>
-                  {step.title}
-                </h3>
-                <p style={{
-                  fontSize: '1.1rem', lineHeight: 1.75,
-                  color: 'rgba(44,40,32,0.6)', fontWeight: 300,
-                  fontFamily: 'Georgia, serif',
-                }}>
-                  {step.body}
-                </p>
+        )
+        return (
+          <section className="home-hiw-section" style={{ position: 'relative', zIndex: 1, margin: '0 2rem' }}>
+            <div className="home-hiw-inner" style={{ background: '#EDE9E0', borderRadius: '24px', padding: '4rem 3rem', overflow: 'hidden' }}>
+              {label}
+
+              {/* Desktop: 3-column grid */}
+              <div className="how-it-works-grid hide-mobile" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2.5rem' }}>
+                {steps.map(step => (
+                  <div key={step.num} className="inflate-card" style={{ background: '#F2EFE8', borderRadius: '16px', padding: '2rem' }}>
+                    <div style={{ fontFamily: 'Georgia, serif', fontSize: '4rem', fontWeight: 300, lineHeight: 1, color: 'rgba(44,40,32,0.12)', marginBottom: '0.75rem' }}>{step.num}</div>
+                    <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '1.4rem', fontWeight: 400, marginBottom: '0.75rem', color: '#2C2820', lineHeight: 1.2 }}>{step.title}</h3>
+                    <p style={{ fontSize: '1.1rem', lineHeight: 1.75, color: 'rgba(44,40,32,0.6)', fontWeight: 300, fontFamily: 'Georgia, serif' }}>{step.body}</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
+              {/* Mobile: swipeable carousel with peek of next card */}
+              <div className="hiw-carousel show-mobile" style={{
+                overflowX: 'auto',
+                scrollSnapType: 'x mandatory',
+                WebkitOverflowScrolling: 'touch' as React.CSSProperties['WebkitOverflowScrolling'],
+                gap: '14px',
+                margin: '0 -24px',
+                padding: '0 20px 12px',
+                scrollbarWidth: 'none' as React.CSSProperties['scrollbarWidth'],
+                msOverflowStyle: 'none' as React.CSSProperties['msOverflowStyle'],
+              }}>
+                {steps.map(step => (
+                  <div key={step.num} style={{
+                    minWidth: 'calc(100vw - 88px)',
+                    flexShrink: 0,
+                    scrollSnapAlign: 'start',
+                    background: '#F2EFE8',
+                    borderRadius: '16px',
+                    padding: '1.5rem',
+                  }}>
+                    <div style={{ fontFamily: 'Georgia, serif', fontSize: '3.5rem', fontWeight: 300, lineHeight: 1, color: 'rgba(44,40,32,0.12)', marginBottom: '0.6rem' }}>{step.num}</div>
+                    <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '1.25rem', fontWeight: 400, marginBottom: '0.6rem', color: '#2C2820', lineHeight: 1.2 }}>{step.title}</h3>
+                    <p style={{ fontSize: '0.95rem', lineHeight: 1.7, color: 'rgba(44,40,32,0.6)', fontWeight: 300, fontFamily: 'Georgia, serif', margin: 0 }}>{step.body}</p>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          </section>
+        )
+      })()}
+
 
       {/* ── CTA strip ── */}
       <section className="home-cta-strip" style={{ position: 'relative', zIndex: 1, margin: '2rem' }}>

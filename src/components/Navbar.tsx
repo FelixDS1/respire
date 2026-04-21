@@ -105,8 +105,8 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
           alignItems: 'center',
         }}>
 
-          {/* Logo */}
-          <Link href="/" style={{
+          {/* Logo — desktop only */}
+          <Link href="/" className="hide-mobile" style={{
             fontFamily: 'Georgia, serif',
             fontSize: '2rem',
             fontWeight: 400,
@@ -117,6 +117,29 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
           }}>
             Respire
           </Link>
+
+          {/* Mobile header row: tagline left · Respire right */}
+          <div className="show-mobile" style={{ width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{
+              fontFamily: 'Georgia, serif',
+              fontSize: '0.62rem',
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color: 'rgba(44,40,32,0.45)',
+            }}>
+              Paris · Thérapie pour tous
+            </span>
+            <Link href="/" style={{
+              fontFamily: 'Georgia, serif',
+              fontSize: '1.5rem',
+              fontWeight: 400,
+              color: 'var(--blue-primary)',
+              letterSpacing: '0.04em',
+              textDecoration: 'none',
+            }}>
+              Respire
+            </Link>
+          </div>
 
           {/* Desktop nav */}
           <div className="hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: '36px' }}>
