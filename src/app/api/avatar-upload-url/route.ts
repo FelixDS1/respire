@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 
     const { data, error } = await admin.storage
       .from('avatars')
-      .createSignedUploadUrl(path)
+      .createSignedUploadUrl(path, { upsert: true })
 
     if (error) {
       console.error('avatar-upload-url error:', JSON.stringify(error))

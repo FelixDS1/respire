@@ -207,7 +207,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
   }
 
   function addSpecialty(term: string) {
-    if (term && ALL_SPECIALTIES.includes(term) && !specialties.includes(term) && specialties.length < 3) {
+    if (term && ALL_SPECIALTIES.includes(term) && !specialties.includes(term) && specialties.length < 7) {
       setSpecialties(prev => [...prev, term])
       setSpecialtyInput('')
     }
@@ -225,6 +225,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
     backgroundColor: 'var(--surface)',
     color: 'var(--text)',
     outline: 'none',
+    borderRadius: '10px',
   }
 
   if (role === 'therapist' && step === 2) {
@@ -260,14 +261,14 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
             </div>
 
             <div>
-              <label className="block text-sm mb-1" style={{ color: 'var(--text)' }}>Spécialités <span style={{ color: '#8A9BAD' }}>(max 3)</span></label>
+              <label className="block text-sm mb-1" style={{ color: 'var(--text)' }}>Spécialités <span style={{ color: '#8A9BAD' }}>(max 7)</span></label>
               <div className="relative">
                 <input
                   type="text"
                   value={specialtyInput}
                   onChange={e => setSpecialtyInput(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (specialtySuggestions[0]) addSpecialty(specialtySuggestions[0]) } }}
-                  disabled={specialties.length >= 3}
+                  disabled={specialties.length >= 7}
                   className="w-full px-4 py-2 text-sm"
                   style={{ ...inputStyle, opacity: specialties.length >= 3 ? 0.5 : 1 }}
                   placeholder="Ex. anxiété, dépression, trauma..."
@@ -286,8 +287,8 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
               {specialties.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2">
                   {specialties.map(s => (
-                    <span key={s} className="flex items-center gap-1 px-2 py-1 text-xs"
-                      style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
+                    <span key={s} className="flex items-center gap-1 px-3 py-1 text-xs"
+                      style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', borderRadius: '999px' }}>
                       {s}
                       <button type="button" onClick={() => setSpecialties(prev => prev.filter(x => x !== s))}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--blue-primary)', lineHeight: 1 }}>×</button>
@@ -323,8 +324,8 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
               {languages.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2">
                   {languages.map(l => (
-                    <span key={l} className="flex items-center gap-1 px-2 py-1 text-xs"
-                      style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)' }}>
+                    <span key={l} className="flex items-center gap-1 px-3 py-1 text-xs"
+                      style={{ backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', borderRadius: '999px' }}>
                       {l}
                       <button type="button" onClick={() => setLanguages(prev => prev.filter(x => x !== l))}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--blue-primary)', lineHeight: 1 }}>×</button>
@@ -409,7 +410,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
               type="submit"
               disabled={loading}
               className="w-full py-3 text-white text-sm transition-opacity hover:opacity-80 disabled:opacity-50"
-              style={{ backgroundColor: 'var(--blue-primary)' }}
+              style={{ backgroundColor: 'var(--blue-primary)', borderRadius: '999px' }}
             >
               {loading ? 'Enregistrement...' : 'Terminer'}
             </button>
@@ -640,7 +641,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
             type="submit"
             disabled={loading}
             className="w-full py-3 text-white text-sm transition-opacity hover:opacity-80 disabled:opacity-50"
-            style={{ backgroundColor: 'var(--blue-primary)' }}
+            style={{ backgroundColor: 'var(--blue-primary)', borderRadius: '999px' }}
           >
             {loading ? 'Enregistrement...' : 'Continuer'}
           </button>
