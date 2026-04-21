@@ -87,7 +87,7 @@ export default function About() {
                 fr ? 'Être simples au niveau de nos (vos) démarches.' : 'To be simple when it comes to our (your) process.',
                 fr ? 'Être honnêtes avec nos membres et nos thérapeutes.' : 'To be honest with our members and our therapists.',
               ].map((text, i) => (
-                <div key={i} style={{ display: 'flex', gap: '1.2rem', alignItems: 'flex-start' }}>
+                <div key={i} className="inflate-card" style={{ display: 'flex', gap: '1.2rem', alignItems: 'flex-start' }}>
                   <span style={{
                     fontFamily: G, fontSize: '3.5rem', fontWeight: 300,
                     color: 'rgba(44,40,32,0.15)', width: '48px', flexShrink: 0, lineHeight: 1,
@@ -121,7 +121,7 @@ export default function About() {
               { num: '02', title: t.home.step2Title, body: t.home.step2Body },
               { num: '03', title: t.home.step3Title, body: t.home.step3Body },
             ].map(step => (
-              <div key={step.num}>
+              <div key={step.num} className="inflate-card" style={{ background: '#F2EFE8', borderRadius: '16px', padding: '2rem' }}>
                 <div style={{
                   fontFamily: G, fontSize: '4rem', fontWeight: 300,
                   lineHeight: 1, color: 'rgba(44,40,32,0.1)', marginBottom: '0.5rem',
@@ -190,23 +190,27 @@ export default function About() {
           </div>
 
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <Link href="/signup" style={{
-              background: '#F2EFE8', color: '#2C2820', borderRadius: '999px',
-              padding: '0.8rem 1.8rem', border: 'none', fontFamily: G,
-              fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase',
-              textDecoration: 'none', display: 'inline-block',
-            }}>
-              {fr ? 'Créer mon compte' : 'Create my account'}
-            </Link>
-            <Link href="/pour-les-therapeutes" style={{
-              background: 'transparent', color: 'rgba(242,239,232,0.6)',
-              border: '0.5px solid rgba(242,239,232,0.25)', borderRadius: '999px',
-              padding: '0.8rem 1.8rem', fontFamily: G,
-              fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase',
-              textDecoration: 'none', display: 'inline-block',
-            }}>
-              {fr ? 'Vous êtes thérapeute ?' : 'Are you a therapist?'}
-            </Link>
+            <span className="inflate-pill" style={{ display: 'inline-block' }}>
+              <Link href="/signup" style={{
+                background: '#F2EFE8', color: '#2C2820', borderRadius: '999px',
+                padding: '0.8rem 1.8rem', border: 'none', fontFamily: G,
+                fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase',
+                textDecoration: 'none', display: 'inline-block',
+              }}>
+                {fr ? 'Créer mon compte' : 'Create my account'}
+              </Link>
+            </span>
+            <span className="inflate-pill" style={{ display: 'inline-block' }}>
+              <Link href="/pour-les-therapeutes" style={{
+                background: 'transparent', color: 'rgba(242,239,232,0.6)',
+                border: '0.5px solid rgba(242,239,232,0.25)', borderRadius: '999px',
+                padding: '0.8rem 1.8rem', fontFamily: G,
+                fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase',
+                textDecoration: 'none', display: 'inline-block',
+              }}>
+                {fr ? 'Vous êtes thérapeute ?' : 'Are you a therapist?'}
+              </Link>
+            </span>
           </div>
         </div>
       </section>

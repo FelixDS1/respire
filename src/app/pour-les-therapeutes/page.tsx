@@ -3,162 +3,284 @@
 import Link from 'next/link'
 import { useLanguage } from '@/lib/language'
 
-// TODO: replace this with your Calendly (or equivalent) link once created
-const CALENDLY_LINK = '#'
+const G = 'Georgia, serif'
+
+interface DashboardData {
+  name: string
+  role: string
+  sessions: string
+  revenue: string
+  nextPatient: string
+  nextTime: string
+}
+
+function DashboardCard({ data, fr }: { data: DashboardData; fr: boolean }) {
+  return (
+    <div style={{
+      background: '#EDE9E0', borderRadius: '20px',
+      padding: '1.8rem', display: 'flex', flexDirection: 'column', gap: '1.2rem',
+    }}>
+      <div>
+        <p style={{
+          fontFamily: G, fontSize: '0.65rem', letterSpacing: '0.18em',
+          textTransform: 'uppercase', color: 'rgba(44,40,32,0.4)', margin: '0 0 0.5rem',
+        }}>
+          {fr ? 'Votre espace thérapeute' : 'Your therapist dashboard'}
+        </p>
+        <p style={{ fontFamily: G, fontSize: '1.2rem', margin: '0 0 0.15rem', color: '#2C2820' }}>
+          {data.name}
+        </p>
+        <p style={{ fontFamily: G, fontSize: '0.75rem', color: 'rgba(44,40,32,0.45)', fontWeight: 300, margin: 0 }}>
+          {data.role}
+        </p>
+      </div>
+
+      <hr style={{ border: 'none', borderTop: '0.5px solid rgba(44,40,32,0.12)', margin: 0 }} />
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        {[
+          { value: data.sessions, label: fr ? 'séances ce mois' : 'sessions this month' },
+          { value: data.revenue, label: fr ? 'encaissés' : 'collected' },
+        ].map(stat => (
+          <div key={stat.label} style={{ background: '#F2EFE8', borderRadius: '12px', padding: '1rem 1.2rem' }}>
+            <p style={{ fontFamily: G, fontSize: '2rem', fontWeight: 300, margin: '0 0 0.2rem', color: '#2C2820' }}>
+              {stat.value}
+            </p>
+            <p style={{ fontFamily: G, fontSize: '0.7rem', color: 'rgba(44,40,32,0.45)', margin: 0 }}>
+              {stat.label}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ background: '#F2EFE8', borderRadius: '12px', padding: '1rem 1.2rem' }}>
+        <p style={{
+          fontFamily: G, fontSize: '0.65rem', letterSpacing: '0.15em',
+          textTransform: 'uppercase', color: 'rgba(44,40,32,0.4)', margin: '0 0 0.6rem',
+        }}>
+          {fr ? 'Prochain rendez-vous' : 'Next appointment'}
+        </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontFamily: G, fontSize: '0.92rem', color: '#2C2820' }}>{data.nextPatient}</span>
+          <span style={{ fontFamily: G, fontSize: '0.85rem', color: '#9C7B5A' }}>{data.nextTime}</span>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontFamily: G, fontSize: '0.8rem', color: 'rgba(44,40,32,0.5)' }}>
+          {fr ? 'Sans abonnement. Sans commission.' : 'No subscription. No commission.'}
+        </span>
+        <span style={{ fontFamily: G, fontSize: '1.4rem', fontWeight: 300, color: '#2C2820' }}>
+          100%
+        </span>
+      </div>
+    </div>
+  )
+}
 
 export default function PourLesTherapeutesPage() {
   const { lang } = useLanguage()
+  const fr = lang !== 'en'
 
-  const content = {
-    fr: {
-      eyebrow: 'Pour les thérapeutes',
-      headline: 'Gérez vos rendez-vous.',
-      headlineAccent: 'Sans commission cachée.',
-      body: 'Avec Respire, vos patients réservent directement en ligne, échangent avec vous via messagerie sécurisée, et règlent la séance au moment de la réservation. Vous fixez vos honoraires — et vous les percevez intégralement. Sans abonnement, sans commission cachée.',
-      cta: 'Créer mon profil',
-      callCta: 'Réserver un appel de 15 min',
-      callSoon: 'La prise de rendez-vous téléphonique sera disponible prochainement.',
-      login: 'Déjà inscrit ? Se connecter →',
-      features: [
-        {
-          title: 'Agenda en ligne',
-          body: 'Publiez vos disponibilités en quelques clics. Vos patients réservent directement — fini les allers-retours par e-mail ou téléphone.',
-        },
-        {
-          title: 'Messagerie sécurisée',
-          body: 'Échangez avec vos patients avant et après chaque séance via une messagerie chiffrée, intégrée à votre espace.',
-        },
-        {
-          title: 'Honoraires préservés',
-          body: 'Vous fixez vos tarifs, vous les percevez intégralement. Sans abonnement, sans commission cachée.',
-        },
-      ],
-    },
-    en: {
-      eyebrow: 'For therapists',
-      headline: 'Appointments booked.',
-      headlineAccent: 'No hidden fees.',
-      body: 'With Respire, your patients book directly online, message you through a secure inbox, and pay at the time of booking. You set your rate — and you keep it in full. No subscription, no hidden commission.',
-      cta: 'Create my profile',
-      callCta: 'Book a 15-minute call',
-      callSoon: 'Phone booking will be available soon.',
-      login: 'Already registered? Log in →',
-      features: [
-        {
-          title: 'Online scheduling',
-          body: 'Publish your availability in a few clicks. Patients book directly — no more back-and-forth by email or phone.',
-        },
-        {
-          title: 'Secure messaging',
-          body: 'Exchange with your patients before and after each session through an encrypted inbox built into your dashboard.',
-        },
-        {
-          title: 'Full fee retention',
-          body: 'You set your rates, you receive them in full. No subscription, no hidden commission.',
-        },
-      ],
-    },
+  const sylvain: DashboardData = {
+    name: 'Sylvain Loup',
+    role: fr ? 'Psychothérapeute · 75011' : 'Psychotherapist · 75011',
+    sessions: '18',
+    revenue: '1 170€',
+    nextPatient: 'Lucas M.',
+    nextTime: fr ? 'Demain, 11:00' : 'Tomorrow, 11:00',
   }
 
-  const c = content[lang as 'fr' | 'en'] ?? content.fr
+  const features = fr ? [
+    {
+      title: 'Agenda en ligne',
+      body: 'Publiez vos disponibilités en quelques clics. Vos patients réservent directement — fini les allers-retours par e-mail ou téléphone.',
+    },
+    {
+      title: 'Messagerie sécurisée',
+      body: 'Échangez avec vos patients avant et après chaque séance via une messagerie chiffrée, intégrée à votre espace.',
+    },
+    {
+      title: 'Honoraires préservés',
+      body: 'Vous fixez vos tarifs, vous les percevez intégralement. Sans abonnement, sans commission cachée.',
+    },
+  ] : [
+    {
+      title: 'Online scheduling',
+      body: 'Publish your availability in a few clicks. Patients book directly — no more back-and-forth by email or phone.',
+    },
+    {
+      title: 'Secure messaging',
+      body: 'Exchange with your patients before and after each session through an encrypted inbox built into your dashboard.',
+    },
+    {
+      title: 'Full fee retention',
+      body: 'You set your rates, you receive them in full. No subscription, no hidden commission.',
+    },
+  ]
+
   return (
-    <main style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100vh', overflowX: 'hidden' }}>
+    <main style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100vh' }}>
 
-      {/* Decorative background */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', width: '600px', height: '600px', borderRadius: '50%', backgroundColor: 'var(--blue-accent)', opacity: 0.4, top: '-180px', right: '-120px' }} />
-        <div style={{ position: 'absolute', width: '400px', height: '400px', borderRadius: '50%', backgroundColor: 'var(--green-soft)', opacity: 0.25, bottom: '-80px', left: '-100px' }} />
-      </div>
+      {/* ── Hero ── */}
+      <section className="therapist-hero" style={{
+        maxWidth: '1400px', margin: '0 auto',
+        display: 'grid', gridTemplateColumns: '1fr 1fr',
+        gap: '3rem', alignItems: 'center',
+        padding: '5rem 3rem 4rem',
+      }}>
 
-      {/* Hero */}
-      <section style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '80px 56px 56px', textAlign: 'center' }}>
-        <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--blue-primary)', marginBottom: '20px', fontFamily: 'Georgia, serif' }}>
-          {c.eyebrow}
-        </p>
-        <h1 style={{ fontSize: '3rem', fontWeight: 300, lineHeight: 1.2, marginBottom: '24px', fontFamily: 'Georgia, serif' }}>
-          {c.headline}<br />
-          <span style={{ color: 'var(--blue-primary)' }}>{c.headlineAccent}</span>
-        </h1>
-        <p style={{ fontSize: '1.1rem', fontWeight: 300, lineHeight: 1.9, color: '#4A6070', marginBottom: '44px', fontFamily: 'Georgia, serif', maxWidth: '600px', margin: '0 auto 44px' }}>
-          {c.body}
-        </p>
-
-        {/* CTAs */}
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '16px' }}>
-          <Link
-            href="/signup?role=therapist"
-            style={{
-              display: 'inline-block',
-              padding: '15px 38px',
-              backgroundColor: 'var(--blue-primary)',
-              color: 'white',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              fontSize: '1rem',
-              fontFamily: 'Georgia, serif',
-            }}
-          >
-            {c.cta}
-          </Link>
-          <a
-            href={CALENDLY_LINK}
-            style={{
-              display: 'inline-block',
-              padding: '14px 30px',
-              backgroundColor: 'transparent',
-              color: 'var(--blue-primary)',
-              borderRadius: '8px',
-              border: '1px solid var(--blue-primary)',
-              textDecoration: 'none',
-              fontSize: '0.95rem',
-              fontFamily: 'Georgia, serif',
-              opacity: CALENDLY_LINK === '#' ? 0.4 : 1,
-              pointerEvents: CALENDLY_LINK === '#' ? 'none' : 'auto',
-            }}
-          >
-            {c.callCta}
-          </a>
-        </div>
-        {CALENDLY_LINK === '#' && (
-          <p style={{ fontSize: '0.75rem', color: '#9EB3C2', fontFamily: 'Georgia, serif' }}>
-            {c.callSoon}
+        {/* Left */}
+        <div>
+          <p style={{
+            fontFamily: G, fontSize: '0.68rem', letterSpacing: '0.2em',
+            textTransform: 'uppercase', color: '#9C7B5A', marginBottom: '1.5rem',
+          }}>
+            {fr ? 'Pour les thérapeutes' : 'For therapists'}
           </p>
-        )}
 
-        <div style={{ marginTop: '12px' }}>
-          <Link href="/login" style={{ fontSize: '0.85rem', color: '#8A9BAD', textDecoration: 'none', fontFamily: 'Georgia, serif' }}>
-            {c.login}
-          </Link>
+          <h1 style={{
+            fontFamily: G, fontSize: '3.4rem', fontWeight: 300,
+            lineHeight: 1.2, marginBottom: '1.5rem',
+          }}>
+            <span style={{ color: '#2C2820' }}>
+              {fr ? 'Gérez vos rendez-vous.' : 'Appointments booked.'}
+            </span>
+            <em style={{ fontStyle: 'italic', color: '#9C7B5A', display: 'block' }}>
+              {fr ? 'Sans commission cachée.' : 'No hidden fees.'}
+            </em>
+          </h1>
+
+          <p style={{
+            fontFamily: G, fontSize: '0.92rem', lineHeight: 1.85,
+            color: 'rgba(44,40,32,0.6)', fontWeight: 300,
+            maxWidth: '400px', marginBottom: '2rem',
+          }}>
+            {fr
+              ? 'Vous fixez vos honoraires — et vous les percevez intégralement.'
+              : 'You set your rate — and you keep it in full.'}
+          </p>
+
+          <div className="home-cta-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <span className="inflate-pill" style={{ display: 'inline-block' }}>
+              <Link href="/signup?role=therapist" style={{
+                display: 'inline-block',
+                fontFamily: G, fontSize: '1rem',
+                background: 'var(--blue-primary)', color: 'white',
+                borderRadius: '999px', padding: '14px 32px',
+                border: '2px solid var(--blue-primary)',
+                textDecoration: 'none',
+              }}>
+                {fr ? 'Créer mon profil' : 'Create my profile'}
+              </Link>
+            </span>
+            <span className="inflate-pill" style={{ display: 'inline-block' }}>
+              <Link href="/login" style={{
+                display: 'inline-block',
+                fontFamily: G, fontSize: '1rem',
+                background: 'transparent', color: '#2C2820',
+                borderRadius: '999px', padding: '14px 32px',
+                border: '2px solid #2C2820',
+                textDecoration: 'none',
+              }}>
+                {fr ? 'Déjà inscrit ? Se connecter' : 'Already registered? Log in'}
+              </Link>
+            </span>
+          </div>
+        </div>
+
+        {/* Right — Sylvain Loup's dashboard */}
+        <div className="hide-mobile">
+          <DashboardCard data={sylvain} fr={fr} />
         </div>
       </section>
 
-      {/* Divider */}
-      <div style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '0 56px' }}>
-        <hr style={{ borderColor: 'var(--border)' }} />
-      </div>
+      {/* ── Features ── */}
+      <section style={{ margin: '0 2rem' }}>
+        <div style={{ background: '#EDE9E0', borderRadius: '24px', padding: '4rem 3rem' }}>
+          <p style={{
+            fontFamily: G, fontSize: '0.68rem', letterSpacing: '0.2em',
+            textTransform: 'uppercase', color: 'rgba(44,40,32,0.4)', marginBottom: '3rem',
+          }}>
+            {fr ? 'Ce que Respire vous offre' : 'What Respire offers you'}
+          </p>
 
-      {/* Features */}
-      <section style={{ position: 'relative', zIndex: 1, maxWidth: '860px', margin: '0 auto', padding: '56px 56px 80px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '28px' }}>
-          {c.features.map(f => (
-            <div
-              key={f.title}
-              style={{
-                backgroundColor: 'var(--surface)',
-                border: '1px solid var(--border)',
-                borderRadius: '16px',
-                padding: '32px 28px',
-                boxShadow: '0 2px 16px rgba(28,43,58,0.06)',
-              }}
-            >
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 500, marginBottom: '12px', color: 'var(--text)', fontFamily: 'Georgia, serif' }}>
-                {f.title}
-              </h3>
-              <p style={{ fontSize: '0.95rem', fontWeight: 300, lineHeight: 1.8, color: '#4A6070', fontFamily: 'Georgia, serif' }}>
-                {f.body}
-              </p>
-            </div>
-          ))}
+          <div className="therapist-features-grid" style={{
+            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem',
+          }}>
+            {features.map((f, i) => (
+              <div key={f.title} className="inflate-card" style={{ background: '#F2EFE8', borderRadius: '16px', padding: '2rem' }}>
+                <div style={{
+                  fontFamily: G, fontSize: '4rem', fontWeight: 300,
+                  color: 'rgba(44,40,32,0.08)', lineHeight: 1, marginBottom: '0.5rem',
+                }}>
+                  {String(i + 1).padStart(2, '0')}
+                </div>
+                <h3 style={{
+                  fontFamily: G, fontSize: '1.4rem', fontWeight: 400,
+                  marginBottom: '0.75rem', color: '#2C2820',
+                }}>
+                  {f.title}
+                </h3>
+                <p style={{
+                  fontFamily: G, fontSize: '1.1rem', lineHeight: 1.75,
+                  color: 'rgba(44,40,32,0.6)', fontWeight: 300, margin: 0,
+                }}>
+                  {f.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA strip ── */}
+      <section style={{ margin: '2rem' }}>
+        <div className="therapist-cta-inner" style={{
+          background: '#2C2820', borderRadius: '24px',
+          padding: '3.5rem 3rem', display: 'flex',
+          justifyContent: 'space-between', alignItems: 'center',
+          gap: '2rem', flexWrap: 'wrap',
+        }}>
+          <div>
+            <p style={{
+              fontFamily: G, fontSize: '0.8rem',
+              color: 'rgba(242,239,232,0.45)', fontWeight: 300, marginBottom: '0.4rem',
+            }}>
+              {fr ? 'Prêt à rejoindre Respire ?' : 'Ready to join Respire?'}
+            </p>
+            <h2 style={{
+              fontFamily: G, fontSize: '2.2rem', fontWeight: 300,
+              fontStyle: 'italic', color: '#F2EFE8', lineHeight: 1.2, margin: 0,
+            }}>
+              {fr ? 'Votre pratique, à votre rythme.' : 'Your practice, your pace.'}
+            </h2>
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <span className="inflate-pill" style={{ display: 'inline-block' }}>
+              <Link href="/signup?role=therapist" style={{
+                fontFamily: G, fontSize: '0.9rem',
+                background: '#F2EFE8', color: '#2C2820',
+                borderRadius: '999px', padding: '0.8rem 1.8rem',
+                border: '2px solid #F2EFE8',
+                textDecoration: 'none', display: 'inline-block',
+              }}>
+                {fr ? 'Créer mon profil' : 'Create my profile'}
+              </Link>
+            </span>
+            <span className="inflate-pill" style={{ display: 'inline-block' }}>
+              <Link href="/about" style={{
+                fontFamily: G, fontSize: '0.9rem',
+                background: 'transparent', color: 'rgba(242,239,232,0.7)',
+                border: '1px solid rgba(242,239,232,0.3)',
+                borderRadius: '999px', padding: '0.8rem 1.8rem',
+                textDecoration: 'none', display: 'inline-block',
+              }}>
+                {fr ? 'En savoir plus' : 'Learn more'}
+              </Link>
+            </span>
+          </div>
         </div>
       </section>
 

@@ -231,32 +231,36 @@ export default function HomeClient({ previews }: Props) {
 
           {/* CTA pills — same size, left filled brown, right outlined black */}
           <div className="home-cta-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <Link href="/therapists" style={{
-              display: 'inline-block',
-              padding: '14px 32px',
-              backgroundColor: 'var(--blue-primary)',
-              color: 'white',
-              borderRadius: '999px',
-              textDecoration: 'none',
-              fontSize: '1rem',
-              fontFamily: 'Georgia, serif',
-              border: '2px solid var(--blue-primary)',
-            }}>
-              {t.home.cta}
-            </Link>
-            <Link href="/pour-les-therapeutes" style={{
-              display: 'inline-block',
-              padding: '14px 32px',
-              backgroundColor: 'transparent',
-              color: '#2C2820',
-              borderRadius: '999px',
-              border: '2px solid #2C2820',
-              textDecoration: 'none',
-              fontSize: '1rem',
-              fontFamily: 'Georgia, serif',
-            }}>
-              {t.home.therapistCta}
-            </Link>
+            <span className="inflate-pill" style={{ display: 'inline-block' }}>
+              <Link href="/therapists" style={{
+                display: 'inline-block',
+                padding: '14px 32px',
+                backgroundColor: 'var(--blue-primary)',
+                color: 'white',
+                borderRadius: '999px',
+                textDecoration: 'none',
+                fontSize: '1rem',
+                fontFamily: 'Georgia, serif',
+                border: '2px solid var(--blue-primary)',
+              }}>
+                {t.home.cta}
+              </Link>
+            </span>
+            <span className="inflate-pill" style={{ display: 'inline-block' }}>
+              <Link href="/pour-les-therapeutes" style={{
+                display: 'inline-block',
+                padding: '14px 32px',
+                backgroundColor: 'transparent',
+                color: '#2C2820',
+                borderRadius: '999px',
+                border: '2px solid #2C2820',
+                textDecoration: 'none',
+                fontSize: '1rem',
+                fontFamily: 'Georgia, serif',
+              }}>
+                {t.home.therapistCta}
+              </Link>
+            </span>
           </div>
         </div>
 
@@ -283,7 +287,7 @@ export default function HomeClient({ previews }: Props) {
               { num: '02', title: t.home.step2Title, body: t.home.step2Body },
               { num: '03', title: t.home.step3Title, body: t.home.step3Body },
             ].map(step => (
-              <div key={step.num}>
+              <div key={step.num} className="inflate-card" style={{ background: '#F2EFE8', borderRadius: '16px', padding: '2rem' }}>
                 <div style={{
                   fontFamily: 'Georgia, serif',
                   fontSize: '4rem', fontWeight: 300, lineHeight: 1,
@@ -340,24 +344,28 @@ export default function HomeClient({ previews }: Props) {
           </div>
 
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <Link href="/signup" style={{
-              background: '#F2EFE8', color: '#2C2820',
-              borderRadius: '999px', padding: '0.8rem 1.8rem',
-              fontSize: '0.9rem', letterSpacing: '0.06em',
-              textDecoration: 'none', display: 'inline-block', fontFamily: 'Georgia, serif',
-              border: '2px solid #F2EFE8',
-            }}>
-              {lang === 'en' ? 'Create my account' : 'Créer mon compte'}
-            </Link>
-            <Link href="/pour-les-therapeutes" style={{
-              background: 'transparent', color: 'rgba(242,239,232,0.7)',
-              border: '1px solid rgba(242,239,232,0.3)',
-              borderRadius: '999px', padding: '0.8rem 1.8rem',
-              fontSize: '0.9rem', letterSpacing: '0.06em',
-              textDecoration: 'none', display: 'inline-block', fontFamily: 'Georgia, serif',
-            }}>
-              {t.home.therapistCta}
-            </Link>
+            <span className="inflate-pill" style={{ display: 'inline-block' }}>
+              <Link href="/signup" style={{
+                background: '#F2EFE8', color: '#2C2820',
+                borderRadius: '999px', padding: '0.8rem 1.8rem',
+                fontSize: '0.9rem', letterSpacing: '0.06em',
+                textDecoration: 'none', display: 'inline-block', fontFamily: 'Georgia, serif',
+                border: '2px solid #F2EFE8',
+              }}>
+                {lang === 'en' ? 'Create my account' : 'Créer mon compte'}
+              </Link>
+            </span>
+            <span className="inflate-pill" style={{ display: 'inline-block' }}>
+              <Link href="/pour-les-therapeutes" style={{
+                background: 'transparent', color: 'rgba(242,239,232,0.7)',
+                border: '1px solid rgba(242,239,232,0.3)',
+                borderRadius: '999px', padding: '0.8rem 1.8rem',
+                fontSize: '0.9rem', letterSpacing: '0.06em',
+                textDecoration: 'none', display: 'inline-block', fontFamily: 'Georgia, serif',
+              }}>
+                {t.home.therapistCta}
+              </Link>
+            </span>
           </div>
         </div>
       </section>

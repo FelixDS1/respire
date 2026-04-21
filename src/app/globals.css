@@ -33,6 +33,22 @@ body {
   transform-origin: center bottom;
 }
 
+/* ── HOVER INFLATE ── */
+@layer utilities {
+  .inflate-card {
+    transition: transform 0.25s ease;
+  }
+  .inflate-card:hover {
+    transform: scale(1.04);
+  }
+  .inflate-pill {
+    transition: transform 0.18s ease;
+  }
+  .inflate-pill:hover {
+    transform: scale(1.08);
+  }
+}
+
 /* ── RESPONSIVE UTILITIES ── */
 
 /* Hide / show by breakpoint */
@@ -154,6 +170,23 @@ body {
   .nav-inner {
     padding-left: 20px !important;
     padding-right: 20px !important;
+  }
+}
+
+/* Therapist landing page */
+@media (max-width: 768px) {
+  .therapist-hero {
+    grid-template-columns: 1fr !important;
+    padding: 3rem 1.5rem 2rem !important;
+    gap: 2rem !important;
+  }
+  .therapist-features-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .therapist-cta-inner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 2.5rem 1.5rem !important;
   }
 }
 
