@@ -3,7 +3,16 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
+import { createBrowserClient } from '@supabase/ssr'
 import { DPA_CURRENT_VERSION } from '@/lib/constants'
+
+// Fresh client for uploads — avoids auth lock contention from the singleton
+function createFreshClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}
 import { specialtyTranslations, languageTranslations } from '@/lib/language'
 
 const ALL_SPECIALTIES = Object.keys(specialtyTranslations)
@@ -86,7 +95,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
     if (role === 'therapist' && !dpaAccepted) { setError('Veuillez accepter l\'accord de traitement des données.'); return }
 
     setLoading(true)
-    const supabase = createClient()
+    const supabase = createFreshClient()
 
     try {
       // Upload profile photo directly from the client using the user's session
@@ -189,7 +198,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
     if (!location) { setError('Veuillez indiquer votre arrondissement.'); return }
 
     setLoading(true)
-    const supabase = createClient()
+    const supabase = createFreshClient()
     try {
       const { error: err } = await supabase.from('therapists').upsert({
         id: userId,
