@@ -423,7 +423,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
 
   function addSpecialty(value?: string) {
     const term = (value ?? specialtyInput).trim()
-    if (term && ALL_SPECIALTIES.includes(term) && !therapist.specialties.includes(term) && therapist.specialties.length < 6) {
+    if (term && ALL_SPECIALTIES.includes(term) && !therapist.specialties.includes(term) && therapist.specialties.length < 7) {
       setTherapist(prev => ({ ...prev, specialties: [...prev.specialties, term] }))
       setSpecialtyInput('')
     }
@@ -764,7 +764,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                       </span>
                     ))}
                   </div>
-                  {therapist.specialties.length < 6 ? (
+                  {therapist.specialties.length < 7 ? (
                     <SpecialtyInput
                       value={specialtyInput}
                       onChange={setSpecialtyInput}
