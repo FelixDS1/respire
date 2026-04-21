@@ -91,10 +91,10 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
     try {
       // Upload profile photo directly from the client using the user's session
       const ext = photo.name.split('.').pop()?.toLowerCase() ?? 'jpg'
-      const storagePath = `${userId}/avatar.${ext}`
+      const storagePath = `${userId}/avatar_${Date.now()}.${ext}`
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(storagePath, photo, { upsert: true, contentType: photo.type || 'image/jpeg' })
+        .upload(storagePath, photo, { contentType: photo.type || 'image/jpeg' })
       if (uploadError) {
         setError('Erreur téléversement photo : ' + uploadError.message)
         setLoading(false)
