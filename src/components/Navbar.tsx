@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { useLanguage } from '@/lib/language'
 
@@ -15,7 +16,7 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
   const [userEmail, setUserEmail] = useState<string | null>(initialEmail)
   const [role, setRole] = useState<string | null>(initialRole)
   const [unreadCount, setUnreadCount] = useState(0)
-  const [menuOpen, setMenuOpen] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     const supabase = createClient()
@@ -49,12 +50,11 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
     return () => clearInterval(interval)
   }, [userEmail])
 
-  // Close menu when route changes (link clicked)
-  function closeMenu() { setMenuOpen(false) }
-
   const roleLabel = role === 'therapist'
     ? (lang === 'en' ? 'Therapist' : 'Thérapeute')
     : 'Membre'
+
+  const profileHref = role === 'therapist' ? '/dashboard' : '/account'
 
   const linkStyle: React.CSSProperties = {
     color: 'var(--text)',
@@ -63,18 +63,32 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
     transition: 'opacity 0.15s',
   }
 
-  const mobileLinkStyle: React.CSSProperties = {
-    color: 'var(--text)',
-    fontSize: '1.1rem',
+  // Mobile bottom nav active state
+  function isActive(href: string) {
+    if (href === '/') return pathname === '/'
+    return pathname?.startsWith(href)
+  }
+
+  const navItemStyle = (href: string): React.CSSProperties => ({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '3px',
     textDecoration: 'none',
-    padding: '14px 0',
-    borderBottom: '1px solid var(--border)',
-    display: 'block',
+    color: isActive(href) ? 'var(--blue-primary)' : 'rgba(44,40,32,0.4)',
+    flex: 1,
+    padding: '6px 0',
+  })
+
+  const navLabelStyle: React.CSSProperties = {
+    fontSize: '0.6rem',
+    letterSpacing: '0.04em',
     fontFamily: 'Georgia, serif',
   }
 
   return (
     <>
+      {/* ── Top nav (desktop + mobile logo) ── */}
       <nav style={{
         borderBottom: '1px solid var(--border)',
         backgroundColor: 'rgba(250,248,245,0.97)',
@@ -92,7 +106,7 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
         }}>
 
           {/* Logo */}
-          <Link href="/" onClick={closeMenu} style={{
+          <Link href="/" style={{
             fontFamily: 'Georgia, serif',
             fontSize: '2rem',
             fontWeight: 400,
@@ -186,115 +200,70 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
               {lang === 'fr' ? 'EN' : 'FR'}
             </button>
           </div>
-
-          {/* Mobile: right side — unread badge + hamburger */}
-          <div className="show-mobile" style={{ display: 'none', alignItems: 'center', gap: '16px' }}>
-            {userEmail && unreadCount > 0 && (
-              <Link href="/messages" onClick={closeMenu} style={{ position: 'relative', color: 'var(--blue-primary)', textDecoration: 'none', fontSize: '0.9rem' }}>
-                Messages
-                <span style={{
-                  position: 'absolute', top: '-8px', right: '-12px',
-                  backgroundColor: 'var(--blue-primary)', color: 'white',
-                  borderRadius: '10px', fontSize: '10px', lineHeight: 1,
-                  padding: '2px 5px', minWidth: '16px', textAlign: 'center',
-                }}>
-                  {unreadCount > 99 ? '99+' : unreadCount}
-                </span>
-              </Link>
-            )}
-            <button
-              onClick={() => setMenuOpen(o => !o)}
-              aria-label="Menu"
-              style={{
-                background: 'none', border: 'none', cursor: 'pointer',
-                padding: '6px', display: 'flex', flexDirection: 'column',
-                gap: '5px', alignItems: 'center', justifyContent: 'center',
-              }}
-            >
-              {menuOpen ? (
-                /* X icon */
-                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-                  <line x1="2" y1="2" x2="20" y2="20" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"/>
-                  <line x1="20" y1="2" x2="2" y2="20" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              ) : (
-                /* Hamburger icon */
-                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-                  <line x1="2" y1="5" x2="20" y2="5" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"/>
-                  <line x1="2" y1="11" x2="20" y2="11" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"/>
-                  <line x1="2" y1="17" x2="20" y2="17" stroke="var(--text)" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-              )}
-            </button>
-          </div>
         </div>
-
-        {/* Mobile dropdown menu */}
-        {menuOpen && (
-          <div style={{
-            backgroundColor: 'var(--surface)',
-            borderTop: '1px solid var(--border)',
-            padding: '8px 20px 20px',
-            display: 'flex',
-            flexDirection: 'column',
-          }}>
-            <Link href="/therapists" onClick={closeMenu} style={mobileLinkStyle}>{t.nav.findTherapist}</Link>
-            <Link href="/about" onClick={closeMenu} style={mobileLinkStyle}>{t.nav.about}</Link>
-
-            {userEmail ? (
-              <>
-                <Link
-                  href={role === 'therapist' ? '/dashboard' : '/account'}
-                  onClick={closeMenu}
-                  style={mobileLinkStyle}
-                >
-                  {lang === 'en' ? 'My Profile' : 'Mon Profil'}
-                  <span style={{ fontSize: '0.72rem', marginLeft: '8px', padding: '2px 8px', backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', borderRadius: '4px' }}>
-                    {roleLabel}
-                  </span>
-                </Link>
-                <Link href="/messages" onClick={closeMenu} style={{ ...mobileLinkStyle, position: 'relative', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  Messages
-                  {unreadCount > 0 && (
-                    <span style={{
-                      backgroundColor: 'var(--blue-primary)', color: 'white',
-                      borderRadius: '10px', fontSize: '10px', lineHeight: 1,
-                      padding: '2px 6px',
-                    }}>
-                      {unreadCount}
-                    </span>
-                  )}
-                </Link>
-                <a href="/api/logout" style={{ ...mobileLinkStyle, color: '#8A9BAD' }}>{t.nav.logout}</a>
-              </>
-            ) : (
-              <>
-                <Link href="/login" onClick={closeMenu} style={mobileLinkStyle}>{t.nav.login}</Link>
-                <Link href="/signup" onClick={closeMenu} style={{
-                  ...mobileLinkStyle,
-                  backgroundColor: 'var(--blue-primary)', color: 'white',
-                  padding: '14px 20px', borderRadius: '8px', textAlign: 'center',
-                  border: 'none', marginTop: '8px',
-                }}>
-                  {t.nav.signup}
-                </Link>
-              </>
-            )}
-
-            <button
-              onClick={toggle}
-              style={{
-                marginTop: '16px', alignSelf: 'flex-start',
-                fontSize: '0.85rem', letterSpacing: '0.08em', color: '#6B8A9E',
-                background: 'none', border: '1px solid var(--border)', cursor: 'pointer',
-                padding: '6px 14px', borderRadius: '4px', fontFamily: 'Georgia, serif',
-              }}
-            >
-              {lang === 'fr' ? 'EN' : 'FR'}
-            </button>
-          </div>
-        )}
       </nav>
+
+      {/* ── Mobile bottom nav ── */}
+      <div className="mobile-nav-bar" style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: '60px',
+        backgroundColor: 'rgba(250,248,245,0.97)',
+        backdropFilter: 'blur(12px)',
+        borderTop: '1px solid var(--border)',
+        zIndex: 50,
+        alignItems: 'center',
+        justifyContent: 'space-around',
+      }}>
+
+        {/* Respire → home */}
+        <Link href="/" style={navItemStyle('/')}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          <span style={navLabelStyle}>Respire</span>
+        </Link>
+
+        {/* Nos Psys → /therapists */}
+        <Link href="/therapists" style={navItemStyle('/therapists')}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <span style={navLabelStyle}>Nos Psys</span>
+        </Link>
+
+        {/* Messages → /messages */}
+        <Link href="/messages" style={{ ...navItemStyle('/messages'), position: 'relative' }}>
+          {unreadCount > 0 && (
+            <span style={{
+              position: 'absolute', top: '2px', left: '50%', transform: 'translateX(4px)',
+              backgroundColor: 'var(--blue-primary)', color: 'white',
+              borderRadius: '10px', fontSize: '9px', lineHeight: 1,
+              padding: '2px 5px', minWidth: '14px', textAlign: 'center',
+            }}>
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </span>
+          )}
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span style={navLabelStyle}>Messages</span>
+        </Link>
+
+        {/* Mon Profil → /account or /dashboard */}
+        <Link href={profileHref} style={navItemStyle(profileHref)}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span style={navLabelStyle}>Mon Profil</span>
+        </Link>
+
+      </div>
     </>
   )
 }

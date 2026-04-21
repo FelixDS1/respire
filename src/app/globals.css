@@ -96,17 +96,6 @@ body {
 
 /* Therapist listing */
 @media (max-width: 768px) {
-  /* Filters scroll horizontally instead of wrapping */
-  .filter-row {
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding-bottom: 8px;
-    gap: 6px !important;
-  }
-  .filter-row::-webkit-scrollbar { display: none; }
-  .filter-divider { display: none !important; }
 
   /* Cards: keep photo portrait on mobile, hide separate price column */
   .therapist-card-photo {
@@ -135,16 +124,24 @@ body {
   }
 }
 
-/* Footer */
+/* Footer — hidden on mobile (bottom nav replaces it) */
 @media (max-width: 768px) {
-  .footer-inner {
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 12px !important;
-    padding: 20px !important;
-    text-align: center;
-  }
-  .footer-links { flex-wrap: wrap !important; justify-content: center !important; gap: 16px !important; }
+  .footer-desktop { display: none !important; }
+}
+
+/* Mobile bottom nav bar */
+.mobile-nav-bar { display: none; }
+@media (max-width: 768px) {
+  .mobile-nav-bar { display: flex !important; }
+  /* Push page content above the nav bar */
+  body { padding-bottom: 64px; }
+}
+
+/* Therapist filter dropdowns — mobile only */
+.filter-mobile { display: none; }
+@media (max-width: 768px) {
+  .filter-mobile { display: flex !important; gap: 8px; flex-wrap: wrap; }
+  .filter-desktop { display: none !important; }
 }
 
 /* Dashboard / Account tabs */

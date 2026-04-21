@@ -32,6 +32,96 @@ interface Props {
   nextWeekIds: string[]
 }
 
+// Mobile-only dropdown pill — shows current value, opens options on tap
+function FilterDropdown({
+  options,
+  value,
+  onChange,
+}: {
+  options: { value: string; label: string }[]
+  value: string
+  onChange: (v: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  const current = options.find(o => o.value === value)?.label ?? options[0]?.label
+  const isFiltered = value !== options[0]?.value
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          padding: '7px 14px',
+          borderRadius: '999px',
+          border: '1px solid var(--blue-primary)',
+          backgroundColor: isFiltered ? 'var(--blue-primary)' : 'transparent',
+          color: isFiltered ? 'white' : 'var(--blue-primary)',
+          fontSize: '0.8rem',
+          fontFamily: 'Georgia, serif',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {current}
+        <span style={{ fontSize: '0.55rem', opacity: 0.7 }}>▾</span>
+      </button>
+      {open && (
+        <div style={{
+          position: 'absolute',
+          top: 'calc(100% + 6px)',
+          left: 0,
+          backgroundColor: 'var(--surface)',
+          border: '1px solid var(--border)',
+          borderRadius: '12px',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+          zIndex: 30,
+          minWidth: '170px',
+          overflow: 'hidden',
+        }}>
+          {options.map((opt, i) => (
+            <button
+              key={opt.value}
+              onMouseDown={e => {
+                e.preventDefault()
+                onChange(opt.value)
+                setOpen(false)
+              }}
+              style={{
+                display: 'block',
+                width: '100%',
+                textAlign: 'left',
+                padding: '11px 16px',
+                fontSize: '0.85rem',
+                fontFamily: 'Georgia, serif',
+                color: opt.value === value ? 'var(--blue-primary)' : 'var(--text)',
+                backgroundColor: opt.value === value ? 'var(--blue-accent)' : 'transparent',
+                border: 'none',
+                borderBottom: i < options.length - 1 ? '1px solid var(--border)' : 'none',
+                cursor: 'pointer',
+              }}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function PillToggle({
   label,
   active,
@@ -295,58 +385,49 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
           )}
         </div>
 
-        {/* ── Availability + format filters ── */}
-        <div className="filter-row" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '32px' }}>
-          <PillToggle
-            label={lang === 'fr' ? 'Toutes disponibilités' : 'All availability'}
-            active={availFilter === 'all'}
-            onClick={() => setAvailFilter('all')}
-          />
-          <PillToggle
-            label={lang === 'fr' ? 'Cette semaine' : 'This week'}
-            active={availFilter === 'this_week'}
-            onClick={() => setAvailFilter('this_week')}
-          />
-          <PillToggle
-            label={lang === 'fr' ? 'Semaine prochaine' : 'Next week'}
-            active={availFilter === 'next_week'}
-            onClick={() => setAvailFilter('next_week')}
-          />
+        {/* ── Filters — desktop: all pills in a row ── */}
+        <div className="filter-desktop" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '32px' }}>
+          <PillToggle label={lang === 'fr' ? 'Toutes disponibilités' : 'All availability'} active={availFilter === 'all'} onClick={() => setAvailFilter('all')} />
+          <PillToggle label={lang === 'fr' ? 'Cette semaine' : 'This week'} active={availFilter === 'this_week'} onClick={() => setAvailFilter('this_week')} />
+          <PillToggle label={lang === 'fr' ? 'Semaine prochaine' : 'Next week'} active={availFilter === 'next_week'} onClick={() => setAvailFilter('next_week')} />
+          <div style={{ width: '1px', height: '22px', backgroundColor: 'var(--border)', margin: '0 4px' }} />
+          <PillToggle label={lang === 'fr' ? 'Présentiel & vidéo' : 'In-person & video'} active={consultFilter === 'all'} onClick={() => setConsultFilter('all')} />
+          <PillToggle label={lang === 'fr' ? 'Présentiel' : 'In-person'} active={consultFilter === 'presentiel'} onClick={() => setConsultFilter('presentiel')} />
+          <PillToggle label={lang === 'fr' ? 'Vidéo' : 'Video'} active={consultFilter === 'video'} onClick={() => setConsultFilter('video')} />
+          <div style={{ width: '1px', height: '22px', backgroundColor: 'var(--border)', margin: '0 4px' }} />
+          <PillToggle label={lang === 'fr' ? 'Psychologues & psychiatres' : 'All'} active={professionFilter === 'all'} onClick={() => setProfessionFilter('all')} />
+          <PillToggle label={lang === 'fr' ? 'Psychologues' : 'Psychologists'} active={professionFilter === 'Psychologue'} onClick={() => setProfessionFilter('Psychologue')} />
+          <PillToggle label={lang === 'fr' ? 'Psychiatres' : 'Psychiatrists'} active={professionFilter === 'Psychiatre'} onClick={() => setProfessionFilter('Psychiatre')} />
+        </div>
 
-          <div className="filter-divider" style={{ width: '1px', height: '22px', backgroundColor: 'var(--border)', margin: '0 4px' }} />
-
-          <PillToggle
-            label={lang === 'fr' ? 'Présentiel & vidéo' : 'In-person & video'}
-            active={consultFilter === 'all'}
-            onClick={() => setConsultFilter('all')}
+        {/* ── Filters — mobile: one dropdown pill per group ── */}
+        <div className="filter-mobile" style={{ marginBottom: '20px' }}>
+          <FilterDropdown
+            value={availFilter}
+            onChange={v => setAvailFilter(v as typeof availFilter)}
+            options={[
+              { value: 'all', label: lang === 'fr' ? 'Disponibilités' : 'Availability' },
+              { value: 'this_week', label: lang === 'fr' ? 'Cette semaine' : 'This week' },
+              { value: 'next_week', label: lang === 'fr' ? 'Semaine prochaine' : 'Next week' },
+            ]}
           />
-          <PillToggle
-            label={lang === 'fr' ? 'Présentiel' : 'In-person'}
-            active={consultFilter === 'presentiel'}
-            onClick={() => setConsultFilter('presentiel')}
+          <FilterDropdown
+            value={consultFilter}
+            onChange={v => setConsultFilter(v as typeof consultFilter)}
+            options={[
+              { value: 'all', label: lang === 'fr' ? 'Format' : 'Format' },
+              { value: 'presentiel', label: lang === 'fr' ? 'Présentiel' : 'In-person' },
+              { value: 'video', label: 'Vidéo' },
+            ]}
           />
-          <PillToggle
-            label={lang === 'fr' ? 'Vidéo' : 'Video'}
-            active={consultFilter === 'video'}
-            onClick={() => setConsultFilter('video')}
-          />
-
-          <div className="filter-divider" style={{ width: '1px', height: '22px', backgroundColor: 'var(--border)', margin: '0 4px' }} />
-
-          <PillToggle
-            label={lang === 'fr' ? 'Psychologues & psychiatres' : 'Psychologists & psychiatrists'}
-            active={professionFilter === 'all'}
-            onClick={() => setProfessionFilter('all')}
-          />
-          <PillToggle
-            label={lang === 'fr' ? 'Psychologues' : 'Psychologists'}
-            active={professionFilter === 'Psychologue'}
-            onClick={() => setProfessionFilter('Psychologue')}
-          />
-          <PillToggle
-            label={lang === 'fr' ? 'Psychiatres' : 'Psychiatrists'}
-            active={professionFilter === 'Psychiatre'}
-            onClick={() => setProfessionFilter('Psychiatre')}
+          <FilterDropdown
+            value={professionFilter}
+            onChange={v => setProfessionFilter(v as typeof professionFilter)}
+            options={[
+              { value: 'all', label: lang === 'fr' ? 'Profession' : 'Profession' },
+              { value: 'Psychologue', label: lang === 'fr' ? 'Psychologues' : 'Psychologists' },
+              { value: 'Psychiatre', label: lang === 'fr' ? 'Psychiatres' : 'Psychiatrists' },
+            ]}
           />
         </div>
 

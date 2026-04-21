@@ -7,7 +7,7 @@ export default function Footer() {
   const { lang, t } = useLanguage()
 
   return (
-    <footer style={{
+    <footer className="footer-desktop" style={{
       borderTop: '1px solid var(--border)',
       backgroundColor: 'var(--surface)',
       position: 'sticky',
