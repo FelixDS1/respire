@@ -89,37 +89,21 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
     const supabase = createClient()
 
     try {
-      // Upload profile photo via signed URL
+      // Upload profile photo directly from the client using the user's session
       const ext = photo.name.split('.').pop()?.toLowerCase() ?? 'jpg'
-      const urlRes = await fetch('/api/avatar-upload-url', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ext }),
-      })
-      let urlJson: { signedUrl?: string; publicUrl?: string; error?: string } = {}
-      try { urlJson = await urlRes.json() } catch { /* empty body */ }
-      if (!urlRes.ok) {
-        setError('Erreur téléversement photo : ' + (urlJson.error ?? `HTTP ${urlRes.status}`))
+      const storagePath = `${userId}/avatar.${ext}`
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(storagePath, photo, { upsert: true, contentType: photo.type || 'image/jpeg' })
+      if (uploadError) {
+        setError('Erreur téléversement photo : ' + uploadError.message)
         setLoading(false)
         return
       }
-      if (!urlJson.signedUrl) {
-        setError('Erreur : URL de téléversement manquante.')
-        setLoading(false)
-        return
-      }
-      const uploadRes = await fetch(urlJson.signedUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': photo.type || 'image/jpeg' },
-        body: photo,
-      })
-      if (!uploadRes.ok) {
-        setError(`Erreur lors du téléversement de la photo (${uploadRes.status}).`)
-        setLoading(false)
-        return
-      }
-      const photoUrl = `${urlJson.publicUrl}?t=${Date.now()}`
-      // Persist URL to both profiles and therapists tables
+      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(storagePath)
+      const photoUrl = `${publicUrl}?t=${Date.now()}`
+
+      // Persist URL to profiles (and therapists if applicable) via server route
       const saveRes = await fetch('/api/upload-avatar/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
