@@ -95,24 +95,35 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
     if (role === 'therapist' && !dpaAccepted) { setError('Veuillez accepter l\'accord de traitement des données.'); return }
 
     setLoading(true)
+
+    // Helper: upload a file via the server-side API route (avoids client SDK auth lock)
+    async function uploadFile(file: File, bucket: string, path: string): Promise<string | null> {
+      const fd = new FormData()
+      fd.append('file', file)
+      fd.append('bucket', bucket)
+      fd.append('path', path)
+      const res = await fetch('/api/upload-file', { method: 'POST', body: fd })
+      let json: { publicUrl?: string; error?: string } = {}
+      try { json = await res.json() } catch { /* empty body */ }
+      if (!res.ok) {
+        setError('Erreur téléversement : ' + (json.error ?? `HTTP ${res.status}`))
+        setLoading(false)
+        return null
+      }
+      return json.publicUrl ?? ''
+    }
+
     const supabase = createFreshClient()
 
     try {
-      // Upload profile photo directly from the client using the user's session
+      // Upload profile photo via server route (no client SDK auth lock)
       const ext = photo.name.split('.').pop()?.toLowerCase() ?? 'jpg'
-      const storagePath = `${userId}/avatar_${Date.now()}.${ext}`
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(storagePath, photo, { contentType: photo.type || 'image/jpeg' })
-      if (uploadError) {
-        setError('Erreur téléversement photo : ' + uploadError.message)
-        setLoading(false)
-        return
-      }
-      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(storagePath)
-      const photoUrl = `${publicUrl}?t=${Date.now()}`
+      const avatarPath = `${userId}/avatar_${Date.now()}.${ext}`
+      const photoPublicUrl = await uploadFile(photo, 'avatars', avatarPath)
+      if (photoPublicUrl === null) return
+      const photoUrl = `${photoPublicUrl}?t=${Date.now()}`
 
-      // Persist URL to profiles (and therapists if applicable) via server route
+      // Persist URL to profiles and therapists tables
       const saveRes = await fetch('/api/upload-avatar/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -135,33 +146,21 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
         router.push(redirectAfter ?? '/therapists')
 
       } else {
-        // Upload ID document (mandatory)
+        // Upload ID document via server route
         const idExt = idDoc!.name.split('.').pop()
         const idPath = `${userId}/id_${Date.now()}.${idExt}`
-        const { error: idError } = await supabase.storage
-          .from('Credentials')
-          .upload(idPath, idDoc!)
-        if (idError) {
-          setError('Erreur pièce d\'identité : ' + idError.message)
-          setLoading(false)
-          return
-        }
+        const idUrl = await uploadFile(idDoc!, 'Credentials', idPath)
+        if (idUrl === null) return
 
-        // Upload credential documents (diplomas etc.)
+        // Upload credential documents via server route
         const credPaths: string[] = [idPath]
         for (let i = 0; i < credentials.length; i++) {
           const file = credentials[i]
           const credExt = file.name.split('.').pop()
           const path = `${userId}/${Date.now()}_${i}.${credExt}`
-          const { data: credData, error: credError } = await supabase.storage
-            .from('Credentials')
-            .upload(path, file)
-          if (credError) {
-            setError(`Erreur téléversement ${file.name} : ` + credError.message)
-            setLoading(false)
-            return
-          }
-          credPaths.push(credData.path)
+          const credUrl = await uploadFile(file, 'Credentials', path)
+          if (credUrl === null) return
+          credPaths.push(path)
         }
 
         const { error: therapistErr } = await supabase.from('therapists').upsert({
