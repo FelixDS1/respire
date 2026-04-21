@@ -89,16 +89,22 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
     const supabase = createClient()
 
     try {
-      // Upload profile photo via signed URL (no size limit)
+      // Upload profile photo via signed URL
       const ext = photo.name.split('.').pop()?.toLowerCase() ?? 'jpg'
       const urlRes = await fetch('/api/avatar-upload-url', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ext }),
       })
-      const urlJson = await urlRes.json()
+      let urlJson: { signedUrl?: string; publicUrl?: string; error?: string } = {}
+      try { urlJson = await urlRes.json() } catch { /* empty body */ }
       if (!urlRes.ok) {
-        setError('Erreur lors du téléversement de la photo : ' + (urlJson.error ?? urlRes.status))
+        setError('Erreur téléversement photo : ' + (urlJson.error ?? `HTTP ${urlRes.status}`))
+        setLoading(false)
+        return
+      }
+      if (!urlJson.signedUrl) {
+        setError('Erreur : URL de téléversement manquante.')
         setLoading(false)
         return
       }
@@ -108,17 +114,24 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
         body: photo,
       })
       if (!uploadRes.ok) {
-        setError('Erreur lors du téléversement de la photo.')
+        setError(`Erreur lors du téléversement de la photo (${uploadRes.status}).`)
         setLoading(false)
         return
       }
       const photoUrl = `${urlJson.publicUrl}?t=${Date.now()}`
       // Persist URL to both profiles and therapists tables
-      await fetch('/api/upload-avatar/save', {
+      const saveRes = await fetch('/api/upload-avatar/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: photoUrl }),
       })
+      if (!saveRes.ok) {
+        let saveJson: { error?: string } = {}
+        try { saveJson = await saveRes.json() } catch { /* empty body */ }
+        setError('Erreur sauvegarde photo : ' + (saveJson.error ?? `HTTP ${saveRes.status}`))
+        setLoading(false)
+        return
+      }
 
       if (role === 'patient') {
         const { error: profileErr } = await supabase.from('profiles').update({
@@ -179,7 +192,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
       }
     } catch (err) {
       console.error('onboarding error:', err)
-      setError('Une erreur inattendue est survenue. Veuillez réessayer.')
+      setError('Erreur : ' + (err instanceof Error ? err.message : String(err)))
       setLoading(false)
     }
   }
