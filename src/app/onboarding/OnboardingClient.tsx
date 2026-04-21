@@ -2,17 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase'
-import { createBrowserClient } from '@supabase/ssr'
 import { DPA_CURRENT_VERSION } from '@/lib/constants'
-
-// Fresh client for uploads — avoids auth lock contention from the singleton
-function createFreshClient() {
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
 import { specialtyTranslations, languageTranslations } from '@/lib/language'
 
 const ALL_SPECIALTIES = Object.keys(specialtyTranslations)
@@ -96,7 +86,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
 
     setLoading(true)
 
-    // Helper: upload a file via the server-side API route (avoids client SDK auth lock)
+    // Helper: upload a file via the server-side API route (no client SDK, no auth lock)
     async function uploadFile(file: File, bucket: string, path: string): Promise<string | null> {
       const fd = new FormData()
       fd.append('file', file)
@@ -113,46 +103,45 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
       return json.publicUrl ?? ''
     }
 
-    const supabase = createFreshClient()
+    // Helper: call a JSON API route and surface errors
+    async function callApi(url: string, body: object): Promise<boolean> {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      let json: { error?: string } = {}
+      try { json = await res.json() } catch { /* empty body */ }
+      if (!res.ok) {
+        setError('Erreur : ' + (json.error ?? `HTTP ${res.status}`))
+        setLoading(false)
+        return false
+      }
+      return true
+    }
 
     try {
-      // Upload profile photo via server route (no client SDK auth lock)
+      // 1. Upload profile photo via server route (no client SDK)
       const ext = photo.name.split('.').pop()?.toLowerCase() ?? 'jpg'
       const avatarPath = `${userId}/avatar_${Date.now()}.${ext}`
       const photoPublicUrl = await uploadFile(photo, 'avatars', avatarPath)
       if (photoPublicUrl === null) return
       const photoUrl = `${photoPublicUrl}?t=${Date.now()}`
 
-      // Persist URL to profiles and therapists tables
-      const saveRes = await fetch('/api/upload-avatar/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: photoUrl }),
-      })
-      if (!saveRes.ok) {
-        let saveJson: { error?: string } = {}
-        try { saveJson = await saveRes.json() } catch { /* empty body */ }
-        setError('Erreur sauvegarde photo : ' + (saveJson.error ?? `HTTP ${saveRes.status}`))
-        setLoading(false)
-        return
-      }
-
       if (role === 'patient') {
-        const { error: profileErr } = await supabase.from('profiles').update({
-          bio: bio.trim(),
-          avatar_url: photoUrl,
-        }).eq('id', userId)
-        if (profileErr) { setError('Erreur : ' + profileErr.message); setLoading(false); return }
+        // 2a. Save patient profile (bio + avatar) via server route
+        const ok = await callApi('/api/onboarding/patient', { bio: bio.trim(), avatar_url: photoUrl })
+        if (!ok) return
         router.push(redirectAfter ?? '/therapists')
 
       } else {
-        // Upload ID document via server route
+        // 2b. Upload ID document via server route
         const idExt = idDoc!.name.split('.').pop()
         const idPath = `${userId}/id_${Date.now()}.${idExt}`
         const idUrl = await uploadFile(idDoc!, 'Credentials', idPath)
         if (idUrl === null) return
 
-        // Upload credential documents via server route
+        // 3. Upload credential documents via server route
         const credPaths: string[] = [idPath]
         for (let i = 0; i < credentials.length; i++) {
           const file = credentials[i]
@@ -163,8 +152,8 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
           credPaths.push(path)
         }
 
-        const { error: therapistErr } = await supabase.from('therapists').upsert({
-          id: userId,
+        // 4. Upsert therapist record via server route
+        const ok = await callApi('/api/onboarding/therapist-step1', {
           photo_url: photoUrl,
           rpps_number: hasRpps ? rpps.trim() : null,
           adeli_number: !hasRpps ? adeli.trim() : null,
@@ -172,12 +161,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
           dpa_accepted_at: new Date().toISOString(),
           dpa_version: DPA_CURRENT_VERSION,
         })
-
-        if (therapistErr) {
-          setError('Erreur enregistrement : ' + therapistErr.message)
-          setLoading(false)
-          return
-        }
+        if (!ok) return
 
         setLoading(false)
         setStep(2)
@@ -197,23 +181,27 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
     if (!location) { setError('Veuillez indiquer votre arrondissement.'); return }
 
     setLoading(true)
-    const supabase = createFreshClient()
     try {
-      const { error: err } = await supabase.from('therapists').upsert({
-        id: userId,
-        bio: therapistBio.trim(),
-        specialties,
-        languages,
-        consultation_fee: Number(fee),
-        location,
-        sector,
-        consultation_type: consultationType,
+      const res = await fetch('/api/onboarding/therapist-step2', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          bio: therapistBio.trim(),
+          specialties,
+          languages,
+          consultation_fee: Number(fee),
+          location,
+          sector,
+          consultation_type: consultationType,
+        }),
       })
-      if (err) { setError('Erreur : ' + err.message); setLoading(false); return }
+      let json: { error?: string } = {}
+      try { json = await res.json() } catch { /* empty body */ }
+      if (!res.ok) { setError('Erreur : ' + (json.error ?? `HTTP ${res.status}`)); setLoading(false); return }
       router.push('/dashboard')
     } catch (err) {
       console.error('step2 error:', err)
-      setError('Une erreur inattendue est survenue. Veuillez réessayer.')
+      setError('Erreur : ' + (err instanceof Error ? err.message : String(err)))
       setLoading(false)
     }
   }
