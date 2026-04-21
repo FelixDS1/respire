@@ -134,9 +134,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
 
   // Therapist list updates only when selectedPills / other filters change — not on every keystroke
   const filtered = therapists.filter(th => {
-    for (const pill of selectedPills) {
-      if (!th.specialties?.includes(pill)) return false
-    }
+    if (selectedPills.length > 0 && !selectedPills.some(pill => th.specialties?.includes(pill))) return false
     if (availFilter === 'this_week' && !thisWeekSet.has(th.id)) return false
     if (availFilter === 'next_week' && !nextWeekSet.has(th.id)) return false
     if (consultFilter === 'presentiel' && th.consultation_type !== 'presentiel' && th.consultation_type !== 'both') return false
@@ -274,6 +272,27 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
             )}
           </div>
 
+          {/* Selected specialty pills */}
+          {selectedPills.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {selectedPills.map(pill => (
+                <button
+                  key={pill}
+                  onClick={() => togglePill(pill)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    padding: '5px 14px', borderRadius: '999px',
+                    backgroundColor: 'var(--blue-primary)', color: 'white',
+                    fontSize: '0.8rem', fontFamily: 'Georgia, serif',
+                    border: 'none', cursor: 'pointer',
+                  }}
+                >
+                  {lang === 'en' ? (specialtyTranslations[pill] ?? pill) : pill}
+                  <span style={{ fontSize: '1rem', lineHeight: 1, opacity: 0.8 }}>×</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* ── Availability + format filters ── */}
