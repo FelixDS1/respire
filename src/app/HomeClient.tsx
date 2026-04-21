@@ -304,12 +304,12 @@ export default function HomeClient({ previews }: Props) {
                 ))}
               </div>
 
-              {/* Mobile: swipeable carousel with peek of next card */}
+              {/* Mobile: swipeable carousel — one square card at a time, next peeks */}
               <div className="hiw-carousel show-mobile" style={{
                 overflowX: 'auto',
                 scrollSnapType: 'x mandatory',
                 WebkitOverflowScrolling: 'touch' as React.CSSProperties['WebkitOverflowScrolling'],
-                gap: '14px',
+                gap: '12px',
                 margin: '0 -24px',
                 padding: '0 20px 12px',
                 scrollbarWidth: 'none' as React.CSSProperties['scrollbarWidth'],
@@ -317,16 +317,24 @@ export default function HomeClient({ previews }: Props) {
               }}>
                 {steps.map(step => (
                   <div key={step.num} style={{
-                    minWidth: 'calc(100vw - 88px)',
+                    minWidth: 'calc(100vw - 96px)',
+                    width: 'calc(100vw - 96px)',
+                    height: 'calc(100vw - 96px)', // square: same as width
                     flexShrink: 0,
                     scrollSnapAlign: 'start',
                     background: '#F2EFE8',
-                    borderRadius: '16px',
-                    padding: '1.5rem',
+                    borderRadius: '20px',
+                    padding: '1.4rem',
+                    boxSizing: 'border-box',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
                   }}>
-                    <div style={{ fontFamily: 'Georgia, serif', fontSize: '3.5rem', fontWeight: 300, lineHeight: 1, color: 'rgba(44,40,32,0.12)', marginBottom: '0.6rem' }}>{step.num}</div>
-                    <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '1.25rem', fontWeight: 400, marginBottom: '0.6rem', color: '#2C2820', lineHeight: 1.2 }}>{step.title}</h3>
-                    <p style={{ fontSize: '0.95rem', lineHeight: 1.7, color: 'rgba(44,40,32,0.6)', fontWeight: 300, fontFamily: 'Georgia, serif', margin: 0 }}>{step.body}</p>
+                    <div style={{ fontFamily: 'Georgia, serif', fontSize: '3rem', fontWeight: 300, lineHeight: 1, color: 'rgba(44,40,32,0.12)' }}>{step.num}</div>
+                    <div>
+                      <h3 style={{ fontFamily: 'Georgia, serif', fontSize: '1.15rem', fontWeight: 400, marginBottom: '0.5rem', color: '#2C2820', lineHeight: 1.2 }}>{step.title}</h3>
+                      <p style={{ fontSize: '0.88rem', lineHeight: 1.65, color: 'rgba(44,40,32,0.6)', fontWeight: 300, fontFamily: 'Georgia, serif', margin: 0 }}>{step.body}</p>
+                    </div>
                   </div>
                 ))}
               </div>

@@ -78,37 +78,37 @@ body {
 @media (max-width: 768px) {
   .home-hero {
     grid-template-columns: 1fr !important;
-    padding: 1.2rem 16px 1.5rem !important;
-    gap: 1rem !important;
+    padding: 2rem 16px 2rem !important;
+    gap: 1.2rem !important;
   }
-  /* Full-width title on mobile — sized to fill screen on 2 lines */
+  /* Large title — fills most of the screen width on 2 lines */
   .hero-title {
-    font-size: 2.15rem !important;
-    line-height: 1.15 !important;
-    margin-bottom: 1.2rem !important;
+    font-size: 2.4rem !important;
+    line-height: 1.18 !important;
+    margin-bottom: 1.6rem !important;
   }
-  /* Hide subtitle on mobile to keep it tight */
+  /* Hide subtitle on mobile */
   .hero-subtitle { display: none !important; }
-  /* CTA pills: same row, evenly spaced, slightly smaller */
+  /* CTA pills: same row, evenly fill width, slightly smaller */
   .home-cta-row {
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     justify-content: space-between !important;
     width: 100% !important;
-    gap: 8px !important;
+    gap: 10px !important;
   }
   .cta-pill-wrap { flex: 1 !important; text-align: center !important; }
   .cta-pill-primary, .cta-pill-secondary {
     width: 100% !important;
-    padding: 11px 12px !important;
-    font-size: 0.82rem !important;
+    padding: 12px 10px !important;
+    font-size: 0.8rem !important;
     box-sizing: border-box !important;
     text-align: center !important;
   }
   .home-hiw-section { margin: 0 1rem !important; }
   .home-hiw-inner { padding: 2rem 1.5rem !important; }
   .how-it-works-grid { grid-template-columns: 1fr !important; }
-  /* Carousel: hide scrollbar */
+  /* Carousel scrollbar hidden */
   .hiw-carousel { scrollbar-width: none !important; }
   .hiw-carousel::-webkit-scrollbar { display: none !important; }
   .home-cta-strip { margin: 1rem !important; }
