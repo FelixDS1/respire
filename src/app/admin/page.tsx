@@ -8,7 +8,27 @@ export default async function AdminPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // Protect with ADMIN_USER_ID env var
+  // If ADMIN_USER_ID not set, show the current user's ID to help configure it
+  if (!process.env.ADMIN_USER_ID) {
+    return (
+      <main style={{ padding: '4rem 2rem', fontFamily: 'Georgia, serif' }}>
+        <h1 style={{ marginBottom: '1rem' }}>Admin — configuration requise</h1>
+        <p style={{ marginBottom: '0.5rem', color: '#C0392B' }}>
+          La variable d'environnement <code>ADMIN_USER_ID</code> n'est pas définie.
+        </p>
+        <p style={{ marginBottom: '0.5rem' }}>
+          Ajoutez-la dans Vercel → Settings → Environment Variables :
+        </p>
+        <code style={{ display: 'block', background: '#F2EFE8', padding: '1rem', borderRadius: '8px', marginTop: '0.5rem' }}>
+          ADMIN_USER_ID = {user.id}
+        </code>
+        <p style={{ marginTop: '1rem', color: '#4A6070', fontSize: '0.85rem' }}>
+          Redéployez ensuite pour que la variable soit prise en compte.
+        </p>
+      </main>
+    )
+  }
+
   if (user.id !== process.env.ADMIN_USER_ID) redirect('/')
 
   const admin = createClient(
@@ -16,10 +36,19 @@ export default async function AdminPage() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
-  const { data: therapists } = await admin
+  const { data: therapists, error } = await admin
     .from('therapists')
-    .select('id, is_verified, adeli_number, credentials_urls, profiles(full_name, email)')
+    .select('id, is_verified, rpps_number, adeli_number, credentials_urls, profiles(full_name, email)')
     .order('is_verified', { ascending: true })
+
+  if (error) {
+    return (
+      <main style={{ padding: '4rem 2rem', fontFamily: 'Georgia, serif' }}>
+        <h1 style={{ marginBottom: '1rem' }}>Admin</h1>
+        <p style={{ color: '#C0392B' }}>Erreur de chargement : {error.message}</p>
+      </main>
+    )
+  }
 
   // Generate signed URLs for credential files
   const therapistsWithUrls = await Promise.all(

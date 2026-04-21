@@ -5,6 +5,7 @@ import { useState } from 'react'
 interface Therapist {
   id: string
   is_verified: boolean
+  rpps_number: string | null
   adeli_number: string | null
   credentials_urls: string[] | null
   signedUrls: string[]
@@ -89,9 +90,19 @@ function TherapistCard({ t, onVerify, verifying }: {
             {t.profiles?.full_name ?? '—'}
           </p>
           <p className="text-xs mb-1" style={{ color: '#4A6070' }}>{t.profiles?.email ?? '—'}</p>
-          <p className="text-xs" style={{ color: '#4A6070' }}>
-            ADELI : <strong style={{ color: 'var(--text)' }}>{t.adeli_number ?? 'Non renseigné'}</strong>
-          </p>
+          {t.rpps_number && (
+            <p className="text-xs" style={{ color: '#4A6070' }}>
+              RPPS : <strong style={{ color: 'var(--text)' }}>{t.rpps_number}</strong>
+            </p>
+          )}
+          {t.adeli_number && (
+            <p className="text-xs" style={{ color: '#4A6070' }}>
+              ADELI : <strong style={{ color: 'var(--text)' }}>{t.adeli_number}</strong>
+            </p>
+          )}
+          {!t.rpps_number && !t.adeli_number && (
+            <p className="text-xs" style={{ color: '#8A9BAD' }}>Numéro non renseigné</p>
+          )}
         </div>
         <span className="text-xs px-2 py-1"
           style={{
