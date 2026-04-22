@@ -100,25 +100,60 @@ export default function MessagesClient({
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
   const [loadingMessages, setLoadingMessages] = useState(false)
-  // Mobile: which panel is showing — 'list' or 'thread'
   const [mobileView, setMobileView] = useState<'list' | 'thread'>(withId ? 'thread' : 'list')
   const [isMobile, setIsMobile] = useState(false)
+  // Measured height of the sticky navbar so mobile panels don't slide under it
+  const [navbarHeight, setNavbarHeight] = useState(56)
+  // Pixels the iOS keyboard is covering (0 when closed)
+  const [keyboardOffset, setKeyboardOffset] = useState(0)
+
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const selectedConversation = conversations.find(c => c.other_user_id === selectedId)
 
-  // Detect mobile
+  // Detect mobile and measure real navbar height
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= 768)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+
+    const nav = document.querySelector('nav')
+    if (nav) setNavbarHeight(nav.offsetHeight)
+
+    return () => window.removeEventListener('resize', checkMobile)
   }, [])
+
+  // iOS keyboard detection via visualViewport — shrinks our container so input
+  // stays just above the keyboard with zero gap
+  useEffect(() => {
+    if (!isMobile) return
+    const vv = window.visualViewport
+    if (!vv) return
+
+    const handler = () => {
+      // keyboard height = layout viewport height minus what's visible
+      const kh = window.innerHeight - vv.height - vv.offsetTop
+      setKeyboardOffset(Math.max(0, kh))
+    }
+
+    vv.addEventListener('resize', handler)
+    vv.addEventListener('scroll', handler)
+    return () => {
+      vv.removeEventListener('resize', handler)
+      vv.removeEventListener('scroll', handler)
+    }
+  }, [isMobile])
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [])
+
+  // Scroll to latest message whenever messages load/update or keyboard opens
+  useEffect(() => { scrollToBottom() }, [messages, scrollToBottom])
+  useEffect(() => {
+    if (keyboardOffset > 0) scrollToBottom()
+  }, [keyboardOffset, scrollToBottom])
 
   const fetchMessages = useCallback(async (otherUserId: string) => {
     setLoadingMessages(true)
@@ -145,8 +180,6 @@ export default function MessagesClient({
     fetchMessages(selectedId)
     markAsRead(selectedId)
   }, [selectedId, fetchMessages, markAsRead])
-
-  useEffect(() => { scrollToBottom() }, [messages, scrollToBottom])
 
   // Realtime subscription
   useEffect(() => {
@@ -212,13 +245,14 @@ export default function MessagesClient({
 
   const goBackToList = () => {
     setMobileView('list')
+    setKeyboardOffset(0)
   }
 
   const emptyLabel = lang === 'en' ? 'No messages yet.' : 'Aucun message pour le moment.'
   const noConversations = lang === 'en' ? 'No conversations yet.' : 'Aucune conversation pour le moment.'
   const inputPlaceholder = lang === 'en' ? 'Write a message…' : 'Écrire un message…'
 
-  // ── Shared: conversation row (used in both mobile list and desktop sidebar)
+  // ── Shared: conversation row
   const ConvRow = ({ conv, isActive }: { conv: Conversation; isActive: boolean }) => (
     <button
       onClick={() => openConversation(conv.other_user_id)}
@@ -252,9 +286,9 @@ export default function MessagesClient({
     </button>
   )
 
-  // ── Shared: thread panel content
+  // ── Shared: thread panel content (flex column, fills its container)
   const ThreadPanel = ({ fullscreen }: { fullscreen?: boolean }) => (
-    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0, height: fullscreen ? '100%' : undefined }}>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0, height: '100%', overflow: 'hidden' }}>
       {selectedConversation ? (
         <>
           {/* Thread header */}
@@ -275,8 +309,8 @@ export default function MessagesClient({
             </div>
           </div>
 
-          {/* Messages */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px', backgroundColor: 'var(--bg)' }}>
+          {/* Messages — scrollable middle section */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px', backgroundColor: 'var(--bg)', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
             {loadingMessages ? (
               <div style={{ textAlign: 'center', marginTop: '2rem', color: '#9EB3C2', fontSize: '0.85rem', fontFamily: 'Georgia, serif' }}>
                 {lang === 'en' ? 'Loading…' : 'Chargement…'}
@@ -311,7 +345,7 @@ export default function MessagesClient({
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
+          {/* Input — pinned to bottom of flex container */}
           <div style={{ borderTop: '1px solid var(--border)', flexShrink: 0, padding: '10px 14px', display: 'flex', gap: '10px', alignItems: 'flex-end', backgroundColor: 'var(--surface)' }}>
             <textarea
               ref={textareaRef}
@@ -352,39 +386,62 @@ export default function MessagesClient({
   )
 
   // ── Mobile layout
+  // Both list and thread use position:fixed so they are precisely sized to
+  // the visible area and don't interact with the page-level scroll at all.
   if (isMobile) {
+    // MOBILE LIST: sits between the sticky navbar and the fixed bottom nav
+    if (mobileView === 'list') {
+      return (
+        <div style={{
+          position: 'fixed',
+          top: navbarHeight,
+          left: 0,
+          right: 0,
+          bottom: 60, // bottom nav bar height
+          overflowY: 'auto',
+          backgroundColor: 'var(--bg)',
+          zIndex: 10,
+          WebkitOverflowScrolling: 'touch',
+        } as React.CSSProperties}>
+          <div style={{ padding: '20px 16px 12px', backgroundColor: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+            <h1 style={{ fontSize: '1.6rem', fontWeight: 300, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0 }}>Messages</h1>
+          </div>
+          {conversations.length === 0 ? (
+            <div style={{ padding: '3rem 16px', textAlign: 'center', color: '#9EB3C2', fontSize: '0.88rem', fontFamily: 'Georgia, serif' }}>
+              {noConversations}
+            </div>
+          ) : (
+            conversations.map((conv, i) => (
+              <div key={conv.other_user_id}>
+                <ConvRow conv={conv} isActive={false} />
+                {i < conversations.length - 1 && (
+                  <div style={{ height: '1px', backgroundColor: 'var(--border)', margin: '0 16px' }} />
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      )
+    }
+
+    // MOBILE THREAD: full-screen overlay (z-index above navbar).
+    // `bottom` shrinks dynamically as the iOS keyboard opens, keeping the
+    // input bar flush against the keyboard with no blank gap.
     return (
-      <main style={{ backgroundColor: 'var(--bg)', color: 'var(--text)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        {mobileView === 'list' ? (
-          /* Mobile conversation list */
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ padding: '20px 16px 12px', backgroundColor: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-              <h1 style={{ fontSize: '1.6rem', fontWeight: 300, color: 'var(--text)', fontFamily: 'Georgia, serif', margin: 0 }}>Messages</h1>
-            </div>
-            <div style={{ flex: 1, overflowY: 'auto' }}>
-              {conversations.length === 0 ? (
-                <div style={{ padding: '3rem 16px', textAlign: 'center', color: '#9EB3C2', fontSize: '0.88rem', fontFamily: 'Georgia, serif' }}>
-                  {noConversations}
-                </div>
-              ) : (
-                conversations.map((conv, i) => (
-                  <div key={conv.other_user_id}>
-                    <ConvRow conv={conv} isActive={conv.other_user_id === selectedId} />
-                    {i < conversations.length - 1 && (
-                      <div style={{ height: '1px', backgroundColor: 'var(--border)', margin: '0 16px' }} />
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        ) : (
-          /* Mobile thread view — full screen */
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100dvh', maxHeight: '100dvh', overflow: 'hidden' }}>
-            <ThreadPanel fullscreen />
-          </div>
-        )}
-      </main>
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: keyboardOffset,
+        zIndex: 60,
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: 'var(--bg)',
+        overflow: 'hidden',
+      }}>
+        <ThreadPanel fullscreen />
+      </div>
     )
   }
 
