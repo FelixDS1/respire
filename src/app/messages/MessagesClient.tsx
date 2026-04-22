@@ -72,6 +72,208 @@ function Avatar({ name, photoUrl, size = 36 }: { name: string; photoUrl?: string
   )
 }
 
+// ─── ConvRow: defined outside MessagesClient so it never gets recreated ───────
+interface ConvRowProps {
+  conv: Conversation
+  isActive: boolean
+  isMobile: boolean
+  onOpen: (id: string) => void
+}
+
+function ConvRow({ conv, isActive, isMobile, onOpen }: ConvRowProps) {
+  return (
+    <button
+      onClick={() => onOpen(conv.other_user_id)}
+      style={{
+        backgroundColor: isActive && !isMobile ? 'var(--blue-accent)' : 'transparent',
+        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '14px',
+        padding: '14px 16px', border: 'none', width: '100%', textAlign: 'left',
+      }}
+    >
+      <Avatar name={conv.other_user_name} photoUrl={conv.other_user_avatar} size={44} />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
+          <span style={{ fontSize: '0.9rem', fontWeight: conv.unread_count > 0 ? 600 : 400, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px', fontFamily: 'Georgia, serif' }}>
+            {conv.other_user_name}
+          </span>
+          <span style={{ fontSize: '0.7rem', color: '#9EB3C2', flexShrink: 0, fontFamily: 'Georgia, serif' }}>
+            {formatTime(conv.last_message_at)}
+          </span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.82rem', color: conv.unread_count > 0 ? 'var(--text)' : '#8A9BAD', fontWeight: conv.unread_count > 0 ? 500 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '220px', fontFamily: 'Georgia, serif' }}>
+            {conv.last_message || '—'}
+          </span>
+          {conv.unread_count > 0 && (
+            <span style={{ backgroundColor: 'var(--blue-primary)', color: 'white', borderRadius: '10px', fontSize: '0.65rem', lineHeight: 1, padding: '2px 6px', minWidth: '18px', textAlign: 'center', flexShrink: 0 }}>
+              {conv.unread_count}
+            </span>
+          )}
+        </div>
+      </div>
+    </button>
+  )
+}
+
+// ─── ThreadPanel: defined outside MessagesClient so keyboard focus is stable ──
+interface ThreadPanelProps {
+  conversation: Conversation | undefined
+  messages: Message[]
+  loadingMessages: boolean
+  currentUserId: string
+  currentUserRole: string
+  input: string
+  sending: boolean
+  lang: string
+  fullscreen?: boolean
+  messagesEndRef: React.RefObject<HTMLDivElement | null>
+  textareaRef: React.RefObject<HTMLTextAreaElement | null>
+  onInput: (v: string) => void
+  onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void
+  onSend: () => void
+  onBack: () => void
+}
+
+function ThreadPanel({
+  conversation,
+  messages,
+  loadingMessages,
+  currentUserId,
+  currentUserRole,
+  input,
+  sending,
+  lang,
+  fullscreen,
+  messagesEndRef,
+  textareaRef,
+  onInput,
+  onKeyDown,
+  onSend,
+  onBack,
+}: ThreadPanelProps) {
+  const emptyLabel = lang === 'en' ? 'No messages yet.' : 'Aucun message pour le moment.'
+  const inputPlaceholder = lang === 'en' ? 'Write a message…' : 'Écrire un message…'
+  const noSel = lang === 'en' ? 'Select a conversation to begin.' : 'Sélectionnez une conversation.'
+
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column',
+      flex: 1, minWidth: 0, minHeight: 0,
+    }}>
+      {conversation ? (
+        <>
+          {/* Thread header */}
+          <div style={{
+            borderBottom: '1px solid var(--border)', flexShrink: 0,
+            padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px',
+            backgroundColor: 'var(--surface)',
+          }}>
+            {fullscreen && (
+              <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--blue-primary)', padding: '4px 8px 4px 0', display: 'flex', alignItems: 'center' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6"/>
+                </svg>
+              </button>
+            )}
+            <Avatar name={conversation.other_user_name} photoUrl={conversation.other_user_avatar} size={38} />
+            <div>
+              <div style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--text)', fontFamily: 'Georgia, serif' }}>{conversation.other_user_name}</div>
+              <div style={{ fontSize: '0.72rem', color: '#9EB3C2', marginTop: '1px', fontFamily: 'Georgia, serif' }}>
+                {currentUserRole === 'therapist' ? 'Patient' : 'Thérapeute'}
+              </div>
+            </div>
+          </div>
+
+          {/* Messages — flex: 1 with minHeight: 0 so it truly shrinks and scrolls */}
+          <div style={{
+            flex: 1, minHeight: 0, overflowY: 'auto',
+            padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px',
+            backgroundColor: 'var(--bg)',
+            WebkitOverflowScrolling: 'touch',
+          } as React.CSSProperties}>
+            {loadingMessages ? (
+              <div style={{ textAlign: 'center', marginTop: '2rem', color: '#9EB3C2', fontSize: '0.85rem', fontFamily: 'Georgia, serif' }}>
+                {lang === 'en' ? 'Loading…' : 'Chargement…'}
+              </div>
+            ) : messages.length === 0 ? (
+              <div style={{ textAlign: 'center', marginTop: '2rem', color: '#9EB3C2', fontSize: '0.85rem', fontFamily: 'Georgia, serif' }}>
+                {emptyLabel}
+              </div>
+            ) : (
+              messages.map(msg => {
+                const isOwn = msg.sender_id === currentUserId
+                return (
+                  <div key={msg.id} style={{ display: 'flex', flexDirection: 'column', alignItems: isOwn ? 'flex-end' : 'flex-start' }}>
+                    <div style={{
+                      maxWidth: '75%', padding: '9px 14px',
+                      backgroundColor: isOwn ? 'var(--blue-primary)' : 'var(--surface)',
+                      color: isOwn ? 'white' : 'var(--text)',
+                      borderRadius: isOwn ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+                      fontSize: '0.9rem', lineHeight: 1.5, wordBreak: 'break-word',
+                      fontFamily: 'Georgia, serif',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
+                    }}>
+                      {msg.content}
+                    </div>
+                    <span style={{ fontSize: '0.65rem', color: '#9EB3C2', marginTop: '3px', fontFamily: 'Georgia, serif' }}>
+                      {formatFullTime(msg.created_at)}
+                    </span>
+                  </div>
+                )
+              })
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input — flexShrink: 0 always stays at the bottom */}
+          <div style={{
+            borderTop: '1px solid var(--border)', flexShrink: 0,
+            padding: '10px 14px',
+            paddingBottom: 'max(10px, env(safe-area-inset-bottom, 10px))',
+            display: 'flex', gap: '10px', alignItems: 'flex-end',
+            backgroundColor: 'var(--surface)',
+          }}>
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={e => onInput(e.target.value)}
+              onKeyDown={onKeyDown}
+              placeholder={inputPlaceholder}
+              rows={1}
+              style={{
+                flex: 1, resize: 'none', border: '1px solid var(--border)', borderRadius: '20px',
+                padding: '10px 14px', fontSize: '0.9rem', color: 'var(--text)',
+                backgroundColor: 'var(--bg)', outline: 'none', fontFamily: 'Georgia, serif', lineHeight: 1.4,
+              }}
+            />
+            <button
+              onClick={onSend}
+              disabled={sending || !input.trim()}
+              style={{
+                backgroundColor: 'var(--blue-primary)', color: 'white', border: 'none',
+                width: '38px', height: '38px', borderRadius: '50%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: sending || !input.trim() ? 'not-allowed' : 'pointer',
+                opacity: sending || !input.trim() ? 0.4 : 1, transition: 'opacity 0.15s', flexShrink: 0,
+              }}
+            >
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                <path d="M2 8h12M10 4l6 4-6 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </>
+      ) : (
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9EB3C2', fontSize: '0.88rem', fontFamily: 'Georgia, serif' }}>
+          {noSel}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
 export default function MessagesClient({
   currentUserId,
   currentUserRole,
@@ -102,9 +304,7 @@ export default function MessagesClient({
   const [loadingMessages, setLoadingMessages] = useState(false)
   const [mobileView, setMobileView] = useState<'list' | 'thread'>(withId ? 'thread' : 'list')
   const [isMobile, setIsMobile] = useState(false)
-  // Measured height of the sticky navbar so mobile panels don't slide under it
   const [navbarHeight, setNavbarHeight] = useState(56)
-  // Pixels the iOS keyboard is covering (0 when closed)
   const [keyboardOffset, setKeyboardOffset] = useState(0)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -112,31 +312,25 @@ export default function MessagesClient({
 
   const selectedConversation = conversations.find(c => c.other_user_id === selectedId)
 
-  // Detect mobile and measure real navbar height
+  // Detect mobile and measure real navbar height once on mount
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768)
     checkMobile()
     window.addEventListener('resize', checkMobile)
-
     const nav = document.querySelector('nav')
     if (nav) setNavbarHeight(nav.offsetHeight)
-
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // iOS keyboard detection via visualViewport — shrinks our container so input
-  // stays just above the keyboard with zero gap
+  // iOS keyboard detection: shrink thread container bottom when keyboard opens
   useEffect(() => {
     if (!isMobile) return
     const vv = window.visualViewport
     if (!vv) return
-
     const handler = () => {
-      // keyboard height = layout viewport height minus what's visible
       const kh = window.innerHeight - vv.height - vv.offsetTop
       setKeyboardOffset(Math.max(0, kh))
     }
-
     vv.addEventListener('resize', handler)
     vv.addEventListener('scroll', handler)
     return () => {
@@ -149,11 +343,8 @@ export default function MessagesClient({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [])
 
-  // Scroll to latest message whenever messages load/update or keyboard opens
   useEffect(() => { scrollToBottom() }, [messages, scrollToBottom])
-  useEffect(() => {
-    if (keyboardOffset > 0) scrollToBottom()
-  }, [keyboardOffset, scrollToBottom])
+  useEffect(() => { if (keyboardOffset > 0) scrollToBottom() }, [keyboardOffset, scrollToBottom])
 
   const fetchMessages = useCallback(async (otherUserId: string) => {
     setLoadingMessages(true)
@@ -205,14 +396,21 @@ export default function MessagesClient({
                 : c
               ).sort((a, b) => new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime())
             }
-            return [{ other_user_id: newMsg.sender_id, other_user_name: currentUserRole === 'therapist' ? 'Patient' : 'Thérapeute', other_user_avatar: null, last_message: newMsg.content, last_message_at: newMsg.created_at, unread_count: 1 }, ...prev]
+            return [{
+              other_user_id: newMsg.sender_id,
+              other_user_name: currentUserRole === 'therapist' ? 'Patient' : 'Thérapeute',
+              other_user_avatar: null,
+              last_message: newMsg.content,
+              last_message_at: newMsg.created_at,
+              unread_count: 1,
+            }, ...prev]
           })
         }
       ).subscribe()
     return () => { supabase.removeChannel(channel) }
   }, [currentUserId, currentUserRole, selectedId, markAsRead])
 
-  const sendMessage = async () => {
+  const sendMessage = useCallback(async () => {
     if (!input.trim() || !selectedId || sending) return
     setSending(true)
     const content = input.trim()
@@ -231,165 +429,46 @@ export default function MessagesClient({
       )
     }
     setSending(false)
-  }
+  }, [input, selectedId, sending])
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() }
-  }
+  }, [sendMessage])
 
-  const openConversation = (id: string) => {
+  const openConversation = useCallback((id: string) => {
     setSelectedId(id)
     setMessages([])
     if (isMobile) setMobileView('thread')
-  }
+  }, [isMobile])
 
-  const goBackToList = () => {
+  const goBackToList = useCallback(() => {
     setMobileView('list')
     setKeyboardOffset(0)
+  }, [])
+
+  const noConversations = lang === 'en' ? 'No conversations yet.' : 'Aucune conversation pour le moment.'
+
+  // Shared props for ThreadPanel
+  const threadProps: Omit<ThreadPanelProps, 'fullscreen'> = {
+    conversation: selectedConversation,
+    messages,
+    loadingMessages,
+    currentUserId,
+    currentUserRole,
+    input,
+    sending,
+    lang,
+    messagesEndRef,
+    textareaRef,
+    onInput: setInput,
+    onKeyDown: handleKeyDown,
+    onSend: sendMessage,
+    onBack: goBackToList,
   }
 
-  const emptyLabel = lang === 'en' ? 'No messages yet.' : 'Aucun message pour le moment.'
-  const noConversations = lang === 'en' ? 'No conversations yet.' : 'Aucune conversation pour le moment.'
-  const inputPlaceholder = lang === 'en' ? 'Write a message…' : 'Écrire un message…'
-
-  // ── Shared: conversation row
-  const ConvRow = ({ conv, isActive }: { conv: Conversation; isActive: boolean }) => (
-    <button
-      onClick={() => openConversation(conv.other_user_id)}
-      style={{
-        backgroundColor: isActive && !isMobile ? 'var(--blue-accent)' : 'transparent',
-        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '14px',
-        padding: '14px 16px', border: 'none', width: '100%', textAlign: 'left',
-      }}
-    >
-      <Avatar name={conv.other_user_name} photoUrl={conv.other_user_avatar} size={44} />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
-          <span style={{ fontSize: '0.9rem', fontWeight: conv.unread_count > 0 ? 600 : 400, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '180px', fontFamily: 'Georgia, serif' }}>
-            {conv.other_user_name}
-          </span>
-          <span style={{ fontSize: '0.7rem', color: '#9EB3C2', flexShrink: 0, fontFamily: 'Georgia, serif' }}>
-            {formatTime(conv.last_message_at)}
-          </span>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.82rem', color: conv.unread_count > 0 ? 'var(--text)' : '#8A9BAD', fontWeight: conv.unread_count > 0 ? 500 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '220px', fontFamily: 'Georgia, serif' }}>
-            {conv.last_message || '—'}
-          </span>
-          {conv.unread_count > 0 && (
-            <span style={{ backgroundColor: 'var(--blue-primary)', color: 'white', borderRadius: '10px', fontSize: '0.65rem', lineHeight: 1, padding: '2px 6px', minWidth: '18px', textAlign: 'center', flexShrink: 0 }}>
-              {conv.unread_count}
-            </span>
-          )}
-        </div>
-      </div>
-    </button>
-  )
-
-  // ── Shared: thread panel content (flex column, fills its container)
-  const ThreadPanel = ({ fullscreen }: { fullscreen?: boolean }) => (
-    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0, height: '100%', overflow: 'hidden' }}>
-      {selectedConversation ? (
-        <>
-          {/* Thread header */}
-          <div style={{ borderBottom: '1px solid var(--border)', flexShrink: 0, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: 'var(--surface)' }}>
-            {fullscreen && (
-              <button onClick={goBackToList} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--blue-primary)', padding: '4px 8px 4px 0', display: 'flex', alignItems: 'center' }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="15 18 9 12 15 6"/>
-                </svg>
-              </button>
-            )}
-            <Avatar name={selectedConversation.other_user_name} photoUrl={selectedConversation.other_user_avatar} size={38} />
-            <div>
-              <div style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--text)', fontFamily: 'Georgia, serif' }}>{selectedConversation.other_user_name}</div>
-              <div style={{ fontSize: '0.72rem', color: '#9EB3C2', marginTop: '1px', fontFamily: 'Georgia, serif' }}>
-                {currentUserRole === 'therapist' ? 'Patient' : 'Thérapeute'}
-              </div>
-            </div>
-          </div>
-
-          {/* Messages — scrollable middle section */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px', backgroundColor: 'var(--bg)', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
-            {loadingMessages ? (
-              <div style={{ textAlign: 'center', marginTop: '2rem', color: '#9EB3C2', fontSize: '0.85rem', fontFamily: 'Georgia, serif' }}>
-                {lang === 'en' ? 'Loading…' : 'Chargement…'}
-              </div>
-            ) : messages.length === 0 ? (
-              <div style={{ textAlign: 'center', marginTop: '2rem', color: '#9EB3C2', fontSize: '0.85rem', fontFamily: 'Georgia, serif' }}>
-                {emptyLabel}
-              </div>
-            ) : (
-              messages.map(msg => {
-                const isOwn = msg.sender_id === currentUserId
-                return (
-                  <div key={msg.id} style={{ display: 'flex', flexDirection: 'column', alignItems: isOwn ? 'flex-end' : 'flex-start' }}>
-                    <div style={{
-                      maxWidth: '75%', padding: '9px 14px',
-                      backgroundColor: isOwn ? 'var(--blue-primary)' : 'var(--surface)',
-                      color: isOwn ? 'white' : 'var(--text)',
-                      borderRadius: isOwn ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                      fontSize: '0.9rem', lineHeight: 1.5, wordBreak: 'break-word',
-                      fontFamily: 'Georgia, serif',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
-                    }}>
-                      {msg.content}
-                    </div>
-                    <span style={{ fontSize: '0.65rem', color: '#9EB3C2', marginTop: '3px', fontFamily: 'Georgia, serif' }}>
-                      {formatFullTime(msg.created_at)}
-                    </span>
-                  </div>
-                )
-              })
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input — pinned to bottom of flex container */}
-          <div style={{ borderTop: '1px solid var(--border)', flexShrink: 0, padding: '10px 14px', display: 'flex', gap: '10px', alignItems: 'flex-end', backgroundColor: 'var(--surface)' }}>
-            <textarea
-              ref={textareaRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={inputPlaceholder}
-              rows={1}
-              style={{
-                flex: 1, resize: 'none', border: '1px solid var(--border)', borderRadius: '20px',
-                padding: '10px 14px', fontSize: '0.9rem', color: 'var(--text)',
-                backgroundColor: 'var(--bg)', outline: 'none', fontFamily: 'Georgia, serif', lineHeight: 1.4,
-              }}
-            />
-            <button
-              onClick={sendMessage}
-              disabled={sending || !input.trim()}
-              style={{
-                backgroundColor: 'var(--blue-primary)', color: 'white', border: 'none',
-                width: '38px', height: '38px', borderRadius: '50%',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: sending || !input.trim() ? 'not-allowed' : 'pointer',
-                opacity: sending || !input.trim() ? 0.4 : 1, transition: 'opacity 0.15s', flexShrink: 0,
-              }}
-            >
-              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                <path d="M2 8h12M10 4l6 4-6 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-          </div>
-        </>
-      ) : (
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9EB3C2', fontSize: '0.88rem', fontFamily: 'Georgia, serif' }}>
-          {lang === 'en' ? 'Select a conversation to begin.' : 'Sélectionnez une conversation.'}
-        </div>
-      )}
-    </div>
-  )
-
-  // ── Mobile layout
-  // Both list and thread use position:fixed so they are precisely sized to
-  // the visible area and don't interact with the page-level scroll at all.
+  // ── Mobile layout ─────────────────────────────────────────────────────────
   if (isMobile) {
-    // MOBILE LIST: sits between the sticky navbar and the fixed bottom nav
+    // LIST: fixed between navbar and bottom nav — always starts at top
     if (mobileView === 'list') {
       return (
         <div style={{
@@ -397,7 +476,7 @@ export default function MessagesClient({
           top: navbarHeight,
           left: 0,
           right: 0,
-          bottom: 60, // bottom nav bar height
+          bottom: 60,
           overflowY: 'auto',
           backgroundColor: 'var(--bg)',
           zIndex: 10,
@@ -413,7 +492,7 @@ export default function MessagesClient({
           ) : (
             conversations.map((conv, i) => (
               <div key={conv.other_user_id}>
-                <ConvRow conv={conv} isActive={false} />
+                <ConvRow conv={conv} isActive={false} isMobile={isMobile} onOpen={openConversation} />
                 {i < conversations.length - 1 && (
                   <div style={{ height: '1px', backgroundColor: 'var(--border)', margin: '0 16px' }} />
                 )}
@@ -424,9 +503,8 @@ export default function MessagesClient({
       )
     }
 
-    // MOBILE THREAD: full-screen overlay (z-index above navbar).
-    // `bottom` shrinks dynamically as the iOS keyboard opens, keeping the
-    // input bar flush against the keyboard with no blank gap.
+    // THREAD: full-screen overlay, above navbar (z-index: 60 > navbar z-index: 50)
+    // bottom shrinks when iOS keyboard opens so input stays flush against keyboard
     return (
       <div style={{
         position: 'fixed',
@@ -438,14 +516,13 @@ export default function MessagesClient({
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: 'var(--bg)',
-        overflow: 'hidden',
       }}>
-        <ThreadPanel fullscreen />
+        <ThreadPanel {...threadProps} fullscreen />
       </div>
     )
   }
 
-  // ── Desktop layout (split pane)
+  // ── Desktop layout (split pane) ───────────────────────────────────────────
   return (
     <main className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg)', color: 'var(--text)' }}>
       <div style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
@@ -457,7 +534,6 @@ export default function MessagesClient({
       <div style={{ maxWidth: '1400px', margin: '0 auto', width: '100%', padding: '32px 56px', flex: 1, display: 'flex' }}>
         <div style={{ display: 'flex', flex: 1, border: '1px solid var(--border)', borderRadius: '16px', backgroundColor: 'var(--surface)', minHeight: '520px', maxHeight: '680px', overflow: 'hidden' }}>
 
-          {/* Sidebar */}
           <aside style={{ width: '280px', minWidth: '220px', borderRight: '1px solid var(--border)', overflowY: 'auto', flexShrink: 0 }}>
             <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', fontSize: '0.72rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--blue-primary)', fontFamily: 'Georgia, serif' }}>
               Conversations
@@ -467,15 +543,14 @@ export default function MessagesClient({
             ) : (
               conversations.map((conv, i) => (
                 <div key={conv.other_user_id}>
-                  <ConvRow conv={conv} isActive={conv.other_user_id === selectedId} />
+                  <ConvRow conv={conv} isActive={conv.other_user_id === selectedId} isMobile={false} onOpen={openConversation} />
                   {i < conversations.length - 1 && <div style={{ height: '1px', backgroundColor: 'var(--border)', margin: '0 16px' }} />}
                 </div>
               ))
             )}
           </aside>
 
-          {/* Thread */}
-          <ThreadPanel />
+          <ThreadPanel {...threadProps} />
         </div>
       </div>
     </main>
