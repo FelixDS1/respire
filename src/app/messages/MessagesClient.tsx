@@ -242,7 +242,7 @@ function ThreadPanel({
               rows={1}
               style={{
                 flex: 1, resize: 'none', border: '1px solid var(--border)', borderRadius: '20px',
-                padding: '10px 14px', fontSize: '0.9rem', color: 'var(--text)',
+                padding: '10px 14px', fontSize: '16px', color: 'var(--text)',
                 backgroundColor: 'var(--bg)', outline: 'none', fontFamily: 'Georgia, serif', lineHeight: 1.4,
               }}
             />
@@ -305,7 +305,11 @@ export default function MessagesClient({
   const [mobileView, setMobileView] = useState<'list' | 'thread'>(withId ? 'thread' : 'list')
   const [isMobile, setIsMobile] = useState(false)
   const [navbarHeight, setNavbarHeight] = useState(56)
-  const [keyboardOffset, setKeyboardOffset] = useState(0)
+  // Visual viewport position — updated whenever iOS keyboard opens/closes/scrolls.
+  // We use these to pin the thread container to exactly the visible area so the
+  // header stays at the top and the input stays at the bottom at all times.
+  const [vpTop, setVpTop] = useState(0)
+  const [vpHeight, setVpHeight] = useState(0)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -319,18 +323,26 @@ export default function MessagesClient({
     window.addEventListener('resize', checkMobile)
     const nav = document.querySelector('nav')
     if (nav) setNavbarHeight(nav.offsetHeight)
+    setVpHeight(window.innerHeight)
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // iOS keyboard detection: shrink thread container bottom when keyboard opens
+  // Track the visual viewport so the thread container always matches what's
+  // actually visible — including when the iOS keyboard shifts things.
   useEffect(() => {
     if (!isMobile) return
     const vv = window.visualViewport
-    if (!vv) return
-    const handler = () => {
-      const kh = window.innerHeight - vv.height - vv.offsetTop
-      setKeyboardOffset(Math.max(0, kh))
+    if (!vv) {
+      // Fallback: no visualViewport API
+      setVpTop(0)
+      setVpHeight(window.innerHeight)
+      return
     }
+    const handler = () => {
+      setVpTop(vv.offsetTop)
+      setVpHeight(vv.height)
+    }
+    handler() // set immediately
     vv.addEventListener('resize', handler)
     vv.addEventListener('scroll', handler)
     return () => {
@@ -344,7 +356,8 @@ export default function MessagesClient({
   }, [])
 
   useEffect(() => { scrollToBottom() }, [messages, scrollToBottom])
-  useEffect(() => { if (keyboardOffset > 0) scrollToBottom() }, [keyboardOffset, scrollToBottom])
+  // Scroll to bottom whenever the visible area changes (keyboard open/close)
+  useEffect(() => { scrollToBottom() }, [vpHeight, scrollToBottom])
 
   const fetchMessages = useCallback(async (otherUserId: string) => {
     setLoadingMessages(true)
@@ -443,7 +456,6 @@ export default function MessagesClient({
 
   const goBackToList = useCallback(() => {
     setMobileView('list')
-    setKeyboardOffset(0)
   }, [])
 
   const noConversations = lang === 'en' ? 'No conversations yet.' : 'Aucune conversation pour le moment.'
@@ -503,15 +515,17 @@ export default function MessagesClient({
       )
     }
 
-    // THREAD: full-screen overlay, above navbar (z-index: 60 > navbar z-index: 50)
-    // bottom shrinks when iOS keyboard opens so input stays flush against keyboard
+    // THREAD: full-screen overlay pinned to the visual viewport.
+    // top/height track vpTop/vpHeight so the container exactly matches what's
+    // visible — header stays at top and input stays at bottom even when the
+    // iOS keyboard is open and has scrolled the layout viewport.
     return (
       <div style={{
         position: 'fixed',
-        top: 0,
+        top: vpTop,
         left: 0,
         right: 0,
-        bottom: keyboardOffset,
+        height: vpHeight || '100dvh',
         zIndex: 60,
         display: 'flex',
         flexDirection: 'column',
