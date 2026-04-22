@@ -98,6 +98,8 @@ const INPUT_BORDER = '0.5px solid rgba(44,40,32,0.2)'
 export default function AccountClient({ userId, profile, appointments, waitlistEntries, initialNir }: Props) {
   const { lang } = useLanguage()
   const [tab, setTab] = useState<Tab>('profile')
+  const [isMobile, setIsMobile] = useState(false)
+  const [navbarHeight, setNavbarHeight] = useState(56)
 
   // Profile edit state
   const [bio, setBio] = useState(profile.bio ?? '')
@@ -168,6 +170,15 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
   const [showStreakModal, setShowStreakModal] = useState(!profile.streak_frequency && hasPastSession)
   const [streakSaving, setStreakSaving] = useState(false)
   const [streakError, setStreakError] = useState('')
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768)
+    check()
+    window.addEventListener('resize', check)
+    const nav = document.querySelector('nav')
+    if (nav) setNavbarHeight(nav.offsetHeight)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   const streakCount = streakFrequency ? computeStreak(appointments, streakFrequency) : 0
 
@@ -384,46 +395,59 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
 
       <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg)', width: '100%' }}>
 
-        {/* Page header */}
-        <div style={{ padding: '2rem 2.5rem 0' }}>
-          <h1 style={{ fontFamily: GARAMOND, fontSize: '2rem', fontWeight: 400, color: 'rgba(44,40,32,0.9)', margin: 0, lineHeight: 1.1 }}>
-            {lang === 'en' ? 'My profile' : 'Mon profil'}
-          </h1>
-          <p style={{ fontSize: '0.85rem', color: 'rgba(44,40,32,0.45)', marginTop: '0.25rem', marginBottom: 0 }}>
-            {profile.full_name}
-          </p>
-        </div>
-
-        {/* Tab bar */}
-        <div style={{ borderBottom: '0.5px solid rgba(44,40,32,0.15)', display: 'flex', marginTop: '1.5rem' }}>
-          {tabs.map(t => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              style={{
-                padding: '0.85rem 1.5rem',
-                fontSize: '0.8rem',
-                background: 'none',
-                border: 'none',
-                borderBottom: `2px solid ${tab === t.key ? ACCENT : 'transparent'}`,
-                color: tab === t.key ? ACCENT : MUTED,
-                cursor: 'pointer',
-                marginBottom: '-0.5px',
-                letterSpacing: '0.02em',
-                transition: 'color 0.15s',
-              }}
-            >
-              {t.label}
-            </button>
-          ))}
+        {/* Page header + tab bar — sticky on all screen sizes */}
+        <div style={{
+          position: 'sticky',
+          top: navbarHeight,
+          zIndex: 30,
+          backgroundColor: 'var(--bg)',
+          borderBottom: '0.5px solid rgba(44,40,32,0.15)',
+        }}>
+          <div style={{ padding: isMobile ? '1rem 1.25rem 0' : '2rem 2.5rem 0' }}>
+            <h1 style={{ fontFamily: GARAMOND, fontSize: isMobile ? '1.4rem' : '2rem', fontWeight: 400, color: 'rgba(44,40,32,0.9)', margin: 0, lineHeight: 1.1 }}>
+              {lang === 'en' ? 'My profile' : 'Mon profil'}
+            </h1>
+            <p style={{ fontSize: '0.8rem', color: 'rgba(44,40,32,0.45)', marginTop: '0.2rem', marginBottom: 0 }}>
+              {profile.full_name}
+            </p>
+          </div>
+          <div style={{ display: 'flex', marginTop: isMobile ? '0.75rem' : '1.5rem' }}>
+            {tabs.map(t => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                style={{
+                  padding: isMobile ? '0.7rem 0.9rem' : '0.85rem 1.5rem',
+                  fontSize: isMobile ? '0.72rem' : '0.8rem',
+                  background: 'none',
+                  border: 'none',
+                  borderBottom: `2px solid ${tab === t.key ? ACCENT : 'transparent'}`,
+                  color: tab === t.key ? ACCENT : MUTED,
+                  cursor: 'pointer',
+                  marginBottom: '-0.5px',
+                  letterSpacing: '0.02em',
+                  transition: 'color 0.15s',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* ── Profile tab ── */}
         {tab === 'profile' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', flex: 1 }}>
+          <div style={isMobile ? { display: 'flex', flexDirection: 'column', flex: 1 } : { display: 'grid', gridTemplateColumns: '220px 1fr', flex: 1 }}>
 
-            {/* Left sidebar */}
-            <div style={{ borderRight: '0.5px solid rgba(0,0,0,0.12)', padding: '2rem' }}>
+            {/* Left sidebar / mobile top section */}
+            <div style={isMobile
+              ? { padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem' }
+              : { borderRight: '0.5px solid rgba(0,0,0,0.12)', padding: '2rem' }
+            }>
+
+              {/* Photo + name row (horizontal on mobile, stacked on desktop) */}
+              <div style={isMobile ? { display: 'flex', alignItems: 'center', gap: '1rem' } : {}}>
 
               {/* Photo — click anywhere to change */}
               <div
@@ -431,14 +455,15 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                 onMouseEnter={() => setPhotoHovered(true)}
                 onMouseLeave={() => setPhotoHovered(false)}
                 style={{
-                  width: '180px',
-                  height: '200px',
+                  width: isMobile ? '80px' : '180px',
+                  height: isMobile ? '90px' : '200px',
                   border: '0.5px solid rgba(0,0,0,0.12)',
                   position: 'relative',
                   cursor: 'pointer',
                   overflow: 'hidden',
                   backgroundColor: '#E8E4DC',
                   flexShrink: 0,
+                  borderRadius: isMobile ? '6px' : '0',
                 }}
               >
                 {photoPreview && (
@@ -449,9 +474,9 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                   />
                 )}
                 {!photoPreview && !photoUploading && (
-                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ color: MUTED, fontSize: '0.72rem', textAlign: 'center', lineHeight: 1.6 }}>
-                      {lang === 'fr' ? 'Cliquer pour\najouter une photo' : 'Click to\nadd a photo'}
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px' }}>
+                    <span style={{ color: MUTED, fontSize: '0.62rem', textAlign: 'center', lineHeight: 1.6 }}>
+                      {lang === 'fr' ? 'Ajouter une photo' : 'Add a photo'}
                     </span>
                   </div>
                 )}
@@ -465,7 +490,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                   pointerEvents: 'none',
                 }}>
                   <span style={{ color: 'white', fontSize: '0.72rem', letterSpacing: '0.04em' }}>
-                    {lang === 'fr' ? 'Changer la photo' : 'Change photo'}
+                    {lang === 'fr' ? 'Changer' : 'Change'}
                   </span>
                 </div>
                 {photoUploading && (
@@ -485,7 +510,27 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                 className="hidden"
               />
 
-              {photoPreview && (
+              {/* Name + badge inline with photo on mobile */}
+              {isMobile && (
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontFamily: GARAMOND, fontSize: '1.2rem', fontWeight: 400, color: 'rgba(44,40,32,0.9)', margin: 0 }}>
+                    {profile.full_name}
+                  </p>
+                  <p style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: MUTED, margin: '2px 0 8px' }}>
+                    {lang === 'fr' ? 'Membre' : 'Member'}
+                  </p>
+                  {photoPreview && (
+                    <button type="button" onClick={handleRemovePhoto}
+                      style={{ fontSize: '0.68rem', color: MUTED, background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'block' }}>
+                      {lang === 'fr' ? 'Supprimer la photo' : 'Remove photo'}
+                    </button>
+                  )}
+                </div>
+              )}
+              </div>{/* end photo+name row */}
+
+              {/* Remove button — desktop only */}
+              {!isMobile && photoPreview && (
                 <button
                   type="button"
                   onClick={handleRemovePhoto}
@@ -495,15 +540,19 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                 </button>
               )}
 
-              {/* Name */}
-              <p style={{ fontFamily: GARAMOND, fontSize: '1.3rem', fontWeight: 400, color: 'rgba(44,40,32,0.9)', marginTop: '1rem', marginBottom: '0.2rem' }}>
-                {profile.full_name}
-              </p>
-              <p style={{ fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: MUTED, marginBottom: 0 }}>
-                {lang === 'fr' ? 'Membre' : 'Member'}
-              </p>
+              {/* Name + badge — desktop only */}
+              {!isMobile && (
+                <>
+                  <p style={{ fontFamily: GARAMOND, fontSize: '1.3rem', fontWeight: 400, color: 'rgba(44,40,32,0.9)', marginTop: '1rem', marginBottom: '0.2rem' }}>
+                    {profile.full_name}
+                  </p>
+                  <p style={{ fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: MUTED, marginBottom: 0 }}>
+                    {lang === 'fr' ? 'Membre' : 'Member'}
+                  </p>
+                </>
+              )}
 
-              <hr style={{ border: 'none', borderTop: '0.5px solid rgba(0,0,0,0.12)', margin: '1.5rem 0' }} />
+              <hr style={{ border: 'none', borderTop: '0.5px solid rgba(0,0,0,0.12)', margin: isMobile ? '0' : '1.5rem 0' }} />
 
               {/* Suivi */}
               {streakFrequency ? (
@@ -538,7 +587,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
             </div>
 
             {/* Right main area */}
-            <div style={{ padding: '2rem 2.5rem' }}>
+            <div style={isMobile ? { padding: '0 1.25rem 2rem', borderTop: '0.5px solid rgba(0,0,0,0.08)' } : { padding: '2rem 2.5rem' }}>
 
               {/* À propos de vous */}
               <div style={{ backgroundColor: '#EDE9E0', padding: '1.25rem', borderRadius: '4px' }}>
@@ -574,7 +623,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                 <p style={{ fontSize: '0.65rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: MUTED, marginBottom: '1rem' }}>
                   {lang === 'fr' ? 'Informations personnelles' : 'Personal information'}
                 </p>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem' }}>
                   <div>
                     <label style={{ fontSize: '0.72rem', color: 'rgba(44,40,32,0.5)', display: 'block', marginBottom: '0.4rem' }}>
                       {lang === 'fr' ? 'Date de naissance' : 'Date of birth'}
@@ -692,7 +741,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
 
         {/* ── Appointments tab ── */}
         {tab === 'appointments' && (
-          <div style={{ padding: '2rem 2.5rem', flex: 1 }}>
+          <div style={{ padding: isMobile ? '1.25rem' : '2rem 2.5rem', flex: 1 }}>
             {cancelMessage && (
               <p style={{ fontSize: '0.875rem', marginBottom: '1rem', color: cancelMessage.includes('erreur') || cancelMessage.includes('error') ? '#C0392B' : 'var(--blue-primary)' }}>
                 {cancelMessage}
@@ -936,8 +985,8 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
 
         {/* ── Calendar tab ── */}
         {tab === 'calendar' && (
-          <div style={{ padding: '2rem 2.5rem', flex: 1 }}>
-            <MembreCalendarTab appointments={appointments} lang={lang} />
+          <div style={{ padding: isMobile ? '1rem 0.75rem' : '2rem 2.5rem', flex: 1 }}>
+            <MembreCalendarTab appointments={appointments} lang={lang} isMobile={isMobile} />
           </div>
         )}
 
@@ -1027,7 +1076,7 @@ function StreakSetupModal({ current, onSave, onSkip, saving, errorMsg, lang }: {
 
 // ─── Member calendar tab ──────────────────────────────────────────────────────
 
-function MembreCalendarTab({ appointments, lang }: { appointments: Appointment[]; lang: string }) {
+function MembreCalendarTab({ appointments, lang, isMobile }: { appointments: Appointment[]; lang: string; isMobile: boolean }) {
   const [weekOffset, setWeekOffset] = useState(0)
 
   const today = new Date()
@@ -1067,12 +1116,16 @@ function MembreCalendarTab({ appointments, lang }: { appointments: Appointment[]
         <div style={{ backgroundColor: 'var(--surface)' }} />
         {days.map((d, i) => {
           const isToday = d.toDateString() === today.toDateString()
+          // On mobile: use single-letter weekday abbreviation
+          const weekdayLabel = isMobile
+            ? d.toLocaleDateString(locale, { weekday: 'narrow' })
+            : d.toLocaleDateString(locale, { weekday: 'short' })
           return (
-            <div key={i} style={{ backgroundColor: isToday ? 'var(--blue-accent)' : 'var(--surface)', textAlign: 'center', padding: '10px 4px' }}>
-              <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#4A6070' }}>
-                {d.toLocaleDateString(locale, { weekday: 'short' })}
+            <div key={i} style={{ backgroundColor: isToday ? 'var(--blue-accent)' : 'var(--surface)', textAlign: 'center', padding: isMobile ? '6px 2px' : '10px 4px' }}>
+              <div style={{ fontSize: isMobile ? '0.5rem' : '0.6rem', textTransform: 'uppercase', letterSpacing: '0.04em', color: '#4A6070' }}>
+                {weekdayLabel}
               </div>
-              <div style={{ fontSize: '1rem', fontWeight: isToday ? 600 : 400, color: isToday ? 'var(--blue-primary)' : 'var(--text)', marginTop: '2px', lineHeight: 1 }}>
+              <div style={{ fontSize: isMobile ? '0.75rem' : '1rem', fontWeight: isToday ? 600 : 400, color: isToday ? 'var(--blue-primary)' : 'var(--text)', marginTop: '2px', lineHeight: 1 }}>
                 {d.getDate()}
               </div>
             </div>
@@ -1082,25 +1135,33 @@ function MembreCalendarTab({ appointments, lang }: { appointments: Appointment[]
     )
   }
 
+  // On mobile: time col is 36px, 7 day cols share the rest — no minWidth so
+  // the grid fits on-screen without horizontal scrolling.
+  const timeColWidth = isMobile ? '36px' : '48px'
+  const gridCols = `${timeColWidth} repeat(7, 1fr)`
+
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+      {/* Week navigation */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '16px', marginBottom: '12px' }}>
         <button onClick={() => setWeekOffset(o => o - 1)}
-          style={{ border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface)', cursor: 'pointer', color: 'var(--text)', padding: '6px 14px', fontSize: '0.875rem' }}>
+          style={{ border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface)', cursor: 'pointer', color: 'var(--text)', padding: isMobile ? '5px 10px' : '6px 14px', fontSize: isMobile ? '0.8rem' : '0.875rem', flexShrink: 0 }}>
           ←
         </button>
-        <span style={{ fontSize: '0.875rem', color: 'var(--text)' }}>
-          {lang === 'fr' ? 'Semaine du' : 'Week of'}{' '}
-          {monday.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}
+        <span style={{ fontSize: isMobile ? '0.72rem' : '0.875rem', color: 'var(--text)', textAlign: 'center', flex: 1 }}>
+          {monday.toLocaleDateString(locale, { day: 'numeric', month: isMobile ? 'short' : 'long', year: isMobile ? undefined : 'numeric' })}
+          {' – '}
+          {days[6].toLocaleDateString(locale, { day: 'numeric', month: 'short' })}
         </span>
         <button onClick={() => setWeekOffset(o => o + 1)}
-          style={{ border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface)', cursor: 'pointer', color: 'var(--text)', padding: '6px 14px', fontSize: '0.875rem' }}>
+          style={{ border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--surface)', cursor: 'pointer', color: 'var(--text)', padding: isMobile ? '5px 10px' : '6px 14px', fontSize: isMobile ? '0.8rem' : '0.875rem', flexShrink: 0 }}>
           →
         </button>
       </div>
 
-      <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid var(--border)' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '48px repeat(7, 1fr)', minWidth: '560px', backgroundColor: 'var(--border)', gap: '1px' }}>
+      {/* Calendar grid — no overflowX on mobile so all 7 days fit */}
+      <div style={{ borderRadius: '12px', border: '1px solid var(--border)', overflow: 'hidden' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: gridCols, backgroundColor: 'var(--border)', gap: '1px' }}>
           <DayHeader />
           {timeRows.length === 0 ? (
             <div style={{ gridColumn: '1 / -1', backgroundColor: 'var(--surface)', textAlign: 'center', padding: '40px 0' }}>
@@ -1111,21 +1172,23 @@ function MembreCalendarTab({ appointments, lang }: { appointments: Appointment[]
           ) : (
             timeRows.map(time => (
               <Fragment key={time}>
-                <div style={{ backgroundColor: 'var(--surface)', textAlign: 'right', paddingRight: '6px', paddingTop: '13px', fontSize: '0.6rem', color: '#4A6070' }}>
+                <div style={{ backgroundColor: 'var(--surface)', textAlign: 'right', paddingRight: '4px', paddingTop: '13px', fontSize: isMobile ? '0.5rem' : '0.6rem', color: '#4A6070' }}>
                   {time}
                 </div>
                 {days.map((d, colIdx) => {
                   const dateStr = d.toISOString().split('T')[0]
                   const appt = apptMap[dateStr]?.[time]
                   return (
-                    <div key={colIdx} style={{ backgroundColor: 'var(--surface)', height: '56px', padding: '4px' }}>
+                    <div key={colIdx} style={{ backgroundColor: 'var(--surface)', height: isMobile ? '44px' : '56px', padding: '3px' }}>
                       {appt && (
-                        <div style={{ height: '100%', backgroundColor: 'var(--blue-primary)', borderRadius: '2px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2px 6px' }}>
-                          <span style={{ fontSize: '0.62rem', color: 'white', textAlign: 'center', overflow: 'hidden', maxWidth: '100%', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {appt.therapists?.profiles?.full_name ?? ''}
-                          </span>
-                          <span style={{ fontSize: '0.55rem', color: 'rgba(255,255,255,0.75)', marginTop: '2px' }}>
-                            {time} – {appt.availability.end_time.slice(0, 5)}
+                        <div style={{ height: '100%', backgroundColor: 'var(--blue-primary)', borderRadius: '2px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2px 3px' }}>
+                          {!isMobile && (
+                            <span style={{ fontSize: '0.62rem', color: 'white', textAlign: 'center', overflow: 'hidden', maxWidth: '100%', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {appt.therapists?.profiles?.full_name ?? ''}
+                            </span>
+                          )}
+                          <span style={{ fontSize: isMobile ? '0.48rem' : '0.55rem', color: 'rgba(255,255,255,0.9)', marginTop: isMobile ? '0' : '2px', textAlign: 'center' }}>
+                            {time}
                           </span>
                         </div>
                       )}
