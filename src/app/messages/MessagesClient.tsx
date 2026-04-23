@@ -200,24 +200,47 @@ function ThreadPanel({
                 {emptyLabel}
               </div>
             ) : (
-              messages.map(msg => {
+              messages.map((msg, idx) => {
                 const isOwn = msg.sender_id === currentUserId
+                // Show avatar on the last message in each consecutive group from the other person
+                const nextMsg = messages[idx + 1]
+                const showAvatar = !isOwn && (!nextMsg || nextMsg.sender_id === currentUserId)
                 return (
-                  <div key={msg.id} style={{ display: 'flex', flexDirection: 'column', alignItems: isOwn ? 'flex-end' : 'flex-start' }}>
-                    <div style={{
-                      maxWidth: '75%', padding: '9px 14px',
-                      backgroundColor: isOwn ? 'var(--blue-primary)' : 'var(--surface)',
-                      color: isOwn ? 'white' : 'var(--text)',
-                      borderRadius: isOwn ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                      fontSize: '0.9rem', lineHeight: 1.5, wordBreak: 'break-word',
-                      fontFamily: 'Georgia, serif',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
-                    }}>
-                      {msg.content}
+                  <div key={msg.id} style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'flex-end',
+                    gap: '8px',
+                    justifyContent: isOwn ? 'flex-end' : 'flex-start',
+                  }}>
+                    {/* Avatar slot — always reserve space so bubbles stay aligned */}
+                    {!isOwn && (
+                      <div style={{ width: 28, flexShrink: 0 }}>
+                        {showAvatar && (
+                          <Avatar
+                            name={conversation.other_user_name}
+                            photoUrl={conversation.other_user_avatar}
+                            size={28}
+                          />
+                        )}
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: isOwn ? 'flex-end' : 'flex-start', maxWidth: '72%' }}>
+                      <div style={{
+                        padding: '9px 14px',
+                        backgroundColor: isOwn ? 'var(--blue-primary)' : 'var(--surface)',
+                        color: isOwn ? 'white' : 'var(--text)',
+                        borderRadius: isOwn ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+                        fontSize: '0.9rem', lineHeight: 1.5, wordBreak: 'break-word',
+                        fontFamily: 'Georgia, serif',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
+                      }}>
+                        {msg.content}
+                      </div>
+                      <span style={{ fontSize: '0.65rem', color: '#9EB3C2', marginTop: '3px', fontFamily: 'Georgia, serif' }}>
+                        {formatFullTime(msg.created_at)}
+                      </span>
                     </div>
-                    <span style={{ fontSize: '0.65rem', color: '#9EB3C2', marginTop: '3px', fontFamily: 'Georgia, serif' }}>
-                      {formatFullTime(msg.created_at)}
-                    </span>
                   </div>
                 )
               })
