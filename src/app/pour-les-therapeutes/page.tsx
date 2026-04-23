@@ -161,8 +161,8 @@ export default function PourLesTherapeutesPage() {
               : 'You set your rate — and you keep it in full.'}
           </p>
 
-          <div className="home-cta-row" style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <span className="inflate-pill" style={{ display: 'inline-block' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <span className="inflate-pill" style={{ display: 'inline-block', alignSelf: 'flex-start' }}>
               <Link href="/signup?role=therapist" style={{
                 display: 'inline-block',
                 fontFamily: G, fontSize: '1rem',
@@ -174,19 +174,27 @@ export default function PourLesTherapeutesPage() {
                 {fr ? 'Créer mon profil' : 'Create my profile'}
               </Link>
             </span>
-            <span className="inflate-pill" style={{ display: 'inline-block' }}>
-              {/* TODO: replace # with Calendly link once set up */}
-              <a href="#" style={{
-                display: 'inline-block',
-                fontFamily: G, fontSize: '1rem',
-                background: 'transparent', color: '#2C2820',
-                borderRadius: '999px', padding: '14px 32px',
-                border: '2px solid #2C2820',
-                textDecoration: 'none',
-              }}>
-                {fr ? 'Réserver un appel de 15 min' : 'Book a 15-min call'}
-              </a>
-            </span>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+              <p style={{ fontFamily: G, fontSize: '0.95rem', color: 'rgba(44,40,32,0.55)', margin: 0, lineHeight: 1.5 }}>
+                {fr
+                  ? 'Vous voulez en savoir plus ? Réservez un appel de 15 minutes avec notre fondateur.'
+                  : 'Want to learn more? Book a 15-minute call with our founder.'}
+              </p>
+              <span className="inflate-pill" style={{ display: 'inline-block', flexShrink: 0 }}>
+                {/* TODO: replace # with Calendly link once set up */}
+                <a href="#" style={{
+                  display: 'inline-block',
+                  fontFamily: G, fontSize: '0.88rem',
+                  background: 'transparent', color: '#2C2820',
+                  borderRadius: '999px', padding: '10px 24px',
+                  border: '1.5px solid rgba(44,40,32,0.35)',
+                  textDecoration: 'none',
+                }}>
+                  {fr ? 'Réservez votre appel' : 'Book your call'}
+                </a>
+              </span>
+            </div>
           </div>
         </div>
 
@@ -258,7 +266,7 @@ export default function PourLesTherapeutesPage() {
             </h2>
           </div>
 
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', alignItems: 'flex-start' }}>
             <span className="inflate-pill" style={{ display: 'inline-block' }}>
               <Link href="/signup?role=therapist" style={{
                 fontFamily: G, fontSize: '0.9rem',
@@ -270,18 +278,26 @@ export default function PourLesTherapeutesPage() {
                 {fr ? 'Créer mon profil' : 'Create my profile'}
               </Link>
             </span>
-            <span className="inflate-pill" style={{ display: 'inline-block' }}>
-              {/* TODO: replace # with Calendly link once set up */}
-              <a href="#" style={{
-                fontFamily: G, fontSize: '0.9rem',
-                background: 'transparent', color: 'rgba(242,239,232,0.7)',
-                border: '1px solid rgba(242,239,232,0.3)',
-                borderRadius: '999px', padding: '0.8rem 1.8rem',
-                textDecoration: 'none', display: 'inline-block',
-              }}>
-                {fr ? 'Réserver un appel de 15 min' : 'Book a 15-min call'}
-              </a>
-            </span>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+              <p style={{ fontFamily: G, fontSize: '0.88rem', color: 'rgba(242,239,232,0.5)', margin: 0, lineHeight: 1.5 }}>
+                {fr
+                  ? 'Vous voulez en savoir plus ? Réservez un appel de 15 minutes avec notre fondateur.'
+                  : 'Want to learn more? Book a 15-minute call with our founder.'}
+              </p>
+              <span className="inflate-pill" style={{ display: 'inline-block', flexShrink: 0 }}>
+                {/* TODO: replace # with Calendly link once set up */}
+                <a href="#" style={{
+                  fontFamily: G, fontSize: '0.85rem',
+                  background: 'transparent', color: 'rgba(242,239,232,0.75)',
+                  border: '1px solid rgba(242,239,232,0.3)',
+                  borderRadius: '999px', padding: '0.7rem 1.5rem',
+                  textDecoration: 'none', display: 'inline-block',
+                }}>
+                  {fr ? 'Réservez votre appel' : 'Book your call'}
+                </a>
+              </span>
+            </div>
           </div>
         </div>
       </section>
