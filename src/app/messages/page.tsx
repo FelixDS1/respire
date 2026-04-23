@@ -149,6 +149,38 @@ export default async function MessagesPage({
     (a, b) => new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime()
   )
 
+  // If opening a specific conversation that isn't in the list yet, fetch the
+  // other person's avatar so the header and message bubbles show the real photo.
+  let withAvatar: string | null = null
+  if (withId && !conversations.some(c => c.other_user_id === withId)) {
+    if (profile.role === 'patient') {
+      // Other person is a therapist — prefer therapists.photo_url
+      const { data: tRow } = await supabase
+        .from('therapists')
+        .select('photo_url')
+        .eq('user_id', withId)
+        .single()
+      if (tRow?.photo_url) {
+        withAvatar = tRow.photo_url
+      } else {
+        const { data: pRow } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', withId)
+          .single()
+        withAvatar = pRow?.avatar_url ?? null
+      }
+    } else {
+      // Other person is a patient — use profiles.avatar_url
+      const { data: pRow } = await supabase
+        .from('profiles')
+        .select('avatar_url')
+        .eq('id', withId)
+        .single()
+      withAvatar = pRow?.avatar_url ?? null
+    }
+  }
+
   return (
     <MessagesClient
       currentUserId={user.id}
@@ -156,6 +188,7 @@ export default async function MessagesPage({
       initialConversations={conversations}
       withId={withId ?? null}
       withName={withName ?? null}
+      withAvatar={withAvatar}
     />
   )
 }

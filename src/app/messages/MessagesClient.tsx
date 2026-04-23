@@ -30,6 +30,7 @@ interface Props {
   initialConversations: Conversation[]
   withId?: string | null
   withName?: string | null
+  withAvatar?: string | null
 }
 
 function formatTime(iso: string): string {
@@ -303,21 +304,23 @@ export default function MessagesClient({
   initialConversations,
   withId: withIdProp,
   withName: withNameProp,
+  withAvatar: withAvatarProp,
 }: Props) {
   const { lang } = useLanguage()
 
   const withId = withIdProp ?? null
   const withName = withNameProp ?? (lang === 'en' ? 'New conversation' : 'Nouvelle conversation')
+  const withAvatar = withAvatarProp ?? null
 
   const seedConversations = useCallback((): Conversation[] => {
     if (!withId) return initialConversations
     const exists = initialConversations.some(c => c.other_user_id === withId)
     if (exists) return initialConversations
     return [
-      { other_user_id: withId, other_user_name: withName, other_user_avatar: null, last_message: '', last_message_at: new Date().toISOString(), unread_count: 0 },
+      { other_user_id: withId, other_user_name: withName, other_user_avatar: withAvatar, last_message: '', last_message_at: new Date().toISOString(), unread_count: 0 },
       ...initialConversations,
     ]
-  }, [withId, withName, initialConversations])
+  }, [withId, withName, withAvatar, initialConversations])
 
   const [conversations, setConversations] = useState<Conversation[]>(seedConversations)
   const [selectedId, setSelectedId] = useState<string | null>(withId ?? initialConversations[0]?.other_user_id ?? null)
@@ -432,6 +435,19 @@ export default function MessagesClient({
                 : c
               ).sort((a, b) => new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime())
             }
+            // Fetch avatar for the new sender in the background and update state
+            fetch(`/api/user-avatar?id=${encodeURIComponent(newMsg.sender_id)}`)
+              .then(r => r.json())
+              .then(json => {
+                if (json.avatar_url) {
+                  setConversations(prev2 => prev2.map(c =>
+                    c.other_user_id === newMsg.sender_id && !c.other_user_avatar
+                      ? { ...c, other_user_avatar: json.avatar_url }
+                      : c
+                  ))
+                }
+              })
+              .catch(() => {})
             return [{
               other_user_id: newMsg.sender_id,
               other_user_name: currentUserRole === 'therapist' ? 'Patient' : 'Thérapeute',
