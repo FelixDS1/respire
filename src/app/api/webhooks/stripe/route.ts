@@ -166,6 +166,46 @@ export async function POST(req: NextRequest) {
       }))
     }
 
+    // If session is within 24h, send reminder now and mark it sent so the
+    // cron job doesn't send a duplicate later
+    const sessionStart = new Date(`${slot.date}T${slot.start_time}`)
+    const hoursUntilSession = (sessionStart.getTime() - Date.now()) / (1000 * 60 * 60)
+
+    if (hoursUntilSession <= 24) {
+      if (patient?.email) {
+        emailPromises.push(resend.emails.send({
+          from,
+          to: patient.email,
+          subject: 'Rappel : votre séance est bientôt — Respire',
+          html: emailWrapper(`
+            <h2 style="font-family: Georgia, serif; font-weight: normal; font-size: 24px; color: #1C2B3A; margin: 0 0 24px 0;">Votre séance approche</h2>
+            <p style="font-family: Georgia, serif; color: #4A6070; margin: 0 0 16px 0;">Bonjour ${patient.full_name ?? ''},</p>
+            <p style="font-family: Georgia, serif; color: #4A6070; margin: 0;">Votre séance avec ${therapistName} a lieu dans moins de 24h. Pensez à vous connecter quelques minutes avant.</p>
+            ${appointmentBlock}
+          `),
+        }))
+      }
+      if (therapistProfile?.email) {
+        emailPromises.push(resend.emails.send({
+          from,
+          to: therapistProfile.email,
+          subject: 'Rappel : séance bientôt — Respire',
+          html: emailWrapper(`
+            <h2 style="font-family: Georgia, serif; font-weight: normal; font-size: 24px; color: #1C2B3A; margin: 0 0 24px 0;">Séance dans moins de 24h</h2>
+            <p style="font-family: Georgia, serif; color: #4A6070; margin: 0 0 16px 0;">Bonjour ${therapistProfile.full_name ?? ''},</p>
+            <p style="font-family: Georgia, serif; color: #4A6070; margin: 0;">Vous avez une séance avec ${patient?.full_name ?? 'un patient'} dans moins de 24h.</p>
+            ${appointmentBlock}
+          `),
+        }))
+      }
+
+      // Mark reminder sent so the cron doesn't send a duplicate
+      await supabase
+        .from('appointments')
+        .update({ reminder_sent_at: new Date().toISOString() })
+        .eq('availability_id', slot_id)
+    }
+
     await Promise.all([
       ...emailPromises,
       supabase.from('messages').insert({
