@@ -175,7 +175,8 @@ export default function PourLesTherapeutesPage() {
               </Link>
             </span>
             <span className="inflate-pill" style={{ display: 'inline-block' }}>
-              <Link href="/login" style={{
+              {/* TODO: replace # with Calendly link once set up */}
+              <a href="#" style={{
                 display: 'inline-block',
                 fontFamily: G, fontSize: '1rem',
                 background: 'transparent', color: '#2C2820',
@@ -183,8 +184,8 @@ export default function PourLesTherapeutesPage() {
                 border: '2px solid #2C2820',
                 textDecoration: 'none',
               }}>
-                {fr ? 'Déjà inscrit ? Se connecter' : 'Already registered? Log in'}
-              </Link>
+                {fr ? 'Réserver un appel de 15 min' : 'Book a 15-min call'}
+              </a>
             </span>
           </div>
         </div>
@@ -270,15 +271,16 @@ export default function PourLesTherapeutesPage() {
               </Link>
             </span>
             <span className="inflate-pill" style={{ display: 'inline-block' }}>
-              <Link href="/about" style={{
+              {/* TODO: replace # with Calendly link once set up */}
+              <a href="#" style={{
                 fontFamily: G, fontSize: '0.9rem',
                 background: 'transparent', color: 'rgba(242,239,232,0.7)',
                 border: '1px solid rgba(242,239,232,0.3)',
                 borderRadius: '999px', padding: '0.8rem 1.8rem',
                 textDecoration: 'none', display: 'inline-block',
               }}>
-                {fr ? 'En savoir plus' : 'Learn more'}
-              </Link>
+                {fr ? 'Réserver un appel de 15 min' : 'Book a 15-min call'}
+              </a>
             </span>
           </div>
         </div>
