@@ -16,10 +16,10 @@ export async function GET(req: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
-  // Window: sessions starting between 23h and 25h from now
+  // Window: sessions starting between 50 and 70 minutes from now
   const now = new Date()
-  const windowStart = new Date(now.getTime() + 23 * 60 * 60 * 1000)
-  const windowEnd = new Date(now.getTime() + 25 * 60 * 60 * 1000)
+  const windowStart = new Date(now.getTime() + 50 * 60 * 1000)
+  const windowEnd = new Date(now.getTime() + 70 * 60 * 1000)
 
   const { data: appointments, error } = await supabase
     .from('appointments')
@@ -98,11 +98,11 @@ export async function GET(req: NextRequest) {
         emailPromises.push(resend.emails.send({
           from,
           to: patient.email,
-          subject: 'Rappel : votre séance est demain — Respire',
+          subject: 'Rappel : votre séance commence dans 1 heure — Respire',
           html: emailWrapper(`
-            <h2 style="font-family: Georgia, serif; font-weight: normal; font-size: 24px; color: #1C2B3A; margin: 0 0 24px 0;">Votre séance est demain</h2>
+            <h2 style="font-family: Georgia, serif; font-weight: normal; font-size: 24px; color: #1C2B3A; margin: 0 0 24px 0;">Votre séance commence dans 1 heure</h2>
             <p style="font-family: Georgia, serif; color: #4A6070; margin: 0 0 16px 0;">Bonjour ${patient.full_name ?? ''},</p>
-            <p style="font-family: Georgia, serif; color: #4A6070; margin: 0 0 8px 0;">Vous avez une séance avec ${therapistName} demain.</p>
+            <p style="font-family: Georgia, serif; color: #4A6070; margin: 0 0 8px 0;">Vous avez une séance avec ${therapistName} dans environ 1 heure.</p>
             <p style="font-family: Georgia, serif; color: #4A6070; margin: 0;">Pensez à vous connecter quelques minutes avant l'heure prévue.</p>
             ${appointmentBlock}
           `),
@@ -113,11 +113,11 @@ export async function GET(req: NextRequest) {
         emailPromises.push(resend.emails.send({
           from,
           to: therapistProfile.email,
-          subject: 'Rappel : séance demain — Respire',
+          subject: 'Rappel : séance dans 1 heure — Respire',
           html: emailWrapper(`
-            <h2 style="font-family: Georgia, serif; font-weight: normal; font-size: 24px; color: #1C2B3A; margin: 0 0 24px 0;">Séance demain</h2>
+            <h2 style="font-family: Georgia, serif; font-weight: normal; font-size: 24px; color: #1C2B3A; margin: 0 0 24px 0;">Séance dans 1 heure</h2>
             <p style="font-family: Georgia, serif; color: #4A6070; margin: 0 0 16px 0;">Bonjour ${therapistProfile.full_name ?? ''},</p>
-            <p style="font-family: Georgia, serif; color: #4A6070; margin: 0;">Vous avez une séance avec ${patient?.full_name ?? 'un patient'} demain.</p>
+            <p style="font-family: Georgia, serif; color: #4A6070; margin: 0;">Vous avez une séance avec ${patient?.full_name ?? 'un patient'} dans environ 1 heure.</p>
             ${appointmentBlock}
           `),
         }))
