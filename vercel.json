@@ -3,6 +3,10 @@
     {
       "path": "/api/release-transfers",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/send-reminders",
+      "schedule": "0 * * * *"
     }
   ]
 }
