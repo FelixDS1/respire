@@ -778,7 +778,23 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                         </span>
                       </div>
 
-                      <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                      <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                        {future && (
+                          <Link
+                            href={`/session/${appt.id}`}
+                            style={{
+                              fontSize: '0.75rem',
+                              color: 'white',
+                              backgroundColor: 'var(--blue-primary)',
+                              padding: '5px 14px',
+                              borderRadius: '999px',
+                              textDecoration: 'none',
+                              fontFamily: 'Georgia, serif',
+                            }}
+                          >
+                            {lang === 'fr' ? '▶ Rejoindre la séance' : '▶ Join session'}
+                          </Link>
+                        )}
                         <Link href={`/messages?with=${appt.therapist_id}&name=${encodeURIComponent(appt.therapists?.profiles?.full_name ?? 'Thérapeute')}`}
                           style={{ fontSize: '0.75rem', color: 'var(--blue-primary)' }}>
                           {lang === 'fr' ? 'Message →' : 'Message →'}

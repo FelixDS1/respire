@@ -1144,13 +1144,30 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                       <p className="text-xs capitalize" style={{ color: '#4A6070' }}>
                         {appt.availability ? `${formatDate(appt.availability.date)} · ${formatTime(appt.availability.start_time)}` : ''}
                       </p>
-                      <a
-                        href={`/messages?with=${appt.patient_id}&name=${encodeURIComponent(appt.profiles?.full_name ?? 'Membre')}`}
-                        className="text-xs hover:opacity-70 transition-opacity"
-                        style={{ color: 'var(--blue-primary)' }}
-                      >
-                        {lang === 'fr' ? 'Message →' : 'Message →'}
-                      </a>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '4px' }}>
+                        <a
+                          href={`/messages?with=${appt.patient_id}&name=${encodeURIComponent(appt.profiles?.full_name ?? 'Membre')}`}
+                          className="text-xs hover:opacity-70 transition-opacity"
+                          style={{ color: 'var(--blue-primary)' }}
+                        >
+                          {lang === 'fr' ? 'Message →' : 'Message →'}
+                        </a>
+                        {!past && (
+                          <a
+                            href={`/session/${appt.id}`}
+                            className="text-xs"
+                            style={{
+                              color: 'white',
+                              backgroundColor: 'var(--blue-primary)',
+                              padding: '4px 12px',
+                              borderRadius: '999px',
+                              textDecoration: 'none',
+                            }}
+                          >
+                            {lang === 'fr' ? '▶ Rejoindre' : '▶ Join'}
+                          </a>
+                        )}
+                      </div>
                     </div>
                     {appt.no_show ? (
                       <span style={{ fontSize: '0.8rem', padding: '4px 12px', backgroundColor: '#FFF3F3', color: '#C0392B', borderRadius: '20px' }}>
