@@ -34,7 +34,6 @@ interface Props {
   profile: Profile
   appointments: Appointment[]
   waitlistEntries: WaitlistEntry[]
-  initialNir: string | null
 }
 
 type Tab = 'profile' | 'appointments' | 'calendar'
@@ -95,7 +94,7 @@ const ACCENT = '#9C7B5A'
 const INPUT_BG = '#E8E4DC'
 const INPUT_BORDER = '0.5px solid rgba(44,40,32,0.2)'
 
-export default function AccountClient({ userId, profile, appointments, waitlistEntries, initialNir }: Props) {
+export default function AccountClient({ userId, profile, appointments, waitlistEntries }: Props) {
   const { lang } = useLanguage()
   const [tab, setTab] = useState<Tab>('profile')
   const [isMobile, setIsMobile] = useState(false)
@@ -104,7 +103,6 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
   // Profile edit state
   const [bio, setBio] = useState(profile.bio ?? '')
   const [dob, setDob] = useState(profile.date_of_birth ?? '')
-  const [nir, setNir] = useState(initialNir ?? '')
   const [photoPreview, setPhotoPreview] = useState<string | null>(profile.avatar_url)
   const [photoUploading, setPhotoUploading] = useState(false)
   const [photoRemoved, setPhotoRemoved] = useState(false)
@@ -228,7 +226,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
     const res = await fetch('/api/save-profile', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ bio, dob, nir, removeAvatar: true }),
+      body: JSON.stringify({ bio, dob, removeAvatar: true }),
     })
     if (!res.ok) {
       setError(lang === 'en' ? 'Failed to remove photo.' : 'Erreur lors de la suppression de la photo.')
@@ -244,7 +242,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
       const res = await fetch('/api/save-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bio, dob, nir }),
+        body: JSON.stringify({ bio, dob }),
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok) {
@@ -641,28 +639,6 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
 
               <hr style={{ border: 'none', borderTop: '0.5px solid rgba(0,0,0,0.1)', margin: '1.5rem 0' }} />
 
-              {/* Sécurité sociale */}
-              <div>
-                <p style={{ fontSize: '0.65rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: MUTED, marginBottom: '1rem' }}>
-                  {lang === 'fr' ? 'Sécurité sociale' : 'Social security'}
-                </p>
-                <label style={{ fontSize: '0.72rem', color: 'rgba(44,40,32,0.5)', display: 'block', marginBottom: '0.4rem' }}>
-                  {lang === 'fr' ? 'Numéro de sécurité sociale (NIR)' : 'Social security number (NIR)'}
-                </label>
-                <input
-                  type="text"
-                  value={nir}
-                  onChange={e => setNir(e.target.value)}
-                  placeholder="1 85 12 75 108 001 28"
-                  style={{ background: INPUT_BG, border: INPUT_BORDER, padding: '0.65rem 1rem', borderRadius: '4px', fontSize: '0.88rem', width: '100%', maxWidth: '320px', boxSizing: 'border-box', color: 'rgba(44,40,32,0.85)', outline: 'none' }}
-                />
-                <p style={{ fontSize: '0.75rem', color: 'rgba(44,40,32,0.38)', marginTop: '0.4rem' }}>
-                  {lang === 'fr'
-                    ? 'Utilisé uniquement pour générer vos feuilles de soins.'
-                    : 'Used only to generate your reimbursement receipts.'}
-                </p>
-              </div>
-
               {error && (
                 <p style={{ fontSize: '0.875rem', color: '#C0392B', marginTop: '1rem' }}>{error}</p>
               )}
@@ -685,7 +661,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                     : (lang === 'en' ? 'Save' : 'Enregistrer')}
                 </button>
                 <button
-                  onClick={() => { setBio(profile.bio ?? ''); setDob(profile.date_of_birth ?? ''); setNir(initialNir ?? '') }}
+                  onClick={() => { setBio(profile.bio ?? ''); setDob(profile.date_of_birth ?? '') }}
                   disabled={saving}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.78rem', color: MUTED, padding: 0, letterSpacing: '0.03em' }}
                 >

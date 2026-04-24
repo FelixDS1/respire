@@ -30,19 +30,12 @@ export default async function AccountPage() {
     .eq('patient_id', user.id)
     .order('created_at', { ascending: false })
 
-  const { data: sensitiveData } = await supabase
-    .from('patient_sensitive')
-    .select('nir')
-    .eq('patient_id', user.id)
-    .single()
-
   return (
     <AccountClient
       userId={user.id}
       profile={profile}
       appointments={(appointments ?? []) as any}
       waitlistEntries={(waitlistEntries ?? []) as any}
-      initialNir={sensitiveData?.nir ?? null}
     />
   )
 }
