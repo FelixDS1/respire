@@ -162,7 +162,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
   const [selectedPills, setSelectedPills] = useState<string[]>([])
   const [availFilter, setAvailFilter] = useState<'all' | 'this_week' | 'next_week'>('all')
   const [consultFilter, setConsultFilter] = useState<'all' | 'presentiel' | 'video'>('all')
-  const [professionFilter, setProfessionFilter] = useState<'all' | 'Psychologue' | 'Psychiatre'>('all')
+  const [professionFilter, setProfessionFilter] = useState<'all' | 'Psychologue'>('all')
   const [hoveredId, setHoveredId] = useState<string | null>(null)
 
   const searchWrapperRef = useRef<HTMLDivElement>(null)
@@ -395,9 +395,8 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
           <PillToggle label={lang === 'fr' ? 'Présentiel' : 'In-person'} active={consultFilter === 'presentiel'} onClick={() => setConsultFilter('presentiel')} />
           <PillToggle label={lang === 'fr' ? 'Vidéo' : 'Video'} active={consultFilter === 'video'} onClick={() => setConsultFilter('video')} />
           <div style={{ width: '1px', height: '22px', backgroundColor: 'var(--border)', margin: '0 4px' }} />
-          <PillToggle label={lang === 'fr' ? 'Psychologues & psychiatres' : 'All'} active={professionFilter === 'all'} onClick={() => setProfessionFilter('all')} />
+          <PillToggle label={lang === 'fr' ? 'Tous les thérapeutes' : 'All therapists'} active={professionFilter === 'all'} onClick={() => setProfessionFilter('all')} />
           <PillToggle label={lang === 'fr' ? 'Psychologues' : 'Psychologists'} active={professionFilter === 'Psychologue'} onClick={() => setProfessionFilter('Psychologue')} />
-          <PillToggle label={lang === 'fr' ? 'Psychiatres' : 'Psychiatrists'} active={professionFilter === 'Psychiatre'} onClick={() => setProfessionFilter('Psychiatre')} />
         </div>
 
         {/* ── Filters — mobile: one dropdown pill per group ── */}
@@ -426,7 +425,6 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
             options={[
               { value: 'all', label: lang === 'fr' ? 'Profession' : 'Profession' },
               { value: 'Psychologue', label: lang === 'fr' ? 'Psychologues' : 'Psychologists' },
-              { value: 'Psychiatre', label: lang === 'fr' ? 'Psychiatres' : 'Psychiatrists' },
             ]}
           />
         </div>

@@ -661,9 +661,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                   <p style={{ color: 'var(--text)', fontWeight: 500, fontSize: '0.9rem' }}>{profile.full_name}</p>
                   <p style={{ color: '#8A9BAD', fontSize: '0.72rem', marginTop: '2px', letterSpacing: '0.02em' }}>
                     {therapist.profession
-                      ? (lang === 'en'
-                          ? (therapist.profession === 'Psychologue' ? 'Psychologist' : 'Psychiatrist')
-                          : therapist.profession)
+                      ? (lang === 'en' && therapist.profession === 'Psychologue' ? 'Psychologist' : therapist.profession)
                       : (lang === 'fr' ? 'Thérapeute' : 'Therapist')}
                   </p>
                 </div>
@@ -674,7 +672,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                     {lang === 'fr' ? 'Profession' : 'Profession'}
                   </p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {(['Psychologue', 'Psychiatre'] as const).map(p => (
+                    {(['Psychologue'] as const).map(p => (
                       <button
                         key={p}
                         type="button"
@@ -690,7 +688,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                           textAlign: 'left' as const,
                         }}
                       >
-                        {lang === 'en' ? (p === 'Psychologue' ? 'Psychologist' : 'Psychiatrist') : p}
+                        {lang === 'en' ? 'Psychologist' : p}
                       </button>
                     ))}
                   </div>
