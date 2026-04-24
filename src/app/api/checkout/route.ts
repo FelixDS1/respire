@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       {
         price_data: {
           currency: 'eur',
-          unit_amount: (therapist.consultation_fee + 4) * 100,
+          unit_amount: (therapist.consultation_fee + 3) * 100,
           product_data: {
             name: `Séance avec ${therapistName}`,
             description: `${slot.date} à ${slot.start_time.slice(0, 5)}`,
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     payment_intent_data: {
       // No transfer_data — funds are held in the platform account until after
       // the session completes, then released via the daily release-transfers cron.
-      // The €4 platform fee is retained naturally (we only transfer consultation_fee).
+      // The €3 platform fee is retained naturally (we only transfer consultation_fee).
     },
     metadata: {
       slot_id: slotId,

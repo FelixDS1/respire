@@ -463,7 +463,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
             filtered.map(therapist => {
               const bio = lang === 'en' && therapist.bio_en ? therapist.bio_en : therapist.bio
               const name = therapist.profiles?.full_name ?? 'Thérapeute'
-              const price = therapist.consultation_fee ? therapist.consultation_fee + 4 : null
+              const price = therapist.consultation_fee ? therapist.consultation_fee + 3 : null
               const reimbursement = price ? Math.max(price - 55, 6) : null
               const isHovered = hoveredId === therapist.id
 

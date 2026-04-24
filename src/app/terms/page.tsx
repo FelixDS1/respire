@@ -34,7 +34,7 @@ export default function Terms() {
           <section>
             <h2 className="text-base font-normal mb-3">4. Réservation et paiement</h2>
             <p className="text-sm leading-relaxed" style={{ color: '#4A6070' }}>
-              Les réservations sont confirmées à réception du paiement. Les paiements sont traités par Stripe. Le tarif affiché inclut les honoraires du thérapeute ainsi que des frais de service Respire de 4 € par séance, à la charge du membre. Ces frais de service ne sont pas remboursables par l'Assurance Maladie ou les organismes complémentaires. Ils couvrent la mise en relation, la gestion des paiements et l'accès à la plateforme.
+              Les réservations sont confirmées à réception du paiement. Les paiements sont traités par Stripe. Le tarif affiché inclut les honoraires du thérapeute ainsi que des frais de service Respire de 3 € par séance, à la charge du membre. Ces frais de service ne sont pas remboursables par l'Assurance Maladie ou les organismes complémentaires. Ils couvrent la mise en relation, la gestion des paiements et l'accès à la plateforme.
             </p>
           </section>
 

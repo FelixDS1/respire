@@ -168,7 +168,7 @@ export default function TherapistProfileClient({ therapist, byDate, stripeReady 
           <div>
             {therapist.consultation_fee && (
               <p style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--text)', marginBottom: '4px' }}>
-                {therapist.consultation_fee + 4}€
+                {therapist.consultation_fee + 3}€
                 <span style={{ fontSize: '0.9rem', marginLeft: '6px', color: '#4A6070' }}>{t.profile.perSession}</span>
               </p>
             )}
@@ -181,7 +181,7 @@ export default function TherapistProfileClient({ therapist, byDate, stripeReady 
               </p>
             )}
             {therapist.consultation_fee && therapist.sector && (() => {
-              const displayed = therapist.consultation_fee + 4
+              const displayed = therapist.consultation_fee + 3
               const covered = 55
               const outOfPocket = Math.max(displayed - covered, 6)
               return (
