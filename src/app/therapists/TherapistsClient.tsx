@@ -15,6 +15,7 @@ interface Therapist {
   specialties: string[] | null
   photo_url: string | null
   consultation_fee: number | null
+  student_price: number | null
   languages: string[] | null
   location: string | null
   sector: string | null
@@ -30,6 +31,7 @@ interface Props {
   therapists: Therapist[]
   thisWeekIds: string[]
   nextWeekIds: string[]
+  isStudentVerified?: boolean
 }
 
 // Mobile-only dropdown pill — shows current value, opens options on tap
@@ -152,7 +154,7 @@ function PillToggle({
   )
 }
 
-export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds }: Props) {
+export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds, isStudentVerified = false }: Props) {
   const { t, lang } = useLanguage()
 
   // inputText drives the dropdown only — does NOT filter therapists
@@ -463,7 +465,11 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
             filtered.map(therapist => {
               const bio = lang === 'en' && therapist.bio_en ? therapist.bio_en : therapist.bio
               const name = therapist.profiles?.full_name ?? 'Thérapeute'
-              const price = therapist.consultation_fee ? therapist.consultation_fee + 3 : null
+              const applicableFee = isStudentVerified && therapist.student_price !== null
+                ? therapist.student_price
+                : therapist.consultation_fee
+              const price = applicableFee ? applicableFee + 3 : null
+              const hasStudentPrice = therapist.student_price !== null && therapist.student_price !== undefined
               const reimbursement = price ? Math.max(price - 55, 6) : null
               const isHovered = hoveredId === therapist.id
 
@@ -609,6 +615,15 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds 
                             whiteSpace: 'nowrap', border: '1px solid #C8E6C9',
                           }}>
                             ~{reimbursement}€ {lang === 'fr' ? 'après remboursement' : 'after reimbursement'}
+                          </span>
+                        )}
+                        {hasStudentPrice && (
+                          <span style={{
+                            fontSize: '0.7rem', padding: '3px 8px', borderRadius: '20px',
+                            backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', fontFamily: 'Georgia, serif',
+                            whiteSpace: 'nowrap',
+                          }}>
+                            {lang === 'fr' ? 'Tarif étudiant disponible' : 'Student rate available'}
                           </span>
                         )}
                       </div>

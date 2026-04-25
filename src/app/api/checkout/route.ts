@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   // Get therapist
   const { data: therapist } = await supabase
     .from('therapists')
-    .select('consultation_fee, stripe_account_id, stripe_onboarding_complete, profiles(full_name)')
+    .select('consultation_fee, student_price, stripe_account_id, stripe_onboarding_complete, profiles(full_name)')
     .eq('id', slot.therapist_id)
     .single()
 
@@ -43,6 +43,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Ce thérapeute ne peut pas encore recevoir de paiements' }, { status: 400 })
   }
 
+  // Check if patient is a verified student and therapist offers student price
+  let applicableFee = therapist.consultation_fee
+  if (therapist.student_price !== null && therapist.student_price !== undefined) {
+    const { data: studentData } = await supabase
+      .from('patient_students')
+      .select('student_verified')
+      .eq('patient_id', user.id)
+      .single()
+    if (studentData?.student_verified === true) {
+      applicableFee = therapist.student_price
+    }
+  }
+
   const therapistName = (therapist.profiles as unknown as { full_name: string | null })?.full_name ?? 'Thérapeute'
 
   const session = await stripe.checkout.sessions.create({
@@ -52,7 +65,7 @@ export async function POST(req: NextRequest) {
       {
         price_data: {
           currency: 'eur',
-          unit_amount: (therapist.consultation_fee + 3) * 100,
+          unit_amount: (applicableFee + 3) * 100,
           product_data: {
             name: `Séance avec ${therapistName}`,
             description: `${slot.date} à ${slot.start_time.slice(0, 5)}`,
@@ -70,7 +83,7 @@ export async function POST(req: NextRequest) {
       slot_id: slotId,
       patient_id: user.id,
       therapist_id: slot.therapist_id,
-      consultation_fee: String(therapist.consultation_fee),
+      consultation_fee: String(applicableFee),
       stripe_account_id: therapist.stripe_account_id,
     },
     success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/book/success?session_id={CHECKOUT_SESSION_ID}`,

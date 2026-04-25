@@ -4,6 +4,18 @@ import TherapistsClient from './TherapistsClient'
 export default async function TherapistsPage() {
   const supabase = await createServerSupabaseClient()
 
+  // Check if logged-in user is a verified student
+  let isStudentVerified = false
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) {
+    const { data: studentData } = await supabase
+      .from('patient_students')
+      .select('student_verified')
+      .eq('patient_id', user.id)
+      .single()
+    isStudentVerified = studentData?.student_verified ?? false
+  }
+
   const { data } = await supabase
     .from('therapists')
     .select('*, profiles(full_name)')
@@ -90,6 +102,7 @@ export default async function TherapistsPage() {
       therapists={translatedTherapists}
       thisWeekIds={Array.from(thisWeekIds)}
       nextWeekIds={Array.from(nextWeekIds)}
+      isStudentVerified={isStudentVerified}
     />
   )
 }

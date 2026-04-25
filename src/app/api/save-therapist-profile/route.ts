@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   const allowed = [
     'bio', 'bio_en', 'specialties', 'consultation_fee', 'languages',
     'location', 'profession', 'sector', 'consultation_type',
-    'diploma_institution', 'diploma_url',
+    'diploma_institution', 'diploma_url', 'student_price',
   ]
   const update: Record<string, unknown> = {}
   for (const key of allowed) {

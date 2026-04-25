@@ -18,6 +18,18 @@ export default async function TherapistProfile({ params }: { params: Promise<{ i
 
   const stripeReady = !!therapist.stripe_account_id
 
+  // Check if logged-in user is a verified student
+  let isStudentVerified = false
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) {
+    const { data: studentData } = await supabase
+      .from('patient_students')
+      .select('student_verified')
+      .eq('patient_id', user.id)
+      .single()
+    isStudentVerified = studentData?.student_verified ?? false
+  }
+
   type SlotItem = NonNullable<typeof slots>[number]
   const byDate: Record<string, SlotItem[]> = {}
   for (const slot of (stripeReady ? slots : []) ?? []) {
@@ -25,5 +37,5 @@ export default async function TherapistProfile({ params }: { params: Promise<{ i
     byDate[slot.date].push(slot)
   }
 
-  return <TherapistProfileClient therapist={therapist as any} byDate={byDate} stripeReady={stripeReady} />
+  return <TherapistProfileClient therapist={therapist as any} byDate={byDate} stripeReady={stripeReady} isStudentVerified={isStudentVerified} />
 }

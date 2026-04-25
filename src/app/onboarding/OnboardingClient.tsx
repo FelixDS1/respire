@@ -23,6 +23,12 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
 
   // Patient fields
   const [bio, setBio] = useState('')
+  const [isStudent, setIsStudent] = useState<boolean | null>(null)
+  const [studentIdDoc, setStudentIdDoc] = useState<File | null>(null)
+  const [studentCertDoc, setStudentCertDoc] = useState<File | null>(null)
+
+  const studentIdInputRef = useRef<HTMLInputElement>(null)
+  const studentCertInputRef = useRef<HTMLInputElement>(null)
 
   // Therapist step 1 fields
   const [rpps, setRpps] = useState('')
@@ -50,6 +56,7 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
   const photoInputRef = useRef<HTMLInputElement>(null)
   const idDocInputRef = useRef<HTMLInputElement>(null)
   const credInputRef = useRef<HTMLInputElement>(null)
+  // (studentIdInputRef and studentCertInputRef declared above)
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -78,6 +85,9 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
 
     if (!photo) { setError('Veuillez ajouter une photo de profil.'); return }
     if (role === 'patient' && !bio.trim()) { setError('Veuillez compléter votre présentation.'); return }
+    if (role === 'patient' && isStudent === null) { setError('Veuillez indiquer si vous êtes étudiant(e).'); return }
+    if (role === 'patient' && isStudent === true && !studentIdDoc) { setError('Veuillez téléverser votre carte étudiante.'); return }
+    if (role === 'patient' && isStudent === true && !studentCertDoc) { setError('Veuillez téléverser votre certificat de scolarité.'); return }
     if (role === 'therapist' && hasRpps && !rpps.trim()) { setError('Veuillez entrer votre numéro RPPS.'); return }
     if (role === 'therapist' && !hasRpps && !adeli.trim()) { setError('Veuillez entrer votre numéro ADELI.'); return }
     if (role === 'therapist' && !idDoc) { setError('Veuillez téléverser une pièce d\'identité.'); return }
@@ -129,8 +139,25 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
       const photoUrl = `${photoPublicUrl}?t=${Date.now()}`
 
       if (role === 'patient') {
-        // 2a. Save patient profile (bio + avatar) via server route
-        const ok = await callApi('/api/onboarding/patient', { bio: bio.trim(), avatar_url: photoUrl })
+        // 2a. Upload student docs if needed
+        let studentIdUrl: string | null = null
+        let studentCertUrl: string | null = null
+        if (isStudent && studentIdDoc && studentCertDoc) {
+          const idExt = studentIdDoc.name.split('.').pop()
+          studentIdUrl = await uploadFile(studentIdDoc, 'student-docs', `${userId}/id_${Date.now()}.${idExt}`)
+          if (studentIdUrl === null) return
+          const certExt = studentCertDoc.name.split('.').pop()
+          studentCertUrl = await uploadFile(studentCertDoc, 'student-docs', `${userId}/cert_${Date.now()}.${certExt}`)
+          if (studentCertUrl === null) return
+        }
+        // 2b. Save patient profile (bio + avatar + student) via server route
+        const ok = await callApi('/api/onboarding/patient', {
+          bio: bio.trim(),
+          avatar_url: photoUrl,
+          is_student: isStudent ?? false,
+          student_id_url: studentIdUrl,
+          student_cert_url: studentCertUrl,
+        })
         if (!ok) return
         router.push(redirectAfter ?? '/therapists')
 
@@ -483,6 +510,62 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
                   style={{ ...inputStyle, resize: 'vertical' }}
                   placeholder="Ex. Je traverse une période de stress importante au travail..."
                 />
+              </div>
+
+              <div>
+                <p className="text-sm mb-3" style={{ color: 'var(--text)' }}>Êtes-vous étudiant(e) ?</p>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  {([
+                    { value: true, label: 'Oui' },
+                    { value: false, label: 'Non' },
+                  ] as const).map(opt => (
+                    <button
+                      key={String(opt.value)}
+                      type="button"
+                      onClick={() => { setIsStudent(opt.value); if (!opt.value) { setStudentIdDoc(null); setStudentCertDoc(null) } }}
+                      style={{
+                        flex: 1,
+                        padding: '10px',
+                        fontSize: '0.9rem',
+                        border: `1px solid ${isStudent === opt.value ? 'var(--blue-primary)' : 'var(--border)'}`,
+                        backgroundColor: isStudent === opt.value ? 'var(--blue-accent)' : 'var(--surface)',
+                        color: isStudent === opt.value ? 'var(--blue-primary)' : 'var(--text)',
+                        cursor: 'pointer',
+                        borderRadius: '8px',
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                {isStudent === true && (
+                  <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div>
+                      <p className="text-xs mb-1" style={{ color: '#4A6070' }}>Carte étudiante (photo ou scan)</p>
+                      <button
+                        type="button"
+                        onClick={() => studentIdInputRef.current?.click()}
+                        style={{ padding: '8px 16px', fontSize: '0.85rem', border: '1px solid var(--border)', borderRadius: '8px', backgroundColor: 'var(--surface)', color: '#4A6070', cursor: 'pointer' }}
+                      >
+                        {studentIdDoc ? studentIdDoc.name : 'Choisir un fichier'}
+                      </button>
+                      <input ref={studentIdInputRef} type="file" accept=".pdf,image/jpeg,image/png,image/webp" className="hidden"
+                        onChange={e => { const f = e.target.files?.[0]; if (f) setStudentIdDoc(f) }} />
+                    </div>
+                    <div>
+                      <p className="text-xs mb-1" style={{ color: '#4A6070' }}>Certificat de scolarité (année en cours)</p>
+                      <button
+                        type="button"
+                        onClick={() => studentCertInputRef.current?.click()}
+                        style={{ padding: '8px 16px', fontSize: '0.85rem', border: '1px solid var(--border)', borderRadius: '8px', backgroundColor: 'var(--surface)', color: '#4A6070', cursor: 'pointer' }}
+                      >
+                        {studentCertDoc ? studentCertDoc.name : 'Choisir un fichier'}
+                      </button>
+                      <input ref={studentCertInputRef} type="file" accept=".pdf,image/jpeg,image/png,image/webp" className="hidden"
+                        onChange={e => { const f = e.target.files?.[0]; if (f) setStudentCertDoc(f) }} />
+                    </div>
+                  </div>
+                )}
               </div>
 
             </>

@@ -34,6 +34,7 @@ interface TherapistData {
   stripe_onboarding_complete: boolean
   diploma_institution: string | null
   diploma_url: string | null
+  student_price: number | null
 }
 
 interface Slot {
@@ -284,6 +285,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
           sector: therapist.sector || null,
           consultation_type: therapist.consultation_type || 'both',
           diploma_institution: therapist.diploma_institution || null,
+          student_price: therapist.student_price ?? null,
         }),
       })
       const json = await res.json()
@@ -853,6 +855,42 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                         </button>
                       ))}
                     </div>
+                  </div>
+
+                  {/* Student price */}
+                  <div style={{ marginTop: '20px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      onClick={() => setTherapist(prev => ({
+                        ...prev,
+                        student_price: prev.student_price !== null ? null : (prev.consultation_fee ? Math.round(prev.consultation_fee * 0.8) : 0),
+                      }))}
+                      style={{
+                        padding: '8px 18px',
+                        fontSize: '0.85rem',
+                        border: `1px solid ${therapist.student_price !== null ? 'var(--blue-primary)' : 'var(--border)'}`,
+                        backgroundColor: therapist.student_price !== null ? 'var(--blue-accent)' : 'var(--surface)',
+                        color: therapist.student_price !== null ? 'var(--blue-primary)' : '#4A6070',
+                        cursor: 'pointer',
+                        borderRadius: '999px',
+                        fontWeight: 500,
+                      }}
+                    >
+                      {lang === 'fr' ? 'Tarif étudiant' : 'Student rate'}
+                    </button>
+                    {therapist.student_price !== null && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <label style={{ fontSize: '0.8rem', color: '#4A6070', whiteSpace: 'nowrap' }}>
+                          {lang === 'fr' ? 'Prix étudiant (€)' : 'Student price (€)'}
+                        </label>
+                        <input
+                          type="number"
+                          value={therapist.student_price}
+                          onChange={e => setTherapist(prev => ({ ...prev, student_price: parseInt(e.target.value) || 0 }))}
+                          style={{ width: '80px', padding: '8px 12px', fontSize: '0.9rem', border: '1px solid var(--border)', borderRadius: '8px', backgroundColor: 'var(--surface)', color: 'var(--text)', outline: 'none' }}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 

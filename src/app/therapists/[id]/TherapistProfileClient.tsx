@@ -18,6 +18,7 @@ interface Therapist {
   specialties: string[] | null
   photo_url: string | null
   consultation_fee: number | null
+  student_price: number | null
   languages: string[] | null
   location: string | null
   sector: string | null
@@ -33,9 +34,10 @@ interface Props {
   therapist: Therapist
   byDate: Record<string, Slot[]>
   stripeReady: boolean
+  isStudentVerified?: boolean
 }
 
-export default function TherapistProfileClient({ therapist, byDate, stripeReady }: Props) {
+export default function TherapistProfileClient({ therapist, byDate, stripeReady, isStudentVerified = false }: Props) {
   const { t, lang } = useLanguage()
   const [onWaitlist, setOnWaitlist] = useState(false)
   const [waitlistLoading, setWaitlistLoading] = useState(false)
@@ -166,12 +168,32 @@ export default function TherapistProfileClient({ therapist, byDate, stripeReady 
 
           {/* Price info */}
           <div>
-            {therapist.consultation_fee && (
-              <p style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--text)', marginBottom: '4px' }}>
-                {therapist.consultation_fee + 3}€
-                <span style={{ fontSize: '0.9rem', marginLeft: '6px', color: '#4A6070' }}>{t.profile.perSession}</span>
-              </p>
-            )}
+            {therapist.consultation_fee && (() => {
+              const applicableFee = isStudentVerified && therapist.student_price !== null
+                ? therapist.student_price!
+                : therapist.consultation_fee!
+              const displayedPrice = applicableFee + 3
+              return (
+                <>
+                  <p style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--text)', marginBottom: '4px' }}>
+                    {displayedPrice}€
+                    <span style={{ fontSize: '0.9rem', marginLeft: '6px', color: '#4A6070' }}>{t.profile.perSession}</span>
+                  </p>
+                  {isStudentVerified && therapist.student_price !== null && (
+                    <p style={{ fontSize: '0.75rem', color: 'var(--blue-primary)', marginBottom: '4px' }}>
+                      {lang === 'fr' ? 'Tarif étudiant appliqué' : 'Student rate applied'}
+                    </p>
+                  )}
+                  {!isStudentVerified && therapist.student_price !== null && (
+                    <p style={{ fontSize: '0.75rem', color: '#4A6070', marginBottom: '4px' }}>
+                      {lang === 'fr'
+                        ? `Tarif étudiant : ${therapist.student_price + 3}€`
+                        : `Student rate: ${therapist.student_price + 3}€`}
+                    </p>
+                  )}
+                </>
+              )
+            })()}
             {therapist.sector && (
               <p style={{ fontSize: '0.85rem', color: '#4A6070', marginBottom: '8px' }}>
                 Secteur {therapist.sector}
@@ -181,7 +203,10 @@ export default function TherapistProfileClient({ therapist, byDate, stripeReady 
               </p>
             )}
             {therapist.consultation_fee && therapist.sector && (() => {
-              const displayed = therapist.consultation_fee + 3
+              const applicableFee = isStudentVerified && therapist.student_price !== null
+                ? therapist.student_price!
+                : therapist.consultation_fee!
+              const displayed = applicableFee + 3
               const covered = 55
               const outOfPocket = Math.max(displayed - covered, 6)
               return (

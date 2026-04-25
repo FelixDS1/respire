@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const body = await req.json()
-    const { bio, avatar_url } = body
+    const { bio, avatar_url, is_student, student_id_url, student_cert_url } = body
 
     const admin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -24,6 +24,22 @@ export async function POST(req: NextRequest) {
     if (error) {
       console.error('onboarding/patient error:', JSON.stringify(error))
       return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    // If patient indicated student status, upsert into patient_students table
+    if (is_student !== undefined) {
+      const { error: studentErr } = await admin.from('patient_students').upsert({
+        patient_id: user.id,
+        is_student: is_student ?? false,
+        student_id_url: student_id_url ?? null,
+        student_cert_url: student_cert_url ?? null,
+        student_verified: false,
+      }, { onConflict: 'patient_id' })
+
+      if (studentErr) {
+        console.error('onboarding/patient student upsert error:', JSON.stringify(studentErr))
+        return NextResponse.json({ error: studentErr.message }, { status: 500 })
+      }
     }
 
     return NextResponse.json({ ok: true })

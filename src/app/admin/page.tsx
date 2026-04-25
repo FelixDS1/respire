@@ -64,5 +64,27 @@ export default async function AdminPage() {
     })
   )
 
-  return <AdminClient therapists={therapistsWithUrls as any} />
+  // Fetch pending student verifications
+  const { data: pendingStudents } = await admin
+    .from('patient_students')
+    .select('patient_id, student_id_url, student_cert_url, student_verified, profiles!patient_students_patient_id_fkey(full_name, email)')
+    .eq('is_student', true)
+    .eq('student_verified', false)
+
+  // Generate signed URLs for student docs
+  const studentsWithUrls = await Promise.all(
+    (pendingStudents ?? []).map(async (s) => {
+      const signedUrls: { idUrl: string | null; certUrl: string | null } = { idUrl: null, certUrl: null }
+      if (s.student_id_url) {
+        // student_id_url is a full public URL, no need to sign
+        signedUrls.idUrl = s.student_id_url
+      }
+      if (s.student_cert_url) {
+        signedUrls.certUrl = s.student_cert_url
+      }
+      return { ...s, signedUrls }
+    })
+  )
+
+  return <AdminClient therapists={therapistsWithUrls as any} pendingStudents={studentsWithUrls as any} />
 }
