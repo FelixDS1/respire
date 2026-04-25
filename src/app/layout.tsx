@@ -4,7 +4,6 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CookieBanner from "@/components/CookieBanner";
-import StudentCTA from "@/components/StudentCTA";
 import { LanguageProvider } from "@/lib/language";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 
@@ -29,8 +28,6 @@ export default async function RootLayout({
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
   let role: string | null = null
-  let isStudent = false
-  let studentVerified = false
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
@@ -38,16 +35,6 @@ export default async function RootLayout({
       .eq('id', user.id)
       .single()
     role = profile?.role ?? null
-
-    if (role === 'patient') {
-      const { data: studentData } = await supabase
-        .from('patient_students')
-        .select('is_student, student_verified')
-        .eq('patient_id', user.id)
-        .single()
-      isStudent = studentData?.is_student ?? false
-      studentVerified = studentData?.student_verified ?? false
-    }
   }
 
   return (
@@ -58,9 +45,6 @@ export default async function RootLayout({
           <div style={{ flex: 1 }}>{children}</div>
           <Footer />
           <CookieBanner />
-          {role === 'patient' && (
-            <StudentCTA patientId={user?.id ?? null} isStudent={isStudent} studentVerified={studentVerified} />
-          )}
         </LanguageProvider>
       </body>
     </html>

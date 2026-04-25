@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import AccountClient from './AccountClient'
+import StudentCTA from '@/components/StudentCTA'
 
 export default async function AccountPage() {
   const supabase = await createServerSupabaseClient()
@@ -30,12 +31,24 @@ export default async function AccountPage() {
     .eq('patient_id', user.id)
     .order('created_at', { ascending: false })
 
+  const { data: studentData } = await supabase
+    .from('patient_students')
+    .select('is_student, student_verified')
+    .eq('patient_id', user.id)
+    .single()
+
+  const isStudent = studentData?.is_student ?? false
+  const studentVerified = studentData?.student_verified ?? false
+
   return (
-    <AccountClient
-      userId={user.id}
-      profile={profile}
-      appointments={(appointments ?? []) as any}
-      waitlistEntries={(waitlistEntries ?? []) as any}
-    />
+    <>
+      <AccountClient
+        userId={user.id}
+        profile={profile}
+        appointments={(appointments ?? []) as any}
+        waitlistEntries={(waitlistEntries ?? []) as any}
+      />
+      <StudentCTA patientId={user.id} isStudent={isStudent} studentVerified={studentVerified} />
+    </>
   )
 }
