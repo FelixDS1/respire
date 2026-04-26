@@ -470,7 +470,6 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds,
                 : therapist.consultation_fee
               const price = applicableFee ? applicableFee + 3 : null
               const hasStudentPrice = therapist.student_price !== null && therapist.student_price !== undefined
-              const reimbursement = price ? Math.max(price - 55, 6) : null
               const isHovered = hoveredId === therapist.id
 
               return (
@@ -607,15 +606,6 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds,
                           <p style={{ fontSize: '0.73rem', color: '#8A9BAD', fontFamily: 'Georgia, serif', margin: 0 }}>
                             {lang === 'fr' ? 'Secteur' : 'Sector'} {therapist.sector}
                           </p>
-                        )}
-                        {reimbursement !== null && (
-                          <span style={{
-                            fontSize: '0.7rem', padding: '3px 8px', borderRadius: '20px',
-                            backgroundColor: '#EEFAF0', color: '#2E7D32', fontFamily: 'Georgia, serif',
-                            whiteSpace: 'nowrap', border: '1px solid #C8E6C9',
-                          }}>
-                            ~{reimbursement}€ {lang === 'fr' ? 'après remboursement' : 'after reimbursement'}
-                          </span>
                         )}
                         {hasStudentPrice && (
                           <span style={{

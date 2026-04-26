@@ -202,30 +202,6 @@ export default function TherapistProfileClient({ therapist, byDate, stripeReady,
                   : (lang === 'fr' ? ' · dépassements d\'honoraires possibles' : ' · fees above official tariff')}
               </p>
             )}
-            {therapist.consultation_fee && therapist.sector && (() => {
-              const applicableFee = isStudentVerified && therapist.student_price !== null
-                ? therapist.student_price!
-                : therapist.consultation_fee!
-              const displayed = applicableFee + 3
-              const covered = 55
-              const outOfPocket = Math.max(displayed - covered, 6)
-              return (
-                <div style={{ backgroundColor: 'var(--blue-accent)', padding: '10px 12px', marginBottom: '16px', borderRadius: '4px' }}>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--blue-primary)', lineHeight: 1.6 }}>
-                    {lang === 'fr'
-                      ? <>Reste à charge estimé : <strong>~{outOfPocket}€</strong> avec Sécu + mutuelle</>
-                      : <>Estimated out-of-pocket: <strong>~{outOfPocket}€</strong> with Sécu + mutuelle</>}
-                  </p>
-                  {therapist.sector === '2' && (
-                    <p style={{ fontSize: '0.7rem', color: '#4A6070', marginTop: '4px' }}>
-                      {lang === 'fr'
-                        ? 'Hors dépassements couverts par certaines mutuelles premium'
-                        : 'Excess fees may be partially covered by premium mutuelles'}
-                    </p>
-                  )}
-                </div>
-              )
-            })()}
 
             {/* Waitlist */}
             <div style={{ marginTop: '16px' }}>

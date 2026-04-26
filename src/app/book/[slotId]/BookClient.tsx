@@ -109,21 +109,6 @@ export default function BookClient({ slot, therapist, isBooked, userId }: Props)
                   {therapist?.consultation_fee ? `${therapist.consultation_fee + 3}€` : '—'}
                 </span>
               </div>
-              {therapist?.consultation_fee && therapist?.sector && (() => {
-                const outOfPocket = Math.max((therapist.consultation_fee + 3) - 55, 6)
-                return (
-                  <div style={{ backgroundColor: 'var(--blue-accent)', padding: '8px 10px', marginTop: '4px' }}>
-                    <p className="text-xs" style={{ color: 'var(--blue-primary)', lineHeight: 1.6 }}>
-                      Reste à charge estimé avec Sécu + mutuelle : <strong>~{outOfPocket}€</strong>
-                    </p>
-                    {therapist.sector === '2' && (
-                      <p style={{ fontSize: '0.6rem', color: '#4A6070', marginTop: '2px' }}>
-                        Hors dépassements couverts par certaines mutuelles premium
-                      </p>
-                    )}
-                  </div>
-                )
-              })()}
             </div>
           </div>
 

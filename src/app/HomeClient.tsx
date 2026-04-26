@@ -34,7 +34,6 @@ interface Props {
 function PreviewCard({ therapist, slots }: { therapist: PreviewTherapist; slots: Slot[] }) {
   const { lang, t } = useLanguage()
   const price = therapist.consultation_fee ? therapist.consultation_fee + 3 : null
-  const reimbursement = price ? Math.max(price - 55, 6) : null
   const bio = lang === 'en' ? therapist.bio : therapist.bio
 
   return (
@@ -111,15 +110,6 @@ function PreviewCard({ therapist, slots }: { therapist: PreviewTherapist; slots:
             <p style={{ fontSize: '0.73rem', color: '#8A9BAD', fontFamily: 'Georgia, serif', margin: '0 0 5px' }}>
               {lang === 'fr' ? 'Secteur' : 'Sector'} {therapist.sector}
             </p>
-          )}
-          {reimbursement !== null && (
-            <span style={{
-              fontSize: '0.7rem', padding: '3px 8px', borderRadius: '20px',
-              backgroundColor: '#EEFAF0', color: '#2E7D32', fontFamily: 'Georgia, serif',
-              whiteSpace: 'nowrap', border: '1px solid #C8E6C9', display: 'inline-block',
-            }}>
-              ~{reimbursement}€ {lang === 'fr' ? 'après remboursement' : 'after reimbursement'}
-            </span>
           )}
         </div>
       )}
