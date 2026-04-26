@@ -37,11 +37,13 @@ export default async function RootLayout({
     role = profile?.role ?? null
   }
 
+  const isAdmin = !!user && !!process.env.ADMIN_USER_ID && user.id === process.env.ADMIN_USER_ID
+
   return (
     <html lang="fr" className={`h-full ${cormorant.variable}`}>
       <body className="min-h-full flex flex-col">
         <LanguageProvider>
-          <Navbar initialEmail={user?.email ?? null} initialRole={role} />
+          <Navbar initialEmail={user?.email ?? null} initialRole={role} isAdmin={isAdmin} />
           <div style={{ flex: 1 }}>{children}</div>
           <Footer />
           <CookieBanner />

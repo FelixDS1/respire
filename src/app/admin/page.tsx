@@ -8,7 +8,6 @@ export default async function AdminPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // If ADMIN_USER_ID not set, show the current user's ID to help configure it
   if (!process.env.ADMIN_USER_ID) {
     return (
       <main style={{ padding: '4rem 2rem', fontFamily: 'Georgia, serif' }}>
@@ -36,6 +35,69 @@ export default async function AdminPage() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
+  const now = new Date()
+  const daysAgo = (n: number) => new Date(now.getTime() - n * 86400000).toISOString()
+
+  // ── Stats ────────────────────────────────────────────────────────────────
+  const [
+    { count: patientCount },
+    { count: recentSignups },
+    { count: therapistTotal },
+    { count: therapistVerified },
+    { count: appointmentTotal },
+    { count: appointmentsLast30 },
+    { data: feesData },
+  ] = await Promise.all([
+    admin.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'patient'),
+    admin.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'patient').gte('created_at', daysAgo(7)),
+    admin.from('therapists').select('*', { count: 'exact', head: true }),
+    admin.from('therapists').select('*', { count: 'exact', head: true }).eq('is_verified', true),
+    admin.from('appointments').select('*', { count: 'exact', head: true }).eq('status', 'confirmed'),
+    admin.from('appointments').select('*', { count: 'exact', head: true }).eq('status', 'confirmed').gte('created_at', daysAgo(30)),
+    admin.from('appointments').select('consultation_fee').eq('status', 'confirmed').eq('transfer_released', true),
+  ])
+
+  const revenueReleased = (feesData ?? []).reduce((sum: number, r: { consultation_fee: number | null }) => sum + (r.consultation_fee ?? 0), 0)
+
+  const stats = {
+    patientCount: patientCount ?? 0,
+    recentSignups: recentSignups ?? 0,
+    therapistTotal: therapistTotal ?? 0,
+    therapistVerified: therapistVerified ?? 0,
+    appointmentTotal: appointmentTotal ?? 0,
+    appointmentsLast30: appointmentsLast30 ?? 0,
+    revenueReleased,
+  }
+
+  // ── Churn ────────────────────────────────────────────────────────────────
+  const [
+    { data: everBookedData },
+    { data: recentlyBookedData },
+    { data: oldPatients },
+  ] = await Promise.all([
+    admin.from('appointments').select('patient_id').eq('status', 'confirmed'),
+    admin.from('appointments').select('patient_id').eq('status', 'confirmed').gte('created_at', daysAgo(45)),
+    admin.from('profiles').select('id, full_name, email, created_at').eq('role', 'patient').lt('created_at', daysAgo(14)),
+  ])
+
+  const everBookedSet = new Set((everBookedData ?? []).map((a: { patient_id: string }) => a.patient_id))
+  const recentlyBookedSet = new Set((recentlyBookedData ?? []).map((a: { patient_id: string }) => a.patient_id))
+
+  // Never activated: signed up 14+ days ago, never booked
+  const neverActivated = (oldPatients ?? []).filter((p: { id: string }) => !everBookedSet.has(p.id))
+
+  // Went quiet: booked before, but not in the last 45 days
+  const wentQuietIds = [...everBookedSet].filter(id => !recentlyBookedSet.has(id))
+  let wentQuiet: { id: string; full_name: string | null; email: string | null }[] = []
+  if (wentQuietIds.length > 0) {
+    const { data } = await admin
+      .from('profiles')
+      .select('id, full_name, email')
+      .in('id', wentQuietIds)
+    wentQuiet = data ?? []
+  }
+
+  // ── Therapists & verifications ────────────────────────────────────────────
   const { data: therapists, error } = await admin
     .from('therapists')
     .select('id, is_verified, rpps_number, adeli_number, credentials_urls, profiles(full_name, email)')
@@ -50,38 +112,26 @@ export default async function AdminPage() {
     )
   }
 
-  // Generate signed URLs for credential files
   const therapistsWithUrls = await Promise.all(
     (therapists ?? []).map(async (t) => {
       const urls: string[] = []
       for (const path of (t.credentials_urls ?? [])) {
-        const { data } = await admin.storage
-          .from('Credentials')
-          .createSignedUrl(path, 3600)
+        const { data } = await admin.storage.from('Credentials').createSignedUrl(path, 3600)
         if (data?.signedUrl) urls.push(data.signedUrl)
       }
       return { ...t, signedUrls: urls }
     })
   )
 
-  // Fetch pending student verifications
   const { data: pendingStudents } = await admin
     .from('patient_students')
     .select('patient_id, student_id_url, student_cert_url, student_verified, profiles!patient_students_patient_id_fkey(full_name, email)')
     .eq('is_student', true)
     .eq('student_verified', false)
 
-  // Generate signed URLs for student docs
   const studentsWithUrls = await Promise.all(
     (pendingStudents ?? []).map(async (s) => {
-      const signedUrls: { idUrl: string | null; certUrl: string | null } = { idUrl: null, certUrl: null }
-      if (s.student_id_url) {
-        // student_id_url is a full public URL, no need to sign
-        signedUrls.idUrl = s.student_id_url
-      }
-      if (s.student_cert_url) {
-        signedUrls.certUrl = s.student_cert_url
-      }
+      const signedUrls = { idUrl: s.student_id_url ?? null, certUrl: s.student_cert_url ?? null }
       return { ...s, signedUrls }
     })
   )
@@ -91,5 +141,14 @@ export default async function AdminPage() {
     .select('id, name, email, phone, created_at')
     .order('created_at', { ascending: false })
 
-  return <AdminClient therapists={therapistsWithUrls as any} pendingStudents={studentsWithUrls as any} waitlistSignups={waitlistSignups ?? []} />
+  return (
+    <AdminClient
+      therapists={therapistsWithUrls as any}
+      pendingStudents={studentsWithUrls as any}
+      waitlistSignups={waitlistSignups ?? []}
+      stats={stats}
+      neverActivated={neverActivated as any}
+      wentQuiet={wentQuiet}
+    />
+  )
 }

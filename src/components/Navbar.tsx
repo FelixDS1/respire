@@ -9,9 +9,10 @@ import { useLanguage } from '@/lib/language'
 interface Props {
   initialEmail: string | null
   initialRole: string | null
+  isAdmin?: boolean
 }
 
-export default function Navbar({ initialEmail, initialRole }: Props) {
+export default function Navbar({ initialEmail, initialRole, isAdmin = false }: Props) {
   const { t, lang, toggle } = useLanguage()
   const [userEmail, setUserEmail] = useState<string | null>(initialEmail)
   const [role, setRole] = useState<string | null>(initialRole)
@@ -190,6 +191,13 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
                   )}
                 </Link>
 
+                {isAdmin && (
+                  <Link href="/admin" style={{ ...linkStyle, fontSize: '0.8rem', letterSpacing: '0.08em', padding: '3px 10px', border: '1px solid var(--border)', borderRadius: '4px', color: '#9C7B5A' }}
+                    onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                    Admin
+                  </Link>
+                )}
+
                 <a href="/api/logout" style={linkStyle}
                   onMouseEnter={e => (e.currentTarget.style.opacity = '0.6')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
                   {t.nav.logout}
@@ -285,6 +293,17 @@ export default function Navbar({ initialEmail, initialRole }: Props) {
           </svg>
           <span style={navLabelStyle}>Mon Profil</span>
         </Link>
+
+        {/* Admin (only for Felix) */}
+        {isAdmin && (
+          <Link href="/admin" style={{ ...navItemStyle('/admin'), color: isActive('/admin') ? '#9C7B5A' : 'rgba(156,123,90,0.45)' }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            <span style={navLabelStyle}>Admin</span>
+          </Link>
+        )}
 
       </div>
     </>
