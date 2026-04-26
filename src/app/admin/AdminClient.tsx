@@ -169,6 +169,32 @@ export default function AdminClient({
           </section>
         )}
 
+        {/* ── QR code ── */}
+        <section className="mb-12">
+          <h2 className="text-xs uppercase tracking-widest mb-4" style={{ fontFamily: 'Georgia, serif', color: 'rgba(44,40,32,0.4)' }}>
+            QR code liste d'attente
+          </h2>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1.5rem', flexWrap: 'wrap' }}>
+            <img src="/waitlist-qr.png" alt="QR code liste d'attente" style={{ width: '160px', height: '160px', border: '1px solid var(--border)', borderRadius: '8px' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', justifyContent: 'center' }}>
+              <p style={{ fontFamily: 'Georgia, serif', fontSize: '0.82rem', color: '#4A6070', margin: 0 }}>
+                Pointe vers <span style={{ color: 'var(--blue-primary)' }}>respire.pro/liste-attente</span>
+              </p>
+              <a
+                href="/waitlist-qr.png"
+                download="respire-qr-liste-attente.png"
+                style={{
+                  display: 'inline-block', fontFamily: 'Georgia, serif', fontSize: '0.82rem',
+                  color: 'white', backgroundColor: '#2C2820', textDecoration: 'none',
+                  padding: '7px 18px', borderRadius: '6px', width: 'fit-content',
+                }}
+              >
+                Télécharger ↓
+              </a>
+            </div>
+          </div>
+        </section>
+
         {/* ── Pre-launch waitlist ── */}
         <section className="mb-12">
           <h2 className="text-xs uppercase tracking-widest mb-4" style={{ fontFamily: 'Georgia, serif', color: '#9C7B5A' }}>
