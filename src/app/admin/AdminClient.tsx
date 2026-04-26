@@ -12,6 +12,14 @@ interface Therapist {
   profiles: { full_name: string | null; email: string | null } | null
 }
 
+interface WaitlistSignup {
+  id: string
+  name: string
+  email: string
+  phone: string | null
+  created_at: string
+}
+
 interface PendingStudent {
   patient_id: string
   student_id_url: string | null
@@ -21,7 +29,7 @@ interface PendingStudent {
   signedUrls: { idUrl: string | null; certUrl: string | null }
 }
 
-export default function AdminClient({ therapists, pendingStudents = [] }: { therapists: Therapist[]; pendingStudents?: PendingStudent[] }) {
+export default function AdminClient({ therapists, pendingStudents = [], waitlistSignups = [] }: { therapists: Therapist[]; pendingStudents?: PendingStudent[]; waitlistSignups?: WaitlistSignup[] }) {
   const [list, setList] = useState(therapists)
   const [verifying, setVerifying] = useState<string | null>(null)
   const [students, setStudents] = useState(pendingStudents)
@@ -64,6 +72,29 @@ export default function AdminClient({ therapists, pendingStudents = [] }: { ther
 
         <h1 className="text-2xl font-light mb-1" style={{ color: 'var(--text)' }}>Admin</h1>
         <p className="text-sm mb-10" style={{ color: '#4A6070' }}>Vérification des thérapeutes et étudiants</p>
+
+        {/* Pre-launch waitlist */}
+        <section className="mb-12">
+          <h2 className="text-xs uppercase tracking-widest mb-4" style={{ color: '#9C7B5A' }}>
+            Liste d'attente pré-lancement ({waitlistSignups.length})
+          </h2>
+          {waitlistSignups.length === 0 ? (
+            <p className="text-sm" style={{ color: '#4A6070' }}>Aucune inscription pour l'instant.</p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {waitlistSignups.map(s => (
+                <div key={s.id} className="flex flex-wrap items-center gap-x-6 gap-y-1 px-5 py-3" style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
+                  <p className="text-sm font-medium" style={{ color: 'var(--text)', minWidth: '140px' }}>{s.name}</p>
+                  <p className="text-xs" style={{ color: '#4A6070' }}>{s.email}</p>
+                  {s.phone && <p className="text-xs" style={{ color: '#4A6070' }}>{s.phone}</p>}
+                  <p className="text-xs ml-auto" style={{ color: 'rgba(44,40,32,0.3)' }}>
+                    {new Date(s.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
 
         {/* Student verifications */}
         {students.length > 0 && (

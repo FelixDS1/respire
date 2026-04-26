@@ -86,5 +86,10 @@ export default async function AdminPage() {
     })
   )
 
-  return <AdminClient therapists={therapistsWithUrls as any} pendingStudents={studentsWithUrls as any} />
+  const { data: waitlistSignups } = await admin
+    .from('pre_launch_signups')
+    .select('id, name, email, phone, created_at')
+    .order('created_at', { ascending: false })
+
+  return <AdminClient therapists={therapistsWithUrls as any} pendingStudents={studentsWithUrls as any} waitlistSignups={waitlistSignups ?? []} />
 }
