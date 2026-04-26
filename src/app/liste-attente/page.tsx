@@ -96,7 +96,7 @@ export default function ListeAttentePage() {
               <em style={{ fontStyle: 'italic', color: '#9C7B5A' }}>d'attente</em>
             </h1>
             <p style={{ fontFamily: G, fontSize: '0.92rem', color: 'rgba(44,40,32,0.6)', lineHeight: 1.75, marginBottom: '2.5rem', maxWidth: '340px' }}>
-              Respire arrive bientôt — une plateforme pour trouver un thérapeute à Paris, simplement et sereinement. Inscrivez-vous pour être parmi les premiers informés.
+              Respire arrive bientôt — la plateforme qui simplifie l'accès au suivi psychologique qui vous correspond. Inscrivez-vous pour être notifié lors de notre lancement.
             </p>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
