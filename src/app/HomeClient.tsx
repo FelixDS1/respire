@@ -33,7 +33,7 @@ interface Props {
 // Matches the listing card style exactly
 function PreviewCard({ therapist, slots }: { therapist: PreviewTherapist; slots: Slot[] }) {
   const { lang, t } = useLanguage()
-  const price = therapist.consultation_fee ? therapist.consultation_fee + 3 : null
+  const price = therapist.consultation_fee ?? null
   const bio = lang === 'en' ? therapist.bio : therapist.bio
 
   return (

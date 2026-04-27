@@ -468,7 +468,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds,
               const applicableFee = isStudentVerified && therapist.student_price !== null
                 ? therapist.student_price
                 : therapist.consultation_fee
-              const price = applicableFee ? applicableFee + 3 : null
+              const price = applicableFee ?? null
               const hasStudentPrice = therapist.student_price !== null && therapist.student_price !== undefined
               const isHovered = hoveredId === therapist.id
 

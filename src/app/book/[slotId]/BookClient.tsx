@@ -106,7 +106,7 @@ export default function BookClient({ slot, therapist, isBooked, userId }: Props)
               <div className="flex justify-between">
                 <span style={{ color: 'var(--text)' }}>Total</span>
                 <span style={{ color: 'var(--text)' }}>
-                  {therapist?.consultation_fee ? `${therapist.consultation_fee + 3}€` : '—'}
+                  {therapist?.consultation_fee ? `${therapist.consultation_fee}€` : '—'}
                 </span>
               </div>
             </div>

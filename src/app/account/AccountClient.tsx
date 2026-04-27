@@ -746,7 +746,7 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
                           )}
                           <p style={{ fontSize: '0.78rem', color: MUTED }}>
                             {appt.therapists?.profiles?.full_name}
-                            {appt.therapists?.consultation_fee ? ` · ${appt.therapists.consultation_fee + 3}€` : ''}
+                            {appt.therapists?.consultation_fee ? ` · ${appt.therapists.consultation_fee}€` : ''}
                           </p>
                         </div>
                         <span style={{ fontSize: '0.68rem', padding: '4px 12px', backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', borderRadius: '20px', letterSpacing: '0.06em' }}>

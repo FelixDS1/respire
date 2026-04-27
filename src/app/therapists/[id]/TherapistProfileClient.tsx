@@ -172,7 +172,7 @@ export default function TherapistProfileClient({ therapist, byDate, stripeReady,
               const applicableFee = isStudentVerified && therapist.student_price !== null
                 ? therapist.student_price!
                 : therapist.consultation_fee!
-              const displayedPrice = applicableFee + 3
+              const displayedPrice = applicableFee
               return (
                 <>
                   <p style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--text)', marginBottom: '4px' }}>
@@ -187,8 +187,8 @@ export default function TherapistProfileClient({ therapist, byDate, stripeReady,
                   {!isStudentVerified && therapist.student_price !== null && (
                     <p style={{ fontSize: '0.75rem', color: '#4A6070', marginBottom: '4px' }}>
                       {lang === 'fr'
-                        ? `Tarif étudiant : ${therapist.student_price + 3}€`
-                        : `Student rate: ${therapist.student_price + 3}€`}
+                        ? `Tarif étudiant : ${therapist.student_price}€`
+                        : `Student rate: ${therapist.student_price}€`}
                     </p>
                   )}
                 </>
