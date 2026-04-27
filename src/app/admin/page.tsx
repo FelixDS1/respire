@@ -138,7 +138,7 @@ export default async function AdminPage() {
 
   const { data: waitlistSignups } = await admin
     .from('pre_launch_signups')
-    .select('id, name, email, phone, created_at')
+    .select('id, name, email, phone, referral_source, created_at')
     .order('created_at', { ascending: false })
 
   return (

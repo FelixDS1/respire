@@ -18,7 +18,7 @@ const supabaseAdmin = createClient(
 )
 
 export async function POST(req: Request) {
-  const { name, email, phone } = await req.json()
+  const { name, email, phone, referral } = await req.json()
 
   if (!name?.trim() || !email?.trim()) {
     return NextResponse.json({ error: 'Nom et email requis' }, { status: 400 })
@@ -38,6 +38,7 @@ export async function POST(req: Request) {
     name: name.trim(),
     email: email.trim().toLowerCase(),
     phone: phone?.trim() || null,
+    referral_source: referral?.trim() || null,
   })
 
   if (error) {

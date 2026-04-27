@@ -22,6 +22,7 @@ export default function ListeAttentePage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
+  const [referral, setReferral] = useState('')
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
   const [alreadySignedUp, setAlreadySignedUp] = useState(false)
@@ -36,7 +37,7 @@ export default function ListeAttentePage() {
       const res = await fetch('/api/pre-launch-signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone }),
+        body: JSON.stringify({ name, email, phone, referral }),
       })
       const json = await res.json()
       if (!res.ok) {
@@ -141,6 +142,25 @@ export default function ListeAttentePage() {
                   placeholder="+33 6 12 34 56 78"
                   style={inputStyle}
                 />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontFamily: G, fontSize: '0.8rem', color: 'rgba(44,40,32,0.55)', marginBottom: '6px', letterSpacing: '0.05em' }}>
+                  Comment avez-vous entendu parler de nous ?
+                </label>
+                <select
+                  value={referral}
+                  onChange={e => setReferral(e.target.value)}
+                  style={{ ...inputStyle, color: referral ? '#2C2820' : 'rgba(44,40,32,0.4)', appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%232C2820' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 14px center', paddingRight: '36px' }}
+                >
+                  <option value="" disabled>Choisir…</option>
+                  <option value="Reddit">Reddit</option>
+                  <option value="Instagram">Instagram</option>
+                  <option value="TikTok">TikTok</option>
+                  <option value="Un(e) ami(e)">Un(e) ami(e)</option>
+                  <option value="LinkedIn">LinkedIn</option>
+                  <option value="Autre">Autre</option>
+                </select>
               </div>
 
               {error && (

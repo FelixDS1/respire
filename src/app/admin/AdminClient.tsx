@@ -24,6 +24,7 @@ interface WaitlistSignup {
   name: string
   email: string
   phone: string | null
+  referral_source: string | null
   created_at: string
 }
 
@@ -209,6 +210,7 @@ export default function AdminClient({
                   <p className="text-sm font-medium" style={{ color: 'var(--text)', minWidth: '140px', fontFamily: 'Georgia, serif' }}>{s.name}</p>
                   <p className="text-xs" style={{ color: '#4A6070', fontFamily: 'Georgia, serif' }}>{s.email}</p>
                   {s.phone && <p className="text-xs" style={{ color: '#4A6070', fontFamily: 'Georgia, serif' }}>{s.phone}</p>}
+                  {s.referral_source && <p className="text-xs px-2 py-0.5" style={{ fontFamily: 'Georgia, serif', backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', borderRadius: '20px' }}>{s.referral_source}</p>}
                   <p className="text-xs ml-auto" style={{ color: 'rgba(44,40,32,0.3)', fontFamily: 'Georgia, serif' }}>
                     {new Date(s.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </p>
