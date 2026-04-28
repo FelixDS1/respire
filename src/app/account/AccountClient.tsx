@@ -366,11 +366,11 @@ export default function AccountClient({ userId, profile, appointments, waitlistE
     if (!appt.availability) return
     const name = appt.therapists?.profiles?.full_name ?? 'Thérapeute'
     const title = lang === 'fr'
-      ? `Séance avec ${name} — Respire`
-      : `Session with ${name} — Respire`
+      ? `Séance avec ${name} — Respire Psy`
+      : `Session with ${name} — Respire Psy`
     const description = lang === 'fr'
-      ? `Séance de thérapie avec ${name}, réservée via Respire.`
-      : `Therapy session with ${name}, booked via Respire.`
+      ? `Séance de thérapie avec ${name}, réservée via Respire Psy.`
+      : `Therapy session with ${name}, booked via Respire Psy.`
     const ics = generateIcs({
       title,
       date: appt.availability.date,

@@ -66,10 +66,11 @@ export default function ListeAttentePage() {
       <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '420px' }}>
 
         {/* Logo */}
-        <Link href="/" style={{ display: 'block', marginBottom: '2.5rem', textDecoration: 'none' }}>
-          <p style={{ fontFamily: G, fontSize: '1.1rem', fontWeight: 400, color: '#2C2820', letterSpacing: '0.05em' }}>
-            respire
-          </p>
+        <Link href="/" style={{ display: 'inline-block', marginBottom: '2.5rem', textDecoration: 'none' }}>
+          <span style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: 1 }}>
+            <span style={{ fontFamily: G, fontSize: '1.1rem', fontWeight: 400, color: '#2C2820', letterSpacing: '0.05em' }}>Respire</span>
+            <span style={{ fontFamily: G, fontSize: '0.8rem', fontStyle: 'italic', color: '#2C2820', letterSpacing: '0.05em', marginTop: '-0.3em' }}>psy</span>
+          </span>
         </Link>
 
         {done ? (
@@ -80,7 +81,7 @@ export default function ListeAttentePage() {
             <p style={{ fontFamily: G, fontSize: '0.92rem', color: 'rgba(44,40,32,0.6)', lineHeight: 1.75, marginBottom: '2rem' }}>
               {alreadySignedUp
                 ? "Votre adresse e-mail figure déjà sur notre liste. Nous vous contacterons dès l'ouverture."
-                : "Nous vous contacterons dès que Respire ouvrira ses portes. Merci de votre confiance."}
+                : "Nous vous contacterons dès que Respire Psy ouvrira ses portes. Merci de votre confiance."}
             </p>
             <Link href="/" style={{
               display: 'inline-block', fontFamily: G, fontSize: '0.88rem',
@@ -97,7 +98,7 @@ export default function ListeAttentePage() {
               <em style={{ fontStyle: 'italic', color: '#9C7B5A' }}>d'attente</em>
             </h1>
             <p style={{ fontFamily: G, fontSize: '0.92rem', color: 'rgba(44,40,32,0.6)', lineHeight: 1.75, marginBottom: '2.5rem', maxWidth: '340px' }}>
-              Respire arrive bientôt — la plateforme qui simplifie l'accès au suivi psychologique qui vous correspond. Inscrivez-vous pour être notifié lors de notre lancement.
+              Respire Psy arrive bientôt — la plateforme qui simplifie l'accès au suivi psychologique qui vous correspond. Inscrivez-vous pour être notifié lors de notre lancement.
             </p>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

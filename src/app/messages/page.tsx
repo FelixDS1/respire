@@ -5,7 +5,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server'
 import MessagesClient from './MessagesClient'
 
 export const metadata = {
-  title: 'Messages — Respire',
+  title: 'Messages — Respire Psy',
 }
 
 export default async function MessagesPage({

@@ -120,7 +120,7 @@ export default function AdminClient({
       <div className="max-w-4xl mx-auto px-6 py-12">
 
         <h1 className="text-2xl font-light mb-1" style={{ color: 'var(--text)', fontFamily: 'Georgia, serif' }}>Admin</h1>
-        <p className="text-sm mb-8" style={{ color: '#4A6070', fontFamily: 'Georgia, serif' }}>Tableau de bord Respire</p>
+        <p className="text-sm mb-8" style={{ color: '#4A6070', fontFamily: 'Georgia, serif' }}>Tableau de bord Respire Psy</p>
 
         {/* ── Stats ── */}
         <section className="mb-12">

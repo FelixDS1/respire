@@ -16,7 +16,7 @@ const cormorant = Cormorant_Garamond({
 })
 
 export const metadata: Metadata = {
-  title: "Respire — Trouvez votre thérapeute à Paris",
+  title: "Respire Psy — Trouvez votre thérapeute à Paris",
   description: "Prenez rendez-vous avec un thérapeute à Paris. Parcourez les profils et réservez en ligne.",
 };
 

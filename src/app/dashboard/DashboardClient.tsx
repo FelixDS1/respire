@@ -530,7 +530,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
             { label: 'Code postal renseigné', done: therapist.location.length > 0 },
             { label: 'Créneaux configurés', done: hasFutureSlot },
             { label: 'Paiements configurés (Stripe)', done: stripeComplete },
-            { label: 'Profil vérifié par l\'équipe Respire', done: therapist.is_verified },
+            { label: 'Profil vérifié par l\'équipe Respire Psy', done: therapist.is_verified },
           ]
           const allDone = checks.every(c => c.done)
           if (allDone) return null

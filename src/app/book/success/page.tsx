@@ -64,11 +64,11 @@ function SuccessContent() {
     if (!appointmentInfo) return
     const name = appointmentInfo.therapistName ?? 'Thérapeute'
     const ics = generateIcs({
-      title: `Séance avec ${name} — Respire`,
+      title: `Séance avec ${name} — Respire Psy`,
       date: appointmentInfo.date,
       startTime: appointmentInfo.startTime,
       endTime: appointmentInfo.endTime,
-      description: `Séance de thérapie avec ${name}, réservée via Respire.`,
+      description: `Séance de thérapie avec ${name}, réservée via Respire Psy.`,
     })
     downloadIcs(`respire-seance-${appointmentInfo.date}.ics`, ics)
   }

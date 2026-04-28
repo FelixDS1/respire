@@ -211,7 +211,7 @@ export default function PourLesTherapeutesPage() {
             fontFamily: G, fontSize: '0.68rem', letterSpacing: '0.2em',
             textTransform: 'uppercase', color: 'rgba(44,40,32,0.4)', marginBottom: '3rem',
           }}>
-            {fr ? 'Ce que Respire vous offre' : 'What Respire offers you'}
+            {fr ? 'Ce que Respire Psy vous offre' : 'What Respire Psy offers you'}
           </p>
 
           <div className="therapist-features-grid" style={{
@@ -256,7 +256,7 @@ export default function PourLesTherapeutesPage() {
               fontFamily: G, fontSize: '0.8rem',
               color: 'rgba(242,239,232,0.45)', fontWeight: 300, marginBottom: '0.4rem',
             }}>
-              {fr ? 'Prêt à rejoindre Respire ?' : 'Ready to join Respire?'}
+              {fr ? 'Prêt à rejoindre Respire Psy ?' : 'Ready to join Respire Psy?'}
             </p>
             <h2 style={{
               fontFamily: G, fontSize: '2.2rem', fontWeight: 300,

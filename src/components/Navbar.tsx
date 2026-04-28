@@ -107,29 +107,20 @@ export default function Navbar({ initialEmail, initialRole, isAdmin = false }: P
         }}>
 
           {/* Logo — desktop only */}
-          <Link href="/" className="hide-mobile" style={{
-            fontFamily: 'Georgia, serif',
-            fontSize: '2rem',
-            fontWeight: 400,
-            color: 'var(--blue-primary)',
-            letterSpacing: '0.04em',
-            textDecoration: 'none',
-            flexShrink: 0,
-          }}>
-            Respire
+          <Link href="/" className="hide-mobile" style={{ textDecoration: 'none', flexShrink: 0 }}>
+            <span style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: 1 }}>
+              <span style={{ fontFamily: 'Georgia, serif', fontSize: '2rem', fontWeight: 400, color: 'var(--blue-primary)', letterSpacing: '0.04em' }}>Respire</span>
+              <span style={{ fontFamily: 'Georgia, serif', fontSize: '1.4rem', fontStyle: 'italic', color: '#2C2820', letterSpacing: '0.04em', marginTop: '-0.35em' }}>psy</span>
+            </span>
           </Link>
 
           {/* Mobile header row: Respire left · tagline right */}
           <div className="show-mobile" style={{ width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Link href="/" style={{
-              fontFamily: 'Georgia, serif',
-              fontSize: '1.5rem',
-              fontWeight: 400,
-              color: 'var(--blue-primary)',
-              letterSpacing: '0.04em',
-              textDecoration: 'none',
-            }}>
-              Respire
+            <Link href="/" style={{ textDecoration: 'none' }}>
+              <span style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: 1 }}>
+                <span style={{ fontFamily: 'Georgia, serif', fontSize: '1.5rem', fontWeight: 400, color: 'var(--blue-primary)', letterSpacing: '0.04em' }}>Respire</span>
+                <span style={{ fontFamily: 'Georgia, serif', fontSize: '1rem', fontStyle: 'italic', color: '#2C2820', letterSpacing: '0.04em', marginTop: '-0.35em' }}>psy</span>
+              </span>
             </Link>
             <span style={{
               fontFamily: 'Georgia, serif',
