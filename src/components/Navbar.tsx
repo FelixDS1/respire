@@ -195,20 +195,14 @@ export default function Navbar({ initialEmail, initialRole, isAdmin = false }: P
                 </a>
               </>
             ) : (
-              <>
-                <Link href="/login" style={linkStyle}
-                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.6')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-                  {t.nav.login}
-                </Link>
-                <Link href="/signup" style={{
-                  backgroundColor: 'var(--blue-primary)', color: 'white',
-                  padding: '9px 22px', fontSize: '1rem', textDecoration: 'none',
-                  borderRadius: '6px', transition: 'opacity 0.15s',
-                }}
-                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
-                  {t.nav.signup}
-                </Link>
-              </>
+              <Link href="/liste-attente" style={{
+                backgroundColor: 'var(--blue-primary)', color: 'white',
+                padding: '9px 22px', fontSize: '1rem', textDecoration: 'none',
+                borderRadius: '6px', transition: 'opacity 0.15s', fontFamily: 'Georgia, serif',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                Rejoindre la liste d'attente
+              </Link>
             )}
 
             <button
