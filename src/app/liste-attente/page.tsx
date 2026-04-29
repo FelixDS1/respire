@@ -193,6 +193,17 @@ export default function ListeAttentePage() {
                 Vos données ne seront jamais revendues. Consultez notre{' '}
                 <Link href="/privacy" style={{ color: 'var(--blue-primary)' }}>politique de confidentialité</Link>.
               </p>
+
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', paddingTop: '0.5rem' }}>
+                <a href="https://www.instagram.com/respire.psy" target="_blank" rel="noopener noreferrer"
+                  style={{ fontFamily: G, fontSize: '0.78rem', color: 'rgba(44,40,32,0.45)', textDecoration: 'none' }}>
+                  Instagram
+                </a>
+                <a href="https://www.tiktok.com/@respire.psy" target="_blank" rel="noopener noreferrer"
+                  style={{ fontFamily: G, fontSize: '0.78rem', color: 'rgba(44,40,32,0.45)', textDecoration: 'none' }}>
+                  TikTok
+                </a>
+              </div>
             </form>
           </>
         )}

@@ -192,16 +192,6 @@ export default function AdminClient({
               >
                 Télécharger ↓
               </a>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
-                <a href="https://www.instagram.com/respire.psy" target="_blank" rel="noopener noreferrer"
-                  style={{ fontFamily: 'Georgia, serif', fontSize: '0.82rem', color: 'var(--blue-primary)', textDecoration: 'none' }}>
-                  Instagram — @respire.psy
-                </a>
-                <a href="https://www.tiktok.com/@respire.psy" target="_blank" rel="noopener noreferrer"
-                  style={{ fontFamily: 'Georgia, serif', fontSize: '0.82rem', color: 'var(--blue-primary)', textDecoration: 'none' }}>
-                  TikTok — @respire.psy
-                </a>
-              </div>
             </div>
           </div>
         </section>
