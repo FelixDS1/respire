@@ -27,9 +27,18 @@ function DashboardCard({ data, fr }: { data: DashboardData; fr: boolean }) {
         }}>
           {fr ? 'Votre espace thérapeute' : 'Your therapist dashboard'}
         </p>
-        <p style={{ fontFamily: G, fontSize: '1.2rem', margin: '0 0 0.15rem', color: '#2C2820' }}>
-          {data.name}
-        </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 0.15rem' }}>
+          <p style={{ fontFamily: G, fontSize: '1.2rem', margin: 0, color: '#2C2820' }}>
+            {data.name}
+          </p>
+          <span style={{
+            fontSize: '0.6rem', padding: '2px 7px', borderRadius: '20px',
+            backgroundColor: 'rgba(44,40,32,0.08)', color: 'rgba(44,40,32,0.45)',
+            fontFamily: G, letterSpacing: '0.05em', whiteSpace: 'nowrap',
+          }}>
+            compte exemple
+          </span>
+        </div>
         <p style={{ fontFamily: G, fontSize: '0.75rem', color: 'rgba(44,40,32,0.45)', fontWeight: 300, margin: 0 }}>
           {data.role}
         </p>

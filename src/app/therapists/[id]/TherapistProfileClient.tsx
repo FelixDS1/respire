@@ -205,6 +205,16 @@ export default function TherapistProfileClient({ therapist, byDate, stripeReady,
                 </>
               )
             })()}
+            {therapist.profiles?.full_name === 'Sylvain Loup' && (
+              <span style={{
+                display: 'inline-block', marginTop: '6px',
+                fontSize: '0.72rem', padding: '3px 9px', borderRadius: '20px',
+                backgroundColor: 'var(--green-soft)', color: 'var(--green-primary)',
+                fontFamily: 'Georgia, serif', whiteSpace: 'nowrap',
+              }}>
+                Partenaire Mon Soutien Psy
+              </span>
+            )}
 
             {/* Waitlist */}
             <div style={{ marginTop: '16px' }}>

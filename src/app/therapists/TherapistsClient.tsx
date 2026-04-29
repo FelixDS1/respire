@@ -622,6 +622,15 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds,
                             {lang === 'fr' ? 'Tarif étudiant disponible' : 'Student rate available'}
                           </span>
                         )}
+                        {name === 'Sylvain Loup' && (
+                          <span style={{
+                            fontSize: '0.7rem', padding: '3px 8px', borderRadius: '20px',
+                            backgroundColor: 'var(--green-soft)', color: 'var(--green-primary)', fontFamily: 'Georgia, serif',
+                            whiteSpace: 'nowrap',
+                          }}>
+                            Partenaire Mon Soutien Psy
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
