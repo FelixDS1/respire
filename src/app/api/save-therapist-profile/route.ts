@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   // Build update object from only the fields present in the request body
   const allowed = [
     'bio', 'bio_en', 'specialties', 'consultation_fee', 'languages',
-    'location', 'profession', 'sector', 'consultation_type',
+    'location', 'profession', 'consultation_type',
     'diploma_institution', 'diploma_url', 'student_price',
   ]
   const update: Record<string, unknown> = {}

@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const body = await req.json()
-    const { bio, specialties, languages, consultation_fee, location, sector, consultation_type } = body
+    const { bio, specialties, languages, consultation_fee, location, consultation_type } = body
 
     if (!bio?.trim()) return NextResponse.json({ error: 'Bio manquante' }, { status: 400 })
     if (!consultation_fee || isNaN(Number(consultation_fee))) return NextResponse.json({ error: 'Tarif invalide' }, { status: 400 })
@@ -27,7 +27,6 @@ export async function POST(req: NextRequest) {
       languages: languages ?? [],
       consultation_fee: Number(consultation_fee),
       location,
-      sector,
       consultation_type,
     })
 

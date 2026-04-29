@@ -27,7 +27,7 @@ export default async function BookPage({ params }: { params: Promise<{ slotId: s
 
   const { data: therapist } = await supabase
     .from('therapists')
-    .select('id, consultation_fee, sector, profiles(full_name)')
+    .select('id, consultation_fee, profiles(full_name)')
     .eq('id', slot.therapist_id)
     .single()
 

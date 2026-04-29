@@ -26,7 +26,6 @@ interface TherapistData {
   languages: string[]
   location: string
   profession: string
-  sector: string | null
   consultation_type: string | null
   is_verified: boolean
   photo_url: string | null
@@ -282,7 +281,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
           languages: therapist.languages,
           location: therapist.location,
           profession: therapist.profession || null,
-          sector: therapist.sector || null,
+
           consultation_type: therapist.consultation_type || 'both',
           diploma_institution: therapist.diploma_institution || null,
           student_price: therapist.student_price ?? null,
@@ -807,21 +806,6 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                         placeholder="75006"
                         maxLength={10}
                       />
-                    </div>
-                    <div>
-                      <p style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px', color: 'var(--blue-primary)', fontWeight: 500 }}>
-                        {lang === 'fr' ? 'Secteur' : 'Sector'}
-                      </p>
-                      <select
-                        value={therapist.sector ?? ''}
-                        onChange={e => setTherapist(prev => ({ ...prev, sector: e.target.value || null }))}
-                        className="w-full px-3 py-2 text-sm"
-                        style={inputStyle}
-                      >
-                        <option value="">— {lang === 'fr' ? 'Non renseigné' : 'Not specified'} —</option>
-                        <option value="1">Secteur 1</option>
-                        <option value="2">Secteur 2</option>
-                      </select>
                     </div>
                   </div>
 

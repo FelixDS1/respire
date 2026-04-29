@@ -28,7 +28,7 @@ export default async function Home() {
 
     const { data: therapists } = await supabase
       .from('therapists')
-      .select('id, consultation_fee, sector, specialties, photo_url, bio, location, profiles(full_name)')
+      .select('id, consultation_fee, specialties, photo_url, bio, location, profiles(full_name)')
       .in('id', therapistIds)
       .not('stripe_account_id', 'is', null)
       .not('consultation_fee', 'is', null)

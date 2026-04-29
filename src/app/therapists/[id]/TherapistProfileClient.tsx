@@ -112,9 +112,20 @@ export default function TherapistProfileClient({ therapist, byDate, stripeReady,
             )}
           </div>
           <div style={{ flex: 1 }}>
-            <h1 style={{ fontSize: '2rem', fontWeight: 300, color: 'var(--text)', marginBottom: '8px' }}>
-              {therapist.profiles?.full_name ?? 'Thérapeute'}
-            </h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '8px' }}>
+              <h1 style={{ fontSize: '2rem', fontWeight: 300, color: 'var(--text)', margin: 0 }}>
+                {therapist.profiles?.full_name ?? 'Thérapeute'}
+              </h1>
+              {(therapist.profiles?.full_name === 'Sylvain Loup' || therapist.profiles?.full_name === 'Sophie Martin') && (
+                <span style={{
+                  fontSize: '0.65rem', padding: '3px 9px', borderRadius: '20px',
+                  backgroundColor: 'rgba(44,40,32,0.08)', color: 'rgba(44,40,32,0.45)',
+                  fontFamily: 'Georgia, serif', letterSpacing: '0.05em',
+                }}>
+                  compte exemple
+                </span>
+              )}
+            </div>
             {therapist.location && (
               <p style={{ fontSize: '0.95rem', color: '#4A6070', marginBottom: '4px' }}>{therapist.location}</p>
             )}
@@ -194,14 +205,6 @@ export default function TherapistProfileClient({ therapist, byDate, stripeReady,
                 </>
               )
             })()}
-            {therapist.sector && (
-              <p style={{ fontSize: '0.85rem', color: '#4A6070', marginBottom: '8px' }}>
-                Secteur {therapist.sector}
-                {therapist.sector === '1'
-                  ? (lang === 'fr' ? ' · remboursé par la Sécu' : ' · reimbursed by Sécurité sociale')
-                  : (lang === 'fr' ? ' · dépassements d\'honoraires possibles' : ' · fees above official tariff')}
-              </p>
-            )}
 
             {/* Waitlist */}
             <div style={{ marginTop: '16px' }}>

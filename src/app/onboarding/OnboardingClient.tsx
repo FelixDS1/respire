@@ -47,7 +47,6 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
   const [languageInput, setLanguageInput] = useState('')
   const [fee, setFee] = useState('')
   const [location, setLocation] = useState('')
-  const [sector, setSector] = useState<'1' | '2'>('1')
   const [consultationType, setConsultationType] = useState<'presentiel' | 'video' | 'both'>('both')
 
   const [loading, setLoading] = useState(false)
@@ -218,7 +217,6 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
           languages,
           consultation_fee: Number(fee),
           location,
-          sector,
           consultation_type: consultationType,
         }),
       })
@@ -374,18 +372,6 @@ export default function OnboardingClient({ userId, role, fullName, redirectAfter
                   style={inputStyle}
                   placeholder="80"
                 />
-              </div>
-              <div>
-                <label className="block text-sm mb-1" style={{ color: 'var(--text)' }}>Secteur</label>
-                <select
-                  value={sector}
-                  onChange={e => setSector(e.target.value as '1' | '2')}
-                  className="w-full px-4 py-2 text-sm"
-                  style={inputStyle}
-                >
-                  <option value="1">Secteur 1</option>
-                  <option value="2">Secteur 2</option>
-                </select>
               </div>
             </div>
 

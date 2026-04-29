@@ -73,7 +73,7 @@ export default async function DashboardPage() {
         languages: therapistData?.languages ?? [],
         location: therapistData?.location ?? '',
         profession: therapistData?.profession ?? '',
-        sector: therapistData?.sector ?? null,
+
         consultation_type: therapistData?.consultation_type ?? 'both',
         is_verified: therapistData?.is_verified ?? false,
         photo_url: therapistData?.photo_url ?? null,

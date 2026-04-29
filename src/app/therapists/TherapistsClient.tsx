@@ -512,15 +512,26 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds,
                       {/* Center: name, specialty tags, bio excerpt, mobile price */}
                       <div style={{ flex: 1, minWidth: 0, paddingTop: '2px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-                          <h2 style={{
-                            fontSize: '1.1rem',
-                            fontWeight: 400,
-                            fontFamily: 'Georgia, serif',
-                            color: 'var(--text)',
-                            margin: 0,
-                          }}>
-                            {name}
-                          </h2>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <h2 style={{
+                              fontSize: '1.1rem',
+                              fontWeight: 400,
+                              fontFamily: 'Georgia, serif',
+                              color: 'var(--text)',
+                              margin: 0,
+                            }}>
+                              {name}
+                            </h2>
+                            {(name === 'Sylvain Loup' || name === 'Sophie Martin') && (
+                              <span style={{
+                                fontSize: '0.6rem', padding: '2px 7px', borderRadius: '20px',
+                                backgroundColor: 'rgba(44,40,32,0.08)', color: 'rgba(44,40,32,0.45)',
+                                fontFamily: 'Georgia, serif', letterSpacing: '0.05em', whiteSpace: 'nowrap',
+                              }}>
+                                compte exemple
+                              </span>
+                            )}
+                          </div>
                           {/* Mobile price — shown only on mobile via CSS */}
                           {price && (
                             <span className="therapist-card-mobile-price" style={{
@@ -602,11 +613,6 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds,
                             </span>
                           </div>
                         )}
-                        {therapist.sector && (
-                          <p style={{ fontSize: '0.73rem', color: '#8A9BAD', fontFamily: 'Georgia, serif', margin: 0 }}>
-                            {lang === 'fr' ? 'Secteur' : 'Sector'} {therapist.sector}
-                          </p>
-                        )}
                         {hasStudentPrice && (
                           <span style={{
                             fontSize: '0.7rem', padding: '3px 8px', borderRadius: '20px',
@@ -623,6 +629,13 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds,
               )
             })
           )}
+        </div>
+
+        {/* Launch notice */}
+        <div style={{ textAlign: 'center', padding: '2.5rem 1rem', borderTop: '1px solid var(--border)' }}>
+          <p style={{ fontFamily: 'Georgia, serif', fontSize: '0.82rem', color: 'rgba(44,40,32,0.4)', fontStyle: 'italic' }}>
+            Les profils de thérapeutes seront visibles lors du lancement officiel de Respire Psy.
+          </p>
         </div>
 
       </div>

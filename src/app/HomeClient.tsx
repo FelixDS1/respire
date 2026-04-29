@@ -106,11 +106,6 @@ function PreviewCard({ therapist, slots }: { therapist: PreviewTherapist; slots:
               {t.therapists.perSession}
             </span>
           </div>
-          {therapist.sector && (
-            <p style={{ fontSize: '0.73rem', color: '#8A9BAD', fontFamily: 'Georgia, serif', margin: '0 0 5px' }}>
-              {lang === 'fr' ? 'Secteur' : 'Sector'} {therapist.sector}
-            </p>
-          )}
         </div>
       )}
 
