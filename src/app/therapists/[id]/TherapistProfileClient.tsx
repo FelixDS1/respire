@@ -39,6 +39,40 @@ function MonSoutienPill() {
   )
 }
 
+function StudentPricePill({ studentPrice, lang }: { studentPrice: number; lang: string }) {
+  const [show, setShow] = useState(false)
+  return (
+    <span
+      style={{ position: 'relative', display: 'inline-block' }}
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      <span style={{
+        display: 'inline-block',
+        fontSize: '0.72rem', padding: '3px 9px', borderRadius: '20px',
+        backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)',
+        fontFamily: 'Georgia, serif', whiteSpace: 'nowrap', cursor: 'default',
+      }}>
+        {lang === 'fr' ? 'Tarif étudiant disponible' : 'Student rate available'}
+      </span>
+      {show && (
+        <span style={{
+          position: 'absolute', bottom: 'calc(100% + 6px)', left: '50%',
+          transform: 'translateX(-50%)',
+          backgroundColor: '#2C2820', color: '#F2EFE8',
+          fontSize: '0.72rem', fontFamily: 'Georgia, serif',
+          padding: '6px 10px', borderRadius: '8px',
+          whiteSpace: 'nowrap', zIndex: 40,
+          pointerEvents: 'none',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+        }}>
+          {studentPrice}€ {lang === 'fr' ? '/ séance' : '/ session'}
+        </span>
+      )}
+    </span>
+  )
+}
+
 interface Slot {
   id: string
   date: string
@@ -231,11 +265,9 @@ export default function TherapistProfileClient({ therapist, byDate, stripeReady,
                     </p>
                   )}
                   {!isStudentVerified && therapist.student_price !== null && (
-                    <p style={{ fontSize: '0.75rem', color: '#4A6070', marginBottom: '4px' }}>
-                      {lang === 'fr'
-                        ? `Tarif étudiant : ${therapist.student_price}€`
-                        : `Student rate: ${therapist.student_price}€`}
-                    </p>
+                    <div style={{ marginBottom: '4px' }}>
+                      <StudentPricePill studentPrice={therapist.student_price} lang={lang} />
+                    </div>
                   )}
                 </>
               )

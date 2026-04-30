@@ -125,6 +125,39 @@ function FilterDropdown({
   )
 }
 
+function StudentPricePill({ studentPrice, lang }: { studentPrice: number; lang: string }) {
+  const [show, setShow] = useState(false)
+  return (
+    <span
+      style={{ position: 'relative', display: 'inline-block' }}
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      <span style={{
+        fontSize: '0.7rem', padding: '3px 8px', borderRadius: '20px',
+        backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)',
+        fontFamily: 'Georgia, serif', whiteSpace: 'nowrap', cursor: 'default',
+      }}>
+        {lang === 'fr' ? 'Tarif étudiant disponible' : 'Student rate available'}
+      </span>
+      {show && (
+        <span style={{
+          position: 'absolute', bottom: 'calc(100% + 6px)', left: '50%',
+          transform: 'translateX(-50%)',
+          backgroundColor: '#2C2820', color: '#F2EFE8',
+          fontSize: '0.72rem', fontFamily: 'Georgia, serif',
+          padding: '6px 10px', borderRadius: '8px',
+          whiteSpace: 'nowrap', zIndex: 40,
+          pointerEvents: 'none',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+        }}>
+          {studentPrice}€ {lang === 'fr' ? '/ séance' : '/ session'}
+        </span>
+      )}
+    </span>
+  )
+}
+
 function MonSoutienPill() {
   const [show, setShow] = useState(false)
   return (
@@ -686,13 +719,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds,
                           </div>
                         )}
                         {hasStudentPrice && (
-                          <span style={{
-                            fontSize: '0.7rem', padding: '3px 8px', borderRadius: '20px',
-                            backgroundColor: 'var(--blue-accent)', color: 'var(--blue-primary)', fontFamily: 'Georgia, serif',
-                            whiteSpace: 'nowrap',
-                          }}>
-                            {lang === 'fr' ? 'Tarif étudiant disponible' : 'Student rate available'}
-                          </span>
+                          <StudentPricePill studentPrice={therapist.student_price!} lang={lang} />
                         )}
                         {therapist.is_mon_soutien_psy && <MonSoutienPill />}
                       </div>
