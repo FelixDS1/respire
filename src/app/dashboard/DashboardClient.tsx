@@ -34,6 +34,7 @@ interface TherapistData {
   diploma_institution: string | null
   diploma_url: string | null
   student_price: number | null
+  is_mon_soutien_psy: boolean
 }
 
 interface Slot {
@@ -285,6 +286,7 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
           consultation_type: therapist.consultation_type || 'both',
           diploma_institution: therapist.diploma_institution || null,
           student_price: therapist.student_price ?? null,
+          is_mon_soutien_psy: therapist.is_mon_soutien_psy,
         }),
       })
       const json = await res.json()
@@ -839,6 +841,26 @@ export default function DashboardClient({ userId, profile, initialTherapist, ini
                         </button>
                       ))}
                     </div>
+                  </div>
+
+                  {/* Mon Soutien Psy */}
+                  <div style={{ marginTop: '20px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setTherapist(prev => ({ ...prev, is_mon_soutien_psy: !prev.is_mon_soutien_psy }))}
+                      style={{
+                        padding: '8px 18px',
+                        fontSize: '0.85rem',
+                        border: `1px solid ${therapist.is_mon_soutien_psy ? 'var(--green-primary)' : 'var(--border)'}`,
+                        backgroundColor: therapist.is_mon_soutien_psy ? 'var(--green-soft)' : 'var(--surface)',
+                        color: therapist.is_mon_soutien_psy ? 'var(--green-primary)' : '#4A6070',
+                        cursor: 'pointer',
+                        borderRadius: '999px',
+                        fontWeight: 500,
+                      }}
+                    >
+                      Partenaire Mon Soutien Psy
+                    </button>
                   </div>
 
                   {/* Student price */}

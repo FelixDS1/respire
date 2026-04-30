@@ -23,6 +23,7 @@ interface Therapist {
   location: string | null
   sector: string | null
   is_verified: boolean
+  is_mon_soutien_psy: boolean | null
   diploma_institution: string | null
   profiles: {
     full_name: string | null
@@ -205,7 +206,7 @@ export default function TherapistProfileClient({ therapist, byDate, stripeReady,
                 </>
               )
             })()}
-            {therapist.profiles?.full_name === 'Sylvain Loup' && (
+            {therapist.is_mon_soutien_psy && (
               <span style={{
                 display: 'inline-block', marginTop: '6px',
                 fontSize: '0.72rem', padding: '3px 9px', borderRadius: '20px',

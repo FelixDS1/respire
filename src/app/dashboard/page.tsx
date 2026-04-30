@@ -82,6 +82,7 @@ export default async function DashboardPage() {
         diploma_institution: therapistData?.diploma_institution ?? null,
         diploma_url: therapistData?.diploma_url ?? null,
         student_price: therapistData?.student_price ?? null,
+        is_mon_soutien_psy: therapistData?.is_mon_soutien_psy ?? false,
       }}
       initialSlots={slotsData ?? []}
       initialAppointments={(apptData ?? []) as any}

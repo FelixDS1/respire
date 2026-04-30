@@ -22,6 +22,7 @@ interface Therapist {
   consultation_type: string | null
   profession: string | null
   is_verified: boolean
+  is_mon_soutien_psy: boolean | null
   profiles: {
     full_name: string | null
   }
@@ -165,6 +166,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds,
   const [availFilter, setAvailFilter] = useState<'all' | 'this_week' | 'next_week'>('all')
   const [consultFilter, setConsultFilter] = useState<'all' | 'presentiel' | 'video'>('all')
   const [professionFilter, setProfessionFilter] = useState<'all' | 'Psychologue'>('all')
+  const [monSoutienFilter, setMonSoutienFilter] = useState(false)
   const [hoveredId, setHoveredId] = useState<string | null>(null)
 
   const searchWrapperRef = useRef<HTMLDivElement>(null)
@@ -221,6 +223,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds,
     setAvailFilter('all')
     setConsultFilter('all')
     setProfessionFilter('all')
+    setMonSoutienFilter(false)
     setDropdownOpen(false)
   }
 
@@ -232,6 +235,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds,
     if (consultFilter === 'presentiel' && th.consultation_type !== 'presentiel' && th.consultation_type !== 'both') return false
     if (consultFilter === 'video' && th.consultation_type !== 'video' && th.consultation_type !== 'both') return false
     if (professionFilter !== 'all' && th.profession !== professionFilter) return false
+    if (monSoutienFilter && !th.is_mon_soutien_psy) return false
     return true
   })
 
@@ -239,7 +243,8 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds,
     selectedPills.length > 0 ||
     availFilter !== 'all' ||
     consultFilter !== 'all' ||
-    professionFilter !== 'all'
+    professionFilter !== 'all' ||
+    monSoutienFilter
 
   const showDropdown = dropdownOpen && suggestions.length > 0
 
@@ -399,6 +404,24 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds,
           <div style={{ width: '1px', height: '22px', backgroundColor: 'var(--border)', margin: '0 4px' }} />
           <PillToggle label={lang === 'fr' ? 'Tous les thérapeutes' : 'All therapists'} active={professionFilter === 'all'} onClick={() => setProfessionFilter('all')} />
           <PillToggle label={lang === 'fr' ? 'Psychologues' : 'Psychologists'} active={professionFilter === 'Psychologue'} onClick={() => setProfessionFilter('Psychologue')} />
+          <div style={{ width: '1px', height: '22px', backgroundColor: 'var(--border)', margin: '0 4px' }} />
+          <button
+            onClick={() => setMonSoutienFilter(v => !v)}
+            style={{
+              padding: '6px 14px',
+              borderRadius: '20px',
+              border: `1px solid ${monSoutienFilter ? 'var(--green-primary)' : 'var(--blue-primary)'}`,
+              backgroundColor: monSoutienFilter ? 'var(--green-soft)' : 'transparent',
+              color: monSoutienFilter ? 'var(--green-primary)' : 'var(--blue-primary)',
+              fontSize: '0.8rem',
+              fontFamily: 'Georgia, serif',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'background-color 0.12s, color 0.12s',
+            }}
+          >
+            Mon Soutien Psy
+          </button>
         </div>
 
         {/* ── Filters — mobile: one dropdown pill per group ── */}
@@ -429,6 +452,22 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds,
               { value: 'Psychologue', label: lang === 'fr' ? 'Psychologues' : 'Psychologists' },
             ]}
           />
+          <button
+            onClick={() => setMonSoutienFilter(v => !v)}
+            style={{
+              padding: '7px 14px',
+              borderRadius: '999px',
+              border: `1px solid ${monSoutienFilter ? 'var(--green-primary)' : 'var(--blue-primary)'}`,
+              backgroundColor: monSoutienFilter ? 'var(--green-soft)' : 'transparent',
+              color: monSoutienFilter ? 'var(--green-primary)' : 'var(--blue-primary)',
+              fontSize: '0.8rem',
+              fontFamily: 'Georgia, serif',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Mon Soutien Psy
+          </button>
         </div>
 
         {/* ── Result count ── */}
@@ -622,7 +661,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds,
                             {lang === 'fr' ? 'Tarif étudiant disponible' : 'Student rate available'}
                           </span>
                         )}
-                        {name === 'Sylvain Loup' && (
+                        {therapist.is_mon_soutien_psy && (
                           <span style={{
                             fontSize: '0.7rem', padding: '3px 8px', borderRadius: '20px',
                             backgroundColor: 'var(--green-soft)', color: 'var(--green-primary)', fontFamily: 'Georgia, serif',
