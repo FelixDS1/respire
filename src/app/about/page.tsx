@@ -42,14 +42,6 @@ export default function About() {
             : <>You deserve to <em style={{ fontStyle: 'italic', color: '#9C7B5A' }}>breathe.</em></>}
         </h1>
 
-        <p style={{
-          fontFamily: G, fontSize: '0.95rem', lineHeight: 1.9,
-          color: 'rgba(44,40,32,0.6)', fontWeight: 300, maxWidth: '520px', margin: 0,
-        }}>
-          {fr
-            ? 'On se force à vivre en courant. Quand on ralentit, on culpabilise. Prenez du temps pour respirer.'
-            : 'We force ourselves to keep running. When we slow down, we feel guilty. Take time to breathe.'}
-        </p>
       </section>
 
       {/* ── Pourquoi Respire + Nos engagements ── */}
