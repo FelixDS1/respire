@@ -5,6 +5,40 @@ import Link from 'next/link'
 import { useLanguage, specialtyTranslations } from '@/lib/language'
 import { createClient } from '@/lib/supabase'
 
+function MonSoutienPill() {
+  const [show, setShow] = useState(false)
+  return (
+    <span
+      style={{ position: 'relative', display: 'inline-block' }}
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      <span style={{
+        display: 'inline-block',
+        fontSize: '0.72rem', padding: '3px 9px', borderRadius: '20px',
+        backgroundColor: 'var(--green-soft)', color: 'var(--green-primary)',
+        fontFamily: 'Georgia, serif', whiteSpace: 'nowrap', cursor: 'default',
+      }}>
+        Partenaire Mon Soutien Psy
+      </span>
+      {show && (
+        <span style={{
+          position: 'absolute', bottom: 'calc(100% + 6px)', left: '50%',
+          transform: 'translateX(-50%)',
+          backgroundColor: '#2C2820', color: '#F2EFE8',
+          fontSize: '0.72rem', fontFamily: 'Georgia, serif',
+          padding: '6px 10px', borderRadius: '8px',
+          whiteSpace: 'nowrap', zIndex: 40,
+          pointerEvents: 'none',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+        }}>
+          20€ après remboursement sécu / 0€ avec votre mutuelle
+        </span>
+      )}
+    </span>
+  )
+}
+
 interface Slot {
   id: string
   date: string
@@ -207,14 +241,9 @@ export default function TherapistProfileClient({ therapist, byDate, stripeReady,
               )
             })()}
             {therapist.is_mon_soutien_psy && (
-              <span style={{
-                display: 'inline-block', marginTop: '6px',
-                fontSize: '0.72rem', padding: '3px 9px', borderRadius: '20px',
-                backgroundColor: 'var(--green-soft)', color: 'var(--green-primary)',
-                fontFamily: 'Georgia, serif', whiteSpace: 'nowrap',
-              }}>
-                Partenaire Mon Soutien Psy
-              </span>
+              <div style={{ marginTop: '6px' }}>
+                <MonSoutienPill />
+              </div>
             )}
 
             {/* Waitlist */}

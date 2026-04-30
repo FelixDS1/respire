@@ -125,6 +125,39 @@ function FilterDropdown({
   )
 }
 
+function MonSoutienPill() {
+  const [show, setShow] = useState(false)
+  return (
+    <span
+      style={{ position: 'relative', display: 'inline-block' }}
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      <span style={{
+        fontSize: '0.7rem', padding: '3px 8px', borderRadius: '20px',
+        backgroundColor: 'var(--green-soft)', color: 'var(--green-primary)',
+        fontFamily: 'Georgia, serif', whiteSpace: 'nowrap', cursor: 'default',
+      }}>
+        Partenaire Mon Soutien Psy
+      </span>
+      {show && (
+        <span style={{
+          position: 'absolute', bottom: 'calc(100% + 6px)', left: '50%',
+          transform: 'translateX(-50%)',
+          backgroundColor: '#2C2820', color: '#F2EFE8',
+          fontSize: '0.72rem', fontFamily: 'Georgia, serif',
+          padding: '6px 10px', borderRadius: '8px',
+          whiteSpace: 'nowrap', zIndex: 40,
+          pointerEvents: 'none',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
+        }}>
+          20€ après remboursement sécu / 0€ avec votre mutuelle
+        </span>
+      )}
+    </span>
+  )
+}
+
 function PillToggle({
   label,
   active,
@@ -661,15 +694,7 @@ export default function TherapistsClient({ therapists, thisWeekIds, nextWeekIds,
                             {lang === 'fr' ? 'Tarif étudiant disponible' : 'Student rate available'}
                           </span>
                         )}
-                        {therapist.is_mon_soutien_psy && (
-                          <span style={{
-                            fontSize: '0.7rem', padding: '3px 8px', borderRadius: '20px',
-                            backgroundColor: 'var(--green-soft)', color: 'var(--green-primary)', fontFamily: 'Georgia, serif',
-                            whiteSpace: 'nowrap',
-                          }}>
-                            Partenaire Mon Soutien Psy
-                          </span>
-                        )}
+                        {therapist.is_mon_soutien_psy && <MonSoutienPill />}
                       </div>
                     </div>
                   </div>
